@@ -1,0 +1,125 @@
+<!-- 1.2 セクション開始 -->
+<div class="slide divider-slide">
+    <h1>1.2 統計的機械学習の基礎</h1>
+</div>
+
+<!-- 目次スライド -->
+<div class="slide">
+    <h2>本日の内容</h2>
+    <ol>
+        <li>記号の定義と表記</li>
+        <li>データと機械学習の基本概念</li>
+        <li>機械学習の目標と数学的定式化</li>
+        <li>仮説と損失関数</li>
+        <li>経験リスクと期待リスク</li>
+        <li>最適化手法と勾配法</li>
+        <li>汎化性能と過剰適合</li>
+    </ol>
+    <div class="note">
+        本節では、統計的機械学習の数学的基礎について解説します。機械学習の定式化から最適化手法、そして汎化性能の評価までを体系的に学びます。
+    </div>
+</div>
+
+<!-- 記号の定義スライド -->
+<div class="slide">
+    <h2>1. 記号の定義と表記</h2>
+    
+    <h3>数学的記号</h3>
+    <ul>
+        <li>自然数の集合: <span class="math"> $\mathbb{N}$ </span></li>
+        <li>実数の集合: <span class="math">$\mathbb{R}$</span></li>
+        <li>非負の実数の集合: <span class="math">$\mathbb{R}_{\geq 0}$</span></li>
+        <li><span class="math">$d$</span>次元ユークリッド空間: <span class="math">$\mathbb{R}^d$</span></li>
+        <li>ベクトル表記: <span class="math">$\mathbf{x} = (x_1, \ldots, x_d)^\top$</span></li>
+    </ul>
+    
+    <h3>行列とノルム</h3>
+    <ul>
+        <li>行列表記: <span class="math">$\mathbf{A}, \mathbf{B}$</span> (大文字の太字)</li>
+        <li>行列の成分表記: <span class="math">$A_{ij}$</span> (<span class="math">$i, j$</span>成分)</li>
+        <li>ユークリッドノルム: <span class="math">$\|\mathbf{x}\| = \sqrt{\mathbf{x}^\top\mathbf{x}} = \sqrt{\sum_{j=1}^d x_j^2}$</span></li>
+        <li>フロベニウスノルム: <span class="math">$\|\mathbf{A}\| = \sqrt{\mathrm{tr}(\mathbf{A}^\top\mathbf{A})} = \sqrt{\sum_{i=1}^n\sum_{j=1}^d A_{ij}^2}$</span></li>
+    </ul>
+    
+    <div class="note">
+        確率変数は大文字（<span class="math">$X, Y$</span>）、実現値は小文字（<span class="math">$x, y$</span>）で表記します。2次元以上の場合は太字（<span class="math">$\mathbf{x}, \mathbf{y}$</span>）を使います。
+    </div>
+</div>
+
+<!-- データと機械学習の基本概念スライド -->
+<div class="slide">
+    <h2>2. データと機械学習の基本概念</h2>
+    
+    <h3>データとは</h3>
+    <ul>
+        <li>入力 <span class="math">$\mathbf{x}$</span> と出力 <span class="math">$y$</span>、あるいはその組 <span class="math">$(\mathbf{x}, y)$</span></li>
+        <li>入力空間: <span class="math">$\mathcal{X}$</span></li>
+        <li>出力空間: <span class="math">$\mathcal{Y}$</span></li>
+        <li>入出力のペアデータ: <span class="math">$D_n = \{(\mathbf{x}_i, y_i)\}_{i=1}^n \subset \mathcal{X} \times \mathcal{Y}$</span></li>
+        <li>同時確率分布: <span class="math">$P_{X,Y} = P(X, Y)$</span></li>
+    </ul>
+    
+    <h3>タスクの分類</h3>
+    <ul>
+        <li>出力空間が2点集合 <span class="math">$\mathcal{Y} = \{0, 1\}$</span> のとき: <span class="highlight">2値分類問題</span></li>
+        <li>出力空間が3点以上の集合のとき: <span class="highlight">多値分類問題</span></li>
+        <li>出力が連続値のとき: <span class="highlight">回帰問題</span></li>
+    </ul>
+    
+    <div class="note">
+        機械学習では、入力空間 <span class="math">$\mathcal{X}$</span> は通常 <span class="math">$d$</span> 次元ユークリッド空間 <span class="math">$\mathbb{R}^d$</span> の部分集合とします: <span class="math">$\mathcal{X} \subset \mathbb{R}^d$</span>
+    </div>
+</div>
+
+<!-- 機械学習の目標スライド -->
+<div class="slide">
+    <h2>3. 機械学習の目標と数学的定式化</h2>
+    
+    <h3>機械学習の目標</h3>
+    <ul>
+        <li>既知の入力 <span class="math">$\mathbf{X}$</span> と出力 <span class="math">$Y$</span> を用いてモデル（関数）を学習</li>
+        <li>新たな入力 <span class="math">$\mathbf{x}$</span> から対応する出力 <span class="math">$y$</span> を精度よく予測</li>
+        <li>これを<span class="highlight">汎化</span>と呼びます</li>
+    </ul>
+    
+    <div class="note">
+        例えば、手書き数字の画像（入力）から数字のラベル（出力）を認識する関数を学習するケースを考えてみましょう。
+    </div>
+    
+    <h3>数学的定式化</h3>
+    <ul>
+        <li>仮説集合: <span class="math">$\mathcal{H} = \{h: \mathcal{X} \to \mathcal{Y}\}$</span></li>
+        <li>予測モデル（仮説）: <span class="math">$h: \mathcal{X} \to \mathcal{Y}$</span></li>
+        <li>真の入出力関係: <span class="math">$y = f(\mathbf{x})$</span></li>
+        <li>学習（訓練）: データを使って <span class="math">$h$</span> を調整するプロセス</li>
+    </ul>
+</div>
+
+<!-- 仮説と損失関数スライド -->
+<div class="slide">
+    <h2>4. 仮説と損失関数</h2>
+    
+    <h3>仮説の候補</h3>
+    <ul>
+        <li>線形モデル: <span class="math">$h(\mathbf{x}) = \mathbf{w}^\top \mathbf{x}$</span>, <span class="math">$\mathbf{w} \in \mathbb{R}^d$</span></li>
+        <li>ニューラルネットワークモデル</li>
+        <li>決定木モデル</li>
+        <li>サポートベクターマシン</li>
+    </ul>
+    
+    <h3>線形モデルの仮説集合の例</h3>
+    <div class="equation">
+        <span class="math">$\mathcal{H} = \{h : \mathcal{X} \to \mathcal{Y} | h(\mathbf{x}) = \mathbf{w}^\top \mathbf{x}, \mathbf{w} \in \mathbb{R}^d\}$</span>
+    </div>
+    
+    <h3>損失関数</h3>
+    <ul>
+        <li>損失関数: <span class="math">$\ell : \mathcal{Y} \times \mathcal{Y} \to \mathbb{R}$</span></li>
+        <li>予測の評価: <span class="math">$\mathcal{L}(\mathbf{x}, y; h) := \ell(h(\mathbf{x}), y)$</span></li>
+        <li>損失の性質: <span class="key-point">予測精度が高いほど小さく、悪いほど大きくなる</span></li>
+    </ul>
+    
+    <div class="note">
+        損失関数の例: 分類問題での0-1損失、回帰問題での二乗損失、ヒンジ損失、ロジスティック損失など
+    </div>
+</div>
