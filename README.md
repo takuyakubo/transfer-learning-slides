@@ -10,3 +10,7 @@
 - 1.4 転移学習の導入と定義
 
 2025年3月31日作成
+
+## GitHub Pages
+このスライドはGitHub Pagesで公開されています：
+https://takuyakubo.github.io/transfer-learning-slides/
