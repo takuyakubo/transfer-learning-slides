@@ -14,6 +14,50 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
     <title>転移学習 統合スライド</title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // セクションのHTMLを読み込む関数
+            async function loadSectionContent(url, targetElement) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const html = await response.text();
+                    targetElement.innerHTML += html;
+                } catch (error) {
+                    console.error('セクションの読み込みに失敗しました:', error);
+                    targetElement.innerHTML += `<p class="error">セクションの読み込みに失敗しました: ${error.message}</p>`;
+                }
+            }
+
+            // メインコンテンツ領域
+            const mainContent = document.getElementById('main-content');
+
+            // 各セクションを順番に読み込む
+            const sections = [
+                'section1-1.html',
+                'section1-1_part2.html',
+                'section1-2.html',
+                'section1-2_part2.html',
+                'section1-3.html',
+                'section1-4.html',
+                'section1-4_part2.html'
+            ];
+
+            // 読み込みプロミスの配列を作成
+            const loadPromises = sections.map(section => 
+                loadSectionContent(section, mainContent)
+            );
+
+            // すべてのセクションが読み込まれたらMathJaxを再レンダリング
+            Promise.all(loadPromises).then(() => {
+                if (typeof MathJax !== 'undefined') {
+                    MathJax.typeset();
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <!-- 表紙スライド -->
@@ -44,7 +88,8 @@
         </div>
     </div>
 
-    <!-- ここに残りのスライドコンテンツを追加します -->
+    <!-- ここに各セクションのコンテンツが読み込まれます -->
+    <div id="main-content"></div>
 
     <div class="footer">
         <p>&copy; 2025 機械学習プロフェッショナルシリーズ</p>
