@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']]
+          }
+        };
+        </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+    <title>転移学習 統合スライド</title>
+    <link href='../styles/base.css' rel='stylesheet' />
+</head>
+<body>
+    <!-- 表紙スライド -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>転移学習（Transfer Learning）</h1>
+            <p>機械学習プロフェッショナルシリーズ</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2>第1章 機械学習から転移学習へ</h2>
+            <h3>統合スライド</h3>
+            <p style="margin-top: 80px;">勉強会資料</p>
+            <p>2025年3月31日</p>
+        </div>
+    </div>
+
+    <!-- 統合目次スライド -->
+    <div class="slide">
+        <h2>統合スライド目次</h2>
+        <ol>
+            <li>1.1 人工知能、機械学習、そして転移学習</li>
+            <li>1.2 統計的機械学習の基礎</li>
+            <li>1.3 深層学習の基礎</li>
+            <li>1.4 転移学習の導入と定義</li>
+        </ol>
+        <div class="note">
+            本スライドは、転移学習に関する勉強会資料の統合版です。AI・機械学習の基礎から始まり、統計的機械学習の理論、深層学習の基本、そして転移学習の定義と分類まで体系的に学ぶことができます。
+        </div>
+    </div>
+
+    <!-- 1.1 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>1.1 人工知能、機械学習、そして転移学習</h1>
+    </div>
+
+    <!-- 目次スライド -->
+    <div class="slide">
+        <h2>本日の内容</h2>
+        <ol>
+            <li>人工知能の起源と発展</li>
+            <li>記号的人工知能とその限界</li>
+            <li>機械学習の登場と進化</li>
+            <li>機械学習モデルの課題</li>
+            <li>転移学習の必要性</li>
+        </ol>
+        <div class="note">
+            本章では、統計的機械学習の導入から出発し、転移学習のコンセプト、伝統的な機械学習と転移学習の関係、そしてなぜ転移学習が必要なのかについて説明します。
+        </div>
+    </div>
+
+    <!-- 人工知能の起源スライド -->
+    <div class="slide">
+        <h2>1. 人工知能の起源と発展</h2>
+        
+        <h3>人工知能の始まり</h3>
+        <ul>
+            <li>1950年：アラン・チューリングの論文 "Computing Machinery and Intelligence"</li>
+            <li>「<span class="highlight">機械は考えることができるか？</span>」(Can machines think?) という問い</li>
+            <li>1956年：ダートマス会議で「人工知能（artificial intelligence, AI）」という用語が初めて使用される</li>
+        </ul>
+        
+        <div class="note">
+            チューリングテストはAIの能力を評価する先駆的な概念でした。人間と機械の区別がつかなければ、その機械は「知的」と見なせるという考え方です。
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <p style="font-style: italic;">"あらゆる学習の側面、あるいは知能の他の特徴を、原則的に非常に正確に記述できるようにする"</p>
+            <p>- ダートマス会議提案書（1955年、マッカーシーら）</p>
+        </div>
+    </div>
+
+    <!-- AIの変遷スライド -->
+    <div class="slide">
+        <h2>1. 人工知能の起源と発展（続き）</h2>
+        
+        <h3>AIアプローチの変遷</h3>
+        <div class="timeline">
+            <div class="container left">
+                <div class="content">
+                    <h3>1950-1970年代</h3>
+                    <p>記号的AI（論理、推論、知識表現）の黎明期</p>
+                </div>
+            </div>
+            <div class="container right">
+                <div class="content">
+                    <h3>1980年代</h3>
+                    <p>エキスパートシステム全盛期</p>
+                </div>
+            </div>
+            <div class="container left">
+                <div class="content">
+                    <h3>1990年代-2000年代初頭</h3>
+                    <p>機械学習の台頭（決定木、SVM等）</p>
+                </div>
+            </div>
+            <div class="container right">
+                <div class="content">
+                    <h3>2010年代-現在</h3>
+                    <p>深層学習の革命と転移学習の発展</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="note">
+            AIの歴史は「期待と失望のサイクル」を繰り返してきました。各時代の技術的限界に直面するたびに、新しいアプローチが生まれています。
+        </div>
+    </div>
+
+    <!-- 記号的AI スライド -->
+    <div class="slide">
+        <h2>2. 記号的人工知能とその限界</h2>
+        
+        <h3>記号的AI（Symbolic AI）とは</h3>
+        <ul>
+            <li>知能を<span class="highlight">記号の操作</span>として捉える</li>
+            <li>人間が与えたルールの基盤をもとに知的振る舞いを実現</li>
+            <li>「知識をコンピュータに<span class="key-point">明示的に与える</span>」アプローチ</li>
+        </ul>
+        
+        <h3>エキスパートシステムの例</h3>
+        <ul>
+            <li>医療診断システム</li>
+            <li>税務アドバイスシステム</li>
+            <li>鉱物探査支援システム</li>
+        </ul>
+        
+        <h3>フレーム問題</h3>
+        <div class="note">
+            <p>「ある状態にルールを適用して新しい状態を得る」というプロセスを記号で表現するとき、ルールの適用によって変化する状態と変化しない状態をどう表現するかという問題</p>
+            <p><span class="key-point">例：</span>ロボットが棚から試薬を取り出す → 試薬の位置は変わるが壁の位置は変わらない</p>
+        </div>
+    </div>
+
+    <!-- 機械学習スライド -->
+    <div class="slide">
+        <h2>3. 機械学習の登場と進化</h2>
+        
+        <h3>機械学習（Machine Learning）の登場</h3>
+        <ul>
+            <li>1959年：アーサー・サミュエルによる "Some Studies in Machine Learning Using the Game of Checkers"</li>
+            <li>定義：「明示的にプログラムすることなくコンピュータに学習能力を与える研究」</li>
+        </ul>
+        
+        <h3>記号的AIと機械学習の根本的な違い</h3>
+        <table>
+            <tr>
+                <th>記号的AI</th>
+                <th>機械学習</th>
+            </tr>
+            <tr>
+                <td>人間が知識そのものを与える</td>
+                <td>人間は知識獲得方法とデータを与える</td>
+            </tr>
+            <tr>
+                <td>ルールベース</td>
+                <td>データドリブン</td>
+            </tr>
+            <tr>
+                <td>知識が明示的</td>
+                <td>知識が暗黙的（モデルパラメータ）</td>
+            </tr>
+            <tr>
+                <td>汎化は設計者が考慮</td>
+                <td>汎化は自動的に学習</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 機械学習の進化スライド -->
+    <div class="slide">
+        <h2>3. 機械学習の登場と進化（続き）</h2>
+        
+        <h3>1990年代以降の発展</h3>
+        <ul>
+            <li>大量のデータから意味のあるパターンを抽出する方法論</li>
+            <li>様々な問題への適用：
+                <ul>
+                    <li>画像認識</li>
+                    <li>自然言語処理</li>
+                    <li>音声認識</li>
+                    <li>レコメンデーションシステム</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3>機械学習の強み</h3>
+        <div class="two-col">
+            <div class="col">
+                <h4>汎化能力</h4>
+                <p>学習した知識に基づいて未知の状況にも適応できる</p>
+            </div>
+            <div class="col">
+                <h4>スケーラビリティ</h4>
+                <p>データ量の増加に伴い精度が向上（一般的に）</p>
+            </div>
+        </div>
+        
+        <div class="note">
+            現在、機械学習は多様な分野で意思決定の自動化を実現する社会の主要ツールとなっています。オンラインコマース、広告、教育、ヘルスケアなど、幅広い応用があります。
+        </div>
+    </div>
+
+    <!-- 機械学習の課題スライド1 -->
+    <div class="slide">
+        <h2>4. 機械学習モデルの課題</h2>
+        
+        <h3>課題1: 頑健性の問題</h3>
+        <div class="note">
+            機械学習モデルは<span class="highlight">頑健でなければならない</span>。汎化という考え方に代表されるように、ある環境で訓練された機械学習システムには、新たな環境に対しても頑健に（性能を落とすことなく）動作することが期待されています。
+        </div>
+        <ul>
+            <li>伝統的な機械学習では、訓練データとテストデータが<span class="key-point">同一の分布からサンプリング</span>されていると仮定</li>
+            <li>しかし、これは実世界応用を考えるには<span class="key-point">強すぎる仮定</span></li>
+            <li>実際のデータ分布は<span class="highlight">時間的、空間的に変動</span>するため、同一分布に従う訓練データを利用してモデルを学習できる状況は一般に期待できない</li>
+        </ul>
+    </div>
+
+    <!-- 機械学習の課題スライド2 -->
+    <div class="slide">
+        <h2>4. 機械学習モデルの課題（続き）</h2>
+        
+        <h3>顔認識システムの例</h3>
+        <div class="two-col">
+            <div class="col">
+                <h4>訓練環境（室内）</h4>
+                <ul>
+                    <li>一定の光条件</li>
+                    <li>一定のカメラ角度</li>
+                    <li>背景の単純さ</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>テスト環境（屋外）</h4>
+                <ul>
+                    <li>異なる光の強度</li>
+                    <li>影や角度の違い</li>
+                    <li>太陽光というノイズ</li>
+                    <li>通行人の有無</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="note">
+            環境の違いにより、モデルの認識精度が極端に悪化する可能性があります。この性能低下は、「新たな状況」が発生したとき、現在の（古い）予測モデルでは不十分であり、アップデートが必要であることを示唆しています。
+        </div>
+    </div>
+
+    <!-- 機械学習の課題スライド3 -->
+    <div class="slide">
+        <h2>4. 機械学習モデルの課題（続き）</h2>
+        
+        <h3>課題2: データ不足の問題</h3>
+        <ul>
+            <li>機械学習モデルの性能は、<span class="highlight">ラベル付きデータの量</span>に大きく依存</li>
+            <li>高品質なラベルデータは<span class="key-point">不足しがち</span>であり、収集には高いコスト</li>
+            <li>新たな環境でモデルを適応させるための訓練データが不足している場合が多い</li>
+        </ul>
+        
+        <div class="note">
+            例えば、疾患の画像診断システムを訓練するための医用画像データのように、モデルの再訓練のための高品質な訓練データを得るのに非常に高いコストがかかる場合も少なくありません。
+        </div>
+    </div>
+
+    <!-- 機械学習の課題スライド4 -->
+    <div class="slide">
+        <h2>4. 機械学習モデルの課題（続き）</h2>
+        
+        <h3>課題3: サービスの個別化への適応</h3>
+        <ul>
+            <li>現代のサービスは特定の共通因子（年齢、性別など）を持つ<span class="highlight">集団ごと</span>にカスタマイズ</li>
+            <li>今後は<span class="key-point">個人レベル</span>でのサービスカスタマイズが進むと予想</li>
+            <li>しかし、個人用の機械学習モデルを一から学習するには、その<span class="highlight">ユーザ本人から膨大な量のデータ</span>を取得する必要がある</li>
+            <li>現実的には困難であり、<span class="key-point">集団学習済みモデルをさらに本人用に特化</span>させるフレームワークが必要</li>
+        </ul>
+    </div>
+
+    <!-- 転移学習の必要性スライド -->
+    <div class="slide">
+        <h2>5. 転移学習の必要性</h2>
+        
+        <h3>転移学習（Transfer Learning）とは</h3>
+        <div class="note">
+            <p>一言でいえば、<span class="highlight">既存のタスクから知識を適切に抽出することで、目標としている別のタスクでのモデル性能を最大化するための機械学習のパラダイム</span>のことを指します。</p>
+        </div>
+        
+        <h3>機械学習の限界を克服</h3>
+        <ul>
+            <li>前述した3つの課題（頑健性、データ不足、個別化）を解決するアプローチ</li>
+            <li>あるタスクで学習した知識を別のタスクに転用</li>
+            <li>新しい環境・タスク向けに効率的に知識を更新</li>
+        </ul>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <p style="font-weight: bold; font-size: 24px; color: #0078d7;">転移学習は過去の知識を活用して新たな課題に取り組むパラダイム</p>
+        </div>
+    </div>
+
+    <!-- 1.2 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>1.2 統計的機械学習の基礎</h1>
+    </div>
+
+    <!-- 目次スライド -->
+    <div class="slide">
+        <h2>本日の内容</h2>
+        <ol>
+            <li>記号の定義と表記</li>
+            <li>データと機械学習の基本概念</li>
+            <li>機械学習の目標と数学的定式化</li>
+            <li>仮説と損失関数</li>
+            <li>経験リスクと期待リスク</li>
+            <li>最適化手法と勾配法</li>
+            <li>汎化性能と過剰適合</li>
+        </ol>
+        <div class="note">
+            本節では、統計的機械学習の数学的基礎について解説します。機械学習の定式化から最適化手法、そして汎化性能の評価までを体系的に学びます。
+        </div>
+    </div>
+
+    <!-- 記号の定義スライド -->
+    <div class="slide">
+        <h2>1. 記号の定義と表記</h2>
+        
+        <h3>数学的記号</h3>
+        <ul>
+            <li>自然数の集合: <span class="math"> $\mathbb{N}$ </span></li>
+            <li>実数の集合: <span class="math">$\mathbb{R}$</span></li>
+            <li>非負の実数の集合: <span class="math">$\mathbb{R}_{\geq 0}$</span></li>
+            <li><span class="math">$d$</span>次元ユークリッド空間: <span class="math">$\mathbb{R}^d$</span></li>
+            <li>ベクトル表記: <span class="math">$\mathbf{x} = (x_1, \ldots, x_d)^\top$</span></li>
+        </ul>
+        
+        <h3>行列とノルム</h3>
+        <ul>
+            <li>行列表記: <span class="math">$\mathbf{A}, \mathbf{B}$</span> (大文字の太字)</li>
+            <li>行列の成分表記: <span class="math">$A_{ij}$</span> (<span class="math">$i, j$</span>成分)</li>
+            <li>ユークリッドノルム: <span class="math">$\|\mathbf{x}\| = \sqrt{\mathbf{x}^\top\mathbf{x}} = \sqrt{\sum_{j=1}^d x_j^2}$</span></li>
+            <li>フロベニウスノルム: <span class="math">$\|\mathbf{A}\| = \sqrt{\mathrm{tr}(\mathbf{A}^\top\mathbf{A})} = \sqrt{\sum_{i=1}^n\sum_{j=1}^d A_{ij}^2}$</span></li>
+        </ul>
+        
+        <div class="note">
+            確率変数は大文字（<span class="math">$X, Y$</span>）、実現値は小文字（<span class="math">$x, y$</span>）で表記します。2次元以上の場合は太字（<span class="math">$\mathbf{x}, \mathbf{y}$</span>）を使います。
+        </div>
+    </div>
+
+   <!-- データと機械学習の基本概念スライド -->
+   <div class="slide">
+    <h2>2. データと機械学習の基本概念</h2>
+    
+    <h3>データとは</h3>
+    <ul>
+        <li>入力 <span class="math">$\mathbf{x}$</span> と出力 <span class="math">$y$</span>、あるいはその組 <span class="math">$(\mathbf{x}, y)$</span></li>
+        <li>入力空間: <span class="math">$\mathcal{X}$</span></li>
+        <li>出力空間: <span class="math">$\mathcal{Y}$</span></li>
+        <li>入出力のペアデータ: <span class="math">$D_n = \{(\mathbf{x}_i, y_i)\}_{i=1}^n \subset \mathcal{X} \times \mathcal{Y}$</span></li>
+        <li>同時確率分布: <span class="math">$P_{X,Y} = P(X, Y)$</span></li>
+    </ul>
+    
+    <h3>タスクの分類</h3>
+    <ul>
+        <li>出力空間が2点集合 <span class="math">$\mathcal{Y} = \{0, 1\}$</span> のとき: <span class="highlight">2値分類問題</span></li>
+        <li>出力空間が3点以上の集合のとき: <span class="highlight">多値分類問題</span></li>
+        <li>出力が連続値のとき: <span class="highlight">回帰問題</span></li>
+    </ul>
+    
+    <div class="note">
+        機械学習では、入力空間 <span class="math">$\mathcal{X}$</span> は通常 <span class="math">$d$</span> 次元ユークリッド空間 <span class="math">$\mathbb{R}^d$</span> の部分集合とします: <span class="math">$\mathcal{X} \subset \mathbb{R}^d$</span>
+    </div>
+</div>
+
+<!-- 機械学習の目標スライド -->
+<div class="slide">
+    <h2>3. 機械学習の目標と数学的定式化</h2>
+    
+    <h3>機械学習の目標</h3>
+    <ul>
+        <li>既知の入力 <span class="math">$\mathbf{X}$</span> と出力 <span class="math">$Y$</span> を用いてモデル（関数）を学習</li>
+        <li>新たな入力 <span class="math">$\mathbf{x}$</span> から対応する出力 <span class="math">$y$</span> を精度よく予測</li>
+        <li>これを<span class="highlight">汎化</span>と呼びます</li>
+    </ul>
+    
+    <div class="note">
+        例えば、手書き数字の画像（入力）から数字のラベル（出力）を認識する関数を学習するケースを考えてみましょう。
+    </div>
+    
+    <h3>数学的定式化</h3>
+    <ul>
+        <li>仮説集合: <span class="math">$\mathcal{H} = \{h: \mathcal{X} \to \mathcal{Y}\}$</span></li>
+        <li>予測モデル（仮説）: <span class="math">$h: \mathcal{X} \to \mathcal{Y}$</span></li>
+        <li>真の入出力関係: <span class="math">$y = f(\mathbf{x})$</span></li>
+        <li>学習（訓練）: データを使って <span class="math">$h$</span> を調整するプロセス</li>
+    </ul>
+</div>
+
+<!-- 仮説と損失関数スライド -->
+<div class="slide">
+    <h2>4. 仮説と損失関数</h2>
+    
+    <h3>仮説の候補</h3>
+    <ul>
+        <li>線形モデル: <span class="math">$h(\mathbf{x}) = \mathbf{w}^\top \mathbf{x}$</span>, <span class="math">$\mathbf{w} \in \mathbb{R}^d$</span></li>
+        <li>ニューラルネットワークモデル</li>
+        <li>決定木モデル</li>
+        <li>サポートベクターマシン</li>
+    </ul>
+    
+    <h3>線形モデルの仮説集合の例</h3>
+    <div class="equation">
+        <span class="math">$\mathcal{H} = \{h : \mathcal{X} \to \mathcal{Y} | h(\mathbf{x}) = \mathbf{w}^\top \mathbf{x}, \mathbf{w} \in \mathbb{R}^d\}$</span>
+    </div>
+    
+    <h3>損失関数</h3>
+    <ul>
+        <li>損失関数: <span class="math">$\ell : \mathcal{Y} \times \mathcal{Y} \to \mathbb{R}$</span></li>
+        <li>予測の評価: <span class="math">$\mathcal{L}(\mathbf{x}, y; h) := \ell(h(\mathbf{x}), y)$</span></li>
+        <li>損失の性質: <span class="key-point">予測精度が高いほど小さく、悪いほど大きくなる</span></li>
+    </ul>
+    
+    <div class="note">
+        損失関数の例: 分類問題での0-1損失、回帰問題での二乗損失、ヒンジ損失、ロジスティック損失など
+    </div>
+</div>
+
+<!-- 経験リスクと期待リスクスライド -->
+<div class="slide">
+    <h2>5. 経験リスクと期待リスク</h2>
+    
+    <h3>期待リスク</h3>
+    <div class="note">
+        <p><span class="key-point">定義1.1（期待リスク）:</span> データ <span class="math">$(\mathbf{X}, Y)$</span> の従う確率分布 <span class="math">$P_{X,Y}$</span> のもとでの仮説 <span class="math">$h$</span> の期待リスク <span class="math">$R(h)$</span> は、<span class="math">$h$</span> に対する損失 <span class="math">$\mathcal{L}$</span> の期待値</p>
+    </div>
+    <div class="equation">
+        <span class="math">$R(h) := \mathbb{E}_{(\mathbf{X}, Y) \sim P_{X,Y}}[ \mathcal{L}(\mathbf{X}, Y; h)] = \mathbb{E}_{(\mathbf{X}, Y) \sim P_{X,Y}}[ \ell(h(\mathbf{X}), Y)]$</span>
+    </div>
+    <ul>
+        <li>期待リスクが小さければ予測モデルとして高い性能を持つ</li>
+        <li>しかし、実際には確率分布 <span class="math">$P_{X,Y}$</span> は未知であるため直接計算できない</li>
+    </ul>
+    
+    <h3>経験リスク</h3>
+    <div class="note">
+        <p><span class="key-point">定義1.2（経験リスク）:</span> 観測データ <span class="math">$D_n = \{(\mathbf{x}_i, y_i)\}_{i=1}^n$</span> に対して、仮説 <span class="math">$h$</span> の経験リスク <span class="math">$\hat{R}(h)$</span> は、<span class="math">$h$</span> に対する各データの損失値の標本平均</p>
+    </div>
+    <div class="equation">
+        <span class="math">$\hat{R}(h) := (1/n) \sum_{i=1}^n \mathcal{L}(\mathbf{x}_i, y_i; h) = (1/n) \sum_{i=1}^n \ell(h(\mathbf{x}_i), y_i)$</span>
+    </div>
+</div>
+
+<!-- 経験リスク最小化スライド -->
+<div class="slide">
+    <h2>5. 経験リスクと期待リスク（続き）</h2>
+    
+    <h3>経験リスク最小化</h3>
+    <div class="equation">
+        <span class="math">$\hat{h} := \arg \min_{h \in \mathcal{H}} \hat{R}(h)$</span>
+    </div>
+    <ul>
+        <li>機械学習では、<span class="highlight">経験リスク $\hat{R}(h)$ を最小化する $h$ を見つける</span>ことで近似的に期待リスク $R(h)$ を小さくするアプローチをとる</li>
+        <li>線形モデルの場合: <span class="math">$\mathbf{w} = \arg \min_{\mathbf{w} \in \mathbb{R}^d} (1/n) \sum_{i=1}^n \ell(\mathbf{w}^\top \mathbf{x}_i, y_i)$</span></li>
+    </ul>
+    
+    <div class="note">
+        経験リスク最小化は機械学習における学習あるいは訓練の実体です。例えば線形モデルでは、適切なパラメータ <span class="math">$\mathbf{w}$</span> を求めることが学習の目標となります。
+    </div>
+</div>
+
+<!-- 最適化手法スライド -->
+<div class="slide">
+    <h2>6. 最適化手法と勾配法</h2>
+    
+    <h3>勾配法（Gradient Method）</h3>
+    <ul>
+        <li>勾配を用いてパラメータの更新列を生成する手法</li>
+        <li>最急降下法（Steepest Descent Method）:</li>
+    </ul>
+    <div class="equation">
+        <span class="math">$\mathbf{w}_t = \mathbf{w}_{t-1} - \eta_{t-1} \nabla_{\mathbf{w}} \hat{R}(\mathbf{w}_{t-1}), t=1,2,...$</span>
+    </div>
+    <ul>
+        <li>勾配（gradient）ベクトル: <span class="math">$\nabla_{\mathbf{w}} \hat{R}(\mathbf{w}) = (\partial \hat{R}(\mathbf{w})/\partial w_1, ..., \partial \hat{R}(\mathbf{w})/\partial w_D)^\top$</span></li>
+        <li>学習率（learning rate）: <span class="math">$\eta_t$</span></li>
+    </ul>
+    
+    <div class="note">
+        ニューラルネットワークのような複雑な仮説に対しては、勾配法を使用して経験リスクを最小化します。適切な初期値 <span class="math">$\mathbf{w}_0$</span> を設定し、勾配の方向にパラメータを更新していきます。
+    </div>
+</div>
+
+<!-- 確率的勾配降下法スライド -->
+<div class="slide">
+    <h2>6. 最適化手法と勾配法（続き）</h2>
+    
+    <h3>確率的勾配降下法（SGD）</h3>
+    <ul>
+        <li>通常の勾配法では、各反復ですべてのデータを使うため計算コストが高い</li>
+        <li>確率的勾配降下法: データのサブセットを使って勾配を計算</li>
+    </ul>
+    <div class="equation">
+        <span class="math">$\mathbf{w}_t = \mathbf{w}_{t-1} - (\eta_{t-1}/m) \sum_{(\mathbf{x}, y) \in \mathcal{D}_{t-1}} \nabla_{\mathbf{w}} \mathcal{L}(\mathbf{x}, y; h_{\mathbf{w}_{t-1}})$</span>
+    </div>
+    <ul>
+        <li><span class="math">$m$</span>: サブセットのサイズ（ミニバッチサイズ）</li>
+        <li><span class="math">$\mathcal{D}_{t-1}$</span>: t-1回目の更新に使用するデータのサブセット</li>
+        <li><span class="math">$m = 1$</span>: 確率的勾配降下法（各回1データポイントを使用）</li>
+        <li><span class="math">$m \geq 2$</span>: ミニバッチ（minibatch）確率的勾配降下法（複数データポイントを使用）</li>
+    </ul>
+    
+    <h3>SGDの利点</h3>
+    <ul>
+        <li>計算コストが <span class="math">$O(m)$</span> でデータ数 <span class="math">$n$</span> に依存しない</li>
+        <li>大規模データへのスケーラビリティがある</li>
+        <li>局所的な最適解を抜け出す可能性がある</li>
+    </ul>
+</div>
+
+<!-- 汎化性能と残余誤差スライド -->
+<div class="slide">
+    <h2>7. 汎化性能と過剰適合</h2>
+    
+    <h3>残余誤差（Excess Risk）</h3>
+    <div class="note">
+        <p><span class="key-point">定義1.3（残余誤差）:</span> データ <span class="math">$(\mathbf{X}, Y)$</span> の従う確率分布 <span class="math">$P_{X,Y}$</span> のもとでの仮説 <span class="math">$\hat{h}$</span> の残余誤差は、</p>
+    </div>
+    <div class="equation">
+        <span class="math">$R(\hat{h}) - \inf_{h: \text{可測関数}} R(h)$</span>
+    </div>
+    <ul>
+        <li><span class="highlight">可測関数</span>: 数学的に厳密な関数の集合で、値の測定（期待値の計算など）が可能な関数。機械学習では、すべての理論的に可能な予測関数の集合を表す</li>
+        <li>第2項: すべての可測関数の中での期待リスク <span class="math">$R(h)$</span> の下限（ベイズ誤差）</li>
+        <li>残余誤差は <span class="highlight">汎化性能の指標</span> となる</li>
+    </ul>
+    
+    <h3>バイアス・バリアンス分解</h3>
+    <div class="equation">
+        <span class="math">$R(\hat{h}) - \inf_{h: \text{可測関数}} R(h) = [R(\hat{h}) - \min_{h \in \mathcal{H}} R(h)] + [\min_{h \in \mathcal{H}} R(h) - \inf_{h: \text{可測関数}} R(h)]$</span>
+    </div>
+    <ul>
+        <li>推定誤差（estimation error）: <span class="math">$R(\hat{h}) - \min_{h \in \mathcal{H}} R(h)$</span></li>
+        <li>近似誤差（approximation error）: <span class="math">$\min_{h \in \mathcal{H}} R(h) - \inf_{h: \text{可測関数}} R(h)$</span></li>
+    </ul>
+    
+    <h3>ベイズ規則（Bayes Rule）</h3>
+    <div class="note">
+        <p>残余誤差の下限を達成する仮説が存在するとき、その仮説をベイズ規則と呼びます。ベイズ規則は理論上の最適な予測関数です。</p>
+    </div>
+    <ul>
+        <li>分類問題の場合: 真の条件付き確率 <span class="math">$P(Y|\mathbf{X})$</span> に基づく最適分類器</li>
+        <li>回帰問題の場合: 条件付き期待値 <span class="math">$\mathbb{E}[Y|\mathbf{X}]$</span> に基づく最適予測器</li>
+        <li>ベイズ誤差: どんなモデルでも避けられない理論上の最小誤差</li>
+    </ul>
+</div>
+
+<!-- 過剰適合スライド -->
+<div class="slide">
+    <h2>7. 汎化性能と過剰適合（続き）</h2>
+    
+    <h3>推定誤差と近似誤差のトレードオフ</h3>
+    <ul>
+        <li>仮説集合を大きくすると、<span class="key-point">近似誤差は減少</span>する</li>
+        <li>推定誤差と仮説集合の複雑度の関係:
+            <ul>
+                <li>一般的に、仮説集合の複雑度が高いほど推定誤差は大きくなる<span class="highlight">傾向がある</span></li>
+                <li>データ数が増えると推定誤差は減少する<span class="highlight">傾向がある</span></li>
+                <li>この関係は損失関数や推定アルゴリズムにも依存する</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h3>過剰適合（Overfitting）</h3>
+    <div class="two-col">
+        <div class="col">
+            <h4>適切な仮説集合</h4>
+            <ul>
+                <li>バランスの取れた近似誤差と推定誤差</li>
+                <li>未知データに対しても良い性能</li>
+            </ul>
+        </div>
+        <div class="col">
+            <h4>複雑すぎる仮説集合</h4>
+            <ul>
+                <li>大きな推定誤差</li>
+                <li>訓練データにのみフィット</li>
+                <li>未知データでの性能が低下</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="note">
+        過剰適合を防ぐための手法として、適切な仮説集合の選択（モデル選択）や正則化（regularization）付き学習などが用いられます。
+    </div>
+</div>
+
+   <!-- 1.3 セクション開始 -->
+   <div class="slide divider-slide">
+    <h1>1.3 深層学習の基礎</h1>
+</div>
+
+    <!-- 目次スライド -->
+    <div class="slide">
+        <h2>本日の内容</h2>
+        <ol>
+            <li>深層学習の概要と定義</li>
+            <li>ニューラルネットワークの数学的表現</li>
+            <li>活性化関数の種類</li>
+            <li>誤差逆伝播法</li>
+            <li>学習を安定化するためのテクニック
+                <ul>
+                    <li>バッチ正規化</li>
+                    <li>残差接続</li>
+                </ul>
+            </li>
+            <li>勾配消失・爆発問題</li>
+        </ol>
+        <div class="note">
+            本節では、深層学習の基本概念、多層ニューラルネットワークの構造、学習アルゴリズム、そして深層学習モデルの訓練を安定化させるための重要なテクニックについて学びます。
+        </div>
+    </div>
+
+    <!-- 深層学習の概要スライド -->
+    <div class="slide">
+        <h2>1. 深層学習の概要と定義</h2>
+        
+        <h3>深層学習とは</h3>
+        <ul>
+            <li>深層学習（deep learning）とは、<span class="highlight">多層ニューラルネットワーク</span>（multilayer neural network）という複数の層を持つニューラルネットワークを仮説として用いる統計的機械学習の方法全般を指す用語</li>
+            <li>多層ニューラルネットワークは、非常に複雑な関数も精度よく近似できる高い関数近似能力と、さまざまな問題を同一のフレームワークで処理できる広い適用可能性を持ったモデル</li>
+        </ul>
+        
+        <h3>主要な応用分野</h3>
+        <ul>
+            <li>画像認識や自然言語処理、音声認識などの分野で顕著な成功</li>
+            <li>構造データ（画像や文章など）からの表現学習の性能向上が大きな要因</li>
+            <li>それぞれのデータ構造に適したネットワークのアーキテクチャを用いることが重要</li>
+        </ul>
+        
+        <div class="note">
+            本節では、順伝播型（feedforward）または全結合型（fully connected）のニューラルネットワークを中心に説明します。
+        </div>
+    </div>
+
+    <!-- ニューラルネットワークの数学的表現スライド -->
+    <div class="slide">
+        <h2>2. ニューラルネットワークの数学的表現</h2>
+        
+        <h3>多層ニューラルネットワークの基本構造</h3>
+        <p>L層のニューラルネットワークはL個の関数の合成として表現できます：</p>
+        <div style="text-align: center; font-size: 20px; margin: 20px 0;">
+            <span class="math">$h(x) = (h_{W_L} \circ h_{W_{L-1}} \circ \cdots \circ h_{W_1})(x)$</span>
+        </div>
+        
+        <p>各関数 $h_{W_l}$ はパラメータ行列 $W_l$、バイアスベクトル $b_l$、および活性化関数 $\sigma_l$ によって定義されます：</p>
+        
+        <div style="text-align: center; font-size: 18px; margin: 20px 0;">
+            <span class="math">$z_l = h_{W_l}(z_{l-1}) = (\sigma_l(W_{l1}z_{l-1} + b_{l1}), \ldots, \sigma_l(W_{ld_l}z_{l-1} + b_{ld_l}))^\top$</span>
+        </div>
+        
+        <ul>
+            <li>各関数 $h_{W_l} : \mathbb{R}^{d_{l-1}} \to \mathbb{R}^{d_l}$ はパラメータ行列 $W_l \in \mathbb{R}^{d_l \times d_{l-1}}$ とバイアスベクトル $b_l \in \mathbb{R}^{d_l}$、および活性化関数 $\sigma_l$ によって決定</li>
+            <li>$z_0 = x$ として、前層からの入力 $z_{l-1} \in \mathbb{R}^{d_{l-1}}$ を変換して出力 $z_l \in \mathbb{R}^{d_l}$ を得る</li>
+            <li>$z_l$ の各要素 $z_{lj}$ はニューラルネットを構成する最小単位であり、ユニット（unit）と呼ばれる</li>
+        </ul>
+        
+        <div class="image-box">
+            <img src="pcs/1_6.png">
+            <p class="image-caption">図1.6：多層ニューラルネットワークと活性化関数の例</p>
+        </div>
+    </div>
+
+    <!-- 活性化関数スライド -->
+    <div class="slide">
+        <h2>3. 活性化関数の種類</h2>
+        
+        <h3>活性化関数の役割</h3>
+        <ul>
+            <li>活性化関数は、前層からの入力を線形変換したものに対してさらに<span class="highlight">非線形変換</span>を施す</li>
+            <li>これによりモデルの表現性を高める役割がある</li>
+        </ul>
+        
+        <h3>代表的な活性化関数</h3>
+        <table>
+            <tr>
+                <th>関数</th>
+                <th>数式</th>
+            </tr>
+            <tr>
+                <td>ReLU</td>
+                <td class="math">$\sigma(u) = \max(0, u)$</td>
+            </tr>
+            <tr>
+                <td>シグモイド</td>
+                <td class="math">$\sigma(u) = \frac{1}{1+e^{-u}}$</td>
+            </tr>
+            <tr>
+                <td>tanh</td>
+                <td class="math">$\sigma(u) = \tanh(u) = \frac{e^u-e^{-u}}{e^u+e^{-u}}$</td>
+            </tr>
+            <tr>
+                <td>PReLU</td>
+                <td class="math">$\sigma(u, a) = \max(0, u) + a \min(0, u)$</td>
+            </tr>
+        </table>
+        
+        <div class="image-box">
+            <img src="pcs/1_6.png">
+            <p class="image-caption">図1.6：多層ニューラルネットワークと活性化関数の例</p>
+        </div>
+    </div>
+
+    <!-- 誤差逆伝播法スライド -->
+    <div class="slide">
+        <h2>4. 誤差逆伝播法</h2>
+        
+        <h3>多層ニューラルネットワークの学習</h3>
+        <ul>
+            <li>多層ニューラルネットワークモデルは、多くの場合、<span class="highlight">確率的勾配降下法</span>によって経験リスク最小化を行う</li>
+            <li>このとき、ニューラルネットワークのパラメータ$W_1, \ldots, W_L$による経験リスクの勾配を計算する必要がある</li>
+        </ul>
+        
+        <h3>誤差逆伝播法（Backpropagation）</h3>
+        <ul>
+            <li>勾配計算において、途中計算の効率的再利用を可能とする動的計画法のアルゴリズム</li>
+            <li>出力層から入力層へと誤差を伝搬させながら効率的に勾配計算を実現</li>
+        </ul>
+        
+        <div style="text-align: center; font-size: 18px; margin: 20px 0;">
+            <span class="math">$\frac{\partial L(x, y; h)}{\partial W_{lij}} = \sum_{k_{L}=1}^{d_L} \frac{\partial \ell(\hat{y}, y)}{\partial z_{L,k_L}} \cdot \frac{\partial z_{L,k_L}}{\partial W_{lij}}$</span>
+        </div>
+
+        <div class="note">
+            誤差逆伝播法は、計算グラフ上で連鎖律を用いて効率的に勾配を計算する手法です。深層学習の学習を高速化する鍵となる技術の一つです。
+        </div>
+    </div>
+
+    <!-- 勾配消失・爆発問題スライド -->
+    <div class="slide">
+        <h2>5. 勾配消失・爆発問題</h2>
+        
+        <h3>勾配消失問題（Vanishing Gradient Problem）</h3>
+        <ul>
+            <li>誤差逆伝播法は、出力層から入力層に向かって繰り返し勾配の積和演算を行う</li>
+            <li>ある層の勾配がゼロベクトルとなると、そこで逆伝播が止まり、パラメータが更新されなくなる</li>
+            <li>この現象を勾配消失と呼ぶ</li>
+            <li>特にシグモイドやtanhなどの活性化関数では、入力の絶対値が大きくなるほど導関数が0に近づく</li>
+        </ul>
+        
+        <h3>勾配爆発問題（Exploding Gradient Problem）</h3>
+        <ul>
+            <li>ある層の勾配の成分が非常に大きな値をとってしまうことで逆伝播によるパラメータ更新が失敗する現象</li>
+            <li>パラメータ更新量が大きすぎて学習が不安定になる</li>
+        </ul>
+        
+        <h3>対策</h3>
+        <ul>
+            <li><span class="key-point">勾配消失への対策</span>：バッチ正規化、ReLUなどの勾配消失が起こりにくい活性化関数の利用</li>
+            <li><span class="key-point">勾配爆発への対策</span>：勾配のノルムが一定の範囲内に収まるように規格化する勾配クリッピング</li>
+            <li>これらの対策を施していても、非常に深い層では問題が発生するため、残差接続などの構造的な対策も重要</li>
+        </ul>
+    </div>
+
+    <!-- バッチ正規化スライド -->
+    <div class="slide">
+        <h2>6. 学習を安定化するためのテクニック - バッチ正規化</h2>
+        
+        <h3>内部共変量シフト問題</h3>
+        <ul>
+            <li>多層ニューラルネットワークの学習において、パラメータの更新によって各層の出力の分布の差が層間で増大する</li>
+            <li>この現象を<span class="highlight">内部共変量シフト</span>（internal covariate shift）と呼ぶ</li>
+            <li>内部共変量シフトの具体的な影響：
+                <ul>
+                    <li>層間で逆伝播される勾配のノルムの大きさに差が生じる</li>
+                    <li>学習の低速化を誘発</li>
+                    <li>深いネットワークでは、浅い層ほど学習が遅くなる傾向</li>
+                    <li>活性化関数の有効な入力範囲から外れる可能性が高まる</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3>バッチ正規化（Batch Normalization）</h3>
+        <p>バッチ正規化は各層の出力の分布をミニバッチ単位で正規化処理します：</p>
+        
+        <div style="text-align: center; font-size: 18px; margin: 20px 0;">
+            <span class="math">$\hat{u}_j = \gamma_j \cdot \frac{u_j - \mu_j}{\sqrt{\sigma_j^2 + \epsilon}} + \beta_j$</span>
+        </div>
+        
+        <ul>
+            <li><span class="math">$\mu_j$</span>, <span class="math">$\sigma_j^2$</span>：ミニバッチ内の$u_j$の平均と分散</li>
+            <li><span class="math">$\gamma_j$</span>, <span class="math">$\beta_j$</span>：$u_j$を正規化することで学習効果が消滅することを防ぐパラメータ</li>
+            <li>通常、$\gamma_j$と$\beta_j$は他のネットワークのパラメータとともに学習される</li>
+        </ul>
+        
+        <div class="note">
+            バッチ正規化により、以下の効果が得られます：
+            <ul>
+                <li>内部共変量シフトを防ぎ、学習を安定化</li>
+                <li>より大きな学習率を使用可能に</li>
+                <li>各層の出力を適切な範囲に保つことで活性化関数の効果を最大化</li>
+                <li>ミニバッチ内のランダム性により、弱い正則化効果も</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 残差接続スライド -->
+    <div class="slide">
+        <h2>7. 学習を安定化するためのテクニック - 残差接続</h2>
+        
+        <h3>残差接続（Residual Connection）</h3>
+        <p>残差接続は前層の入力を直接後続の層に渡すパス構造：</p>
+        
+        <div style="text-align: center; font-size: 18px; margin: 20px 0;">
+            <span class="math">$z_l = z_{l-1} + h_{W_l}(z_{l-1})$</span>
+        </div>
+        
+        <p>残差接続を持つニューラルネットワークを残差ネットワーク（residual network, ResNet）と呼びます。</p>
+        
+        <h3>勾配計算</h3>
+        <p>残差接続により勾配は以下のように計算されます：</p>
+        
+        <div style="font-size: 16px; margin: 10px 0;">
+            <span class="math">$\frac{\partial L}{\partial z_l} = \frac{\partial L}{\partial z_L} + \frac{\partial L}{\partial z_L} \cdot \frac{\partial z_L}{\partial z_l} \cdot \sum h_{W_{j+1}}(z_j)$</span>
+        </div>
+        
+        <p>第1項は連鎖律を経ずに第l層へ直接伝播されるため、第2項が0となったとしても勾配は消失せず、第l-1層以降へも伝播されます。</p>
+        
+        <div class="note">
+            この構造によって非常に深い層（100層以上）であっても安定して学習を行うことができるようになります。また、問題ごとのモデルの変更が基本的には層の増減という形で実現できるため、高い拡張性を持つという深層学習の特徴を活かせます。
+        </div>
+    </div>
+
+    <!-- 1.4 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>1.4 転移学習の導入と定義</h1>
+    </div>
+
+       <!-- 目次スライド -->
+       <div class="slide">
+        <h2>本日の内容</h2>
+        <ol>
+            <li>転移学習とは</li>
+            <li>転移学習の定性的説明</li>
+            <li>ドメインとタスクの定義</li>
+            <li>転移学習の数学的定式化</li>
+            <li>転移学習問題の分類</li>
+            <li>深層学習時代の転移学習</li>
+            <li>ディスカッションと演習</li>
+        </ol>
+        <div class="note">
+            本節では、転移学習の基本的な考え方から出発し、その形式的な定義、様々な問題設定、そして深層学習との関係について説明します。転移学習が従来の機械学習と比べてどのような利点をもたらすのかを理解しましょう。
+        </div>
+    </div>
+
+    <!-- 転移学習とは スライド -->
+    <div class="slide">
+        <h2>1. 転移学習とは</h2>
+        
+        <h3>転移学習の基本概念</h3>
+        <ul>
+            <li>一つ以上の<span class="highlight">別のタスクで学習された知識</span>を保持・適用する</li>
+            <li><span class="highlight">新しいタスク</span>に対する有効な仮説を効率的に見つけ出す</li>
+            <li>人間の学習方法を模倣：過去の経験・知識を新しい状況に応用</li>
+        </ul>
+        
+        <div class="definition-box">
+            <p><strong>転移学習の定性的な説明：</strong></p>
+            <p>"Inductive transfer or transfer learning refers to the problem of retaining and applying the knowledge learned in one or more tasks to efficiently develop an effective hypothesis for a new task."</p>
+            <p>「帰納的転移または転移学習とは、新しいタスクに対する有効な仮説を効率的に見つけ出すために、一つ以上の別のタスクで学習された知識を保持・適用する問題を指す。」</p>
+        </div>
+        
+        <div class="note">
+            転移学習は、過去の学習経験から得た知識を活用して、新しい状況での学習を効率化するアプローチです。類似した異なるタスク間での知識の転移を可能にします。
+        </div>
+    </div>
+
+    <!-- 転移学習の直感的理解 スライド -->
+    <div class="slide">
+        <h2>2. 転移学習の定性的説明</h2>
+        
+        <h3>子供の自転車学習の例</h3>
+        <div class="image-container">
+            <img src="pcs/1_8.png" alt="転移学習の直感的イメージ：自転車の例">
+        </div>
+        
+        <div class="two-col">
+            <div class="col">
+                <h4>元ドメイン（Source Domain）</h4>
+                <ul>
+                    <li>ペダルなし二輪車（バランス感覚の獲得）</li>
+                    <li>三輪車（ペダル駆動の獲得）</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>目標ドメイン（Target Domain）</h4>
+                <ul>
+                    <li>実際の自転車に乗る</li>
+                    <li>バランス感覚とペダル駆動の両方の能力が必要</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="note">
+            人間は自然に関連する過去の経験を活用して新しいスキルを学びます。転移学習は、この自然な学習プロセスを機械学習に取り入れることで、効率的な学習を可能にします。
+        </div>
+    </div>
+
+    <!-- ドメインの定義 スライド -->
+    <div class="slide">
+        <h2>3. ドメインとタスクの定義</h2>
+        
+        <h3>ドメイン（Domain）の定義</h3>
+        <div class="definition-box">
+            <p><strong>定義1.4（ドメイン）</strong></p>
+            <p>入力空間 $\mathcal{X}$ と出力空間 $\mathcal{Y}$ の直積空間 $\mathcal{X} \times \mathcal{Y}$ とそのうえで定義された同時分布 $P_{X,Y}$ の組 $\mathcal{D} = (\mathcal{X} \times \mathcal{Y}, P_{X,Y})$ をドメインと呼びます。ここで、$X, Y$ はそれぞれ入力および出力を表す確率変数です。</p>
+        </div>
+        
+        <h3>ドメインの重要性</h3>
+        <ul>
+            <li>従来の機械学習：単一ドメインの仮定（同一分布からのサンプリング）</li>
+            <li>転移学習：<span class="highlight">複数ドメイン</span>を考慮する必要性</li>
+            <li>元ドメイン（知識転移元）：$\mathcal{D}_S = (\mathcal{X}_S \times \mathcal{Y}_S, P_{X,Y}^S)$</li>
+            <li>目標ドメイン（知識転移先）：$\mathcal{D}_T = (\mathcal{X}_T \times \mathcal{Y}_T, P_{X,Y}^T)$</li>
+        </ul>
+        
+        <div class="note">
+            ドメインは転移学習に限らず機械学習の問題を考えるうえで基本的な概念ですが、転移学習では複数のドメインを扱うため、より明示的な考察が必要になります。
+        </div>
+    </div>
+
+    <!-- タスクの定義 スライド -->
+    <div class="slide">
+        <h2>3. ドメインとタスクの定義（続き）</h2>
+        
+        <h3>タスク（Task）の定義</h3>
+        <div class="definition-box">
+            <p><strong>定義1.5（タスク）</strong></p>
+            <p>$P_{X,Y}$ をデータ生成分布、$\mathcal{L}$ を損失関数とします。このとき、タスクを $P_{X,Y}$ と $\mathcal{L}$ の組 $(P_{X,Y}, \mathcal{L})$ と定義します。</p>
+        </div>
+        
+        <h3>タスクの例</h3>
+        <ul>
+            <li><strong>回帰問題:</strong> $\mathcal{L}(y, h(x)) = (y - h(x))^2$ を最小化する回帰モデル $h(x)$ を推定するタスク</li>
+            <li><strong>オートエンコーダ:</strong> $\mathcal{L}_{\text{reconst}}(h(x), x) = ||h(x) - x||^2$ を最小化する符号化・復号化関数 $h(x) = (g \circ f)(x)$ を推定するタスク</li>
+        </ul>
+        
+        <div class="note">
+            <p><span class="key-point">注意:</span> ドメインとタスクの定義は文献によって揺らぎがあります。例えばPan & Yangの定義では、入力空間とその確率分布の組をドメイン、出力空間と予測関数の組をタスクとしています。</p>
+        </div>
+    </div>
+
+    <!-- 転移学習の定式化 スライド -->
+    <div class="slide">
+        <h2>4. 転移学習の数学的定式化</h2>
+        
+        <h3>転移学習の目的</h3>
+        <div class="definition-box">
+            <p>転移学習の目的は、目標ドメインにおける期待リスク $R_T(h) = \mathbb{E}_{(\mathbf{X}, Y) \sim P_{X,Y}^T}[ \mathcal{L}(\mathbf{X}, Y; h)]$ を最小化する仮説の学習とします。</p>
+            <p>$\hat{h}_T = \arg \min_{h \in \mathcal{H}} R_T(h)$　　(1.22)</p>
+        </div>
+        
+        <h3>通常の機械学習との違い</h3>
+        <ul>
+            <li>式(1.22)自体は通常の機械学習と同じ</li>
+            <li>転移学習の特徴：<span class="highlight">目標ドメインと類似した元ドメインの存在を仮定</span></li>
+            <li>元ドメイン $\mathcal{D}_S$ で獲得した「知識」を目標ドメインで利用</li>
+            <li>元ドメインの知識により、式(1.22)をより<span class="key-point">効率的に解く</span>ことが目標</li>
+        </ul>
+        
+        <div class="note">
+            転移学習の本質は、「何も知らない状態から学習する」のではなく、「既に獲得した知識を基にして効率的に学習する」点にあります。これにより、少ないデータや計算資源でも効果的な学習が可能になります。
+        </div>
+    </div>
+
+    <!-- 転移学習問題の分類 スライド1 -->
+    <div class="slide">
+        <h2>5. 転移学習問題の分類</h2>
+        
+        <h3>転移学習の4つの主要分類</h3>
+        <div class="image-container">
+            <img src="pcs/1_9.png" alt="転移学習の4つの分類">
+        </div>
+        
+        <ol>
+            <li><span class="highlight">ドメイン適応</span>（Domain Adaptation）</li>
+            <li><span class="highlight">マルチタスク学習</span>（Multitask Learning）</li>
+            <li><span class="highlight">メタ学習</span>（Meta Learning）</li>
+            <li><span class="highlight">継続学習</span>（Continual Learning）</li>
+        </ol>
+        
+        <div class="note">
+            これらは転移学習の主要な問題設定であり、それぞれ異なるアプローチと目標を持っています。実際の応用では、これらを組み合わせて使用することも多いです。
+        </div>
+    </div>
+
+    <!-- 転移学習問題の分類 スライド2 -->
+    <div class="slide">
+        <h2>5. 転移学習問題の分類（続き）</h2>
+        
+        <h3>ドメイン適応（Domain Adaptation）</h3>
+        <ul>
+            <li>最も基本的な転移学習の問題設定</li>
+            <li>元ドメインから目標ドメインへの<span class="highlight">直接的な知識転移</span></li>
+            <li>各ドメインとその役割は固定</li>
+            <li><span class="key-point">例:</span> スマートフォンのカメラで撮影した画像（元ドメイン）から医療用カメラの画像（目標ドメイン）への適応</li>
+        </ul>
+        
+        <h3>マルチタスク学習（Multitask Learning）</h3>
+        <ul>
+            <li>複数の関連タスクを<span class="highlight">同時に学習</span></li>
+            <li>タスク間の共通知識を活用</li>
+            <li>各タスクの性能向上が目標</li>
+            <li><span class="key-point">例:</span> 複数の言語の翻訳を同時に学習し、言語間の共通構造を活用</li>
+        </ul>
+    </div>
+
+    <!-- 転移学習問題の分類 スライド3 -->
+    <div class="slide">
+        <h2>5. 転移学習問題の分類（続き）</h2>
+        
+        <h3>メタ学習（Meta Learning）</h3>
+        <ul>
+            <li>「<span class="highlight">学習の仕方を学習する</span>」アプローチ</li>
+            <li>複数のタスクが共通の確率分布から生成されていると仮定</li>
+            <li>少量のデータでの効率的な学習が目標</li>
+            <li>関連するアプローチ：<span class="key-point">少数ショット学習</span>（Few-shot Learning）、<span class="key-point">ドメイン汎化</span>（Domain Generalization）</li>
+            <li><span class="key-point">例:</span> 新しい言語を数例のサンプルだけで効率的に学習する</li>
+        </ul>
+        
+        <h3>継続学習（Continual Learning）</h3>
+        <ul>
+            <li><span class="highlight">逐次的に与えられるタスク</span>での繰り返し学習</li>
+            <li>過去の知識を忘れずに新しいタスクを学習</li>
+            <li>タスク系列全体の性能で評価</li>
+            <li><span class="key-point">例:</span> ロボットが環境変化に順応しながら徐々に新しいスキルを獲得</li>
+        </ul>
+    </div>
+
+    <!-- 深層学習時代の転移学習 スライド1 -->
+    <div class="slide">
+        <h2>6. 深層学習時代の転移学習</h2>
+        
+        <h3>深層学習が転移学習にもたらした3つの変革</h3>
+        <ol>
+            <li><span class="highlight">深層モデル自体の大きな容量</span>（capacity）</li>
+            <li><span class="highlight">表現学習の性能向上</span></li>
+            <li><span class="highlight">事前学習済みモデルの利用容易化</span></li>
+        </ol>
+        
+        <div class="note">
+            深層学習の普及により、転移学習の研究方向性は大きく変わりました。特に事前学習済みモデルを活用した転移学習は、現在の機械学習応用の主流となっています。
+        </div>
+    </div>
+
+    <!-- 深層学習時代の転移学習 スライド2 -->
+    <div class="slide">
+        <h2>6. 深層学習時代の転移学習（続き）</h2>
+        
+        <h3>1. 深層モデルの大きな容量</h3>
+        <ul>
+            <li>「容量」：モデルが表現できる<span class="highlight">関数の複雑さ</span></li>
+            <li>深層ニューラルネットワークは大規模データを「丸暗記」できるほどの容量</li>
+            <li>複数タスクを単一モデルで処理可能に</li>
+            <li>マルチタスク学習やメタ学習に特に有効</li>
+        </ul>
+        
+        <h3>2. 表現学習の性能向上</h3>
+        <ul>
+            <li>深層ニューラルネットワークによる<span class="highlight">豊かな特徴表現</span>の獲得</li>
+            <li>「ドメイン不変な表現」の効果的な学習</li>
+            <li>異なるドメイン間の共通特徴を自動的に抽出</li>
+            <li>ドメイン適応問題において特に効果的</li>
+        </ul>
+    </div>
+
+    <!-- 深層学習時代の転移学習 スライド3 -->
+    <div class="slide">
+        <h2>6. 深層学習時代の転移学習（続き）</h2>
+        
+        <h3>3. 事前学習済みモデルの利用</h3>
+        <div class="two-col">
+            <div class="col">
+                <h4>従来の機械学習</h4>
+                <ul>
+                    <li>特徴抽出器と予測器が明確に分離</li>
+                    <li>特徴抽出はハンドクラフト（手作業）</li>
+                    <li>予測器のみを学習対象とすることが多い</li>
+                    <li>モデル全体の最適化が困難</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>深層学習</h4>
+                <ul>
+                    <li>層という形で構成された統一モデル</li>
+                    <li>エンドツーエンドの学習</li>
+                    <li>特定の層を切り離して再利用可能</li>
+                    <li>誤差逆伝播法と確率的勾配降下法による共通学習法</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="note">
+            <p><span class="key-point">重要ポイント:</span> 事前学習済みモデルの再利用により、少ないデータと計算資源で新たなタスクにモデルを適応させることが可能になりました。これは特に大規模言語モデル（LLM）や画像認識モデルなど、訓練に膨大なリソースが必要なモデルで重要です。</p>
+        </div>
+    </div>
+
+</body>
+</html>
