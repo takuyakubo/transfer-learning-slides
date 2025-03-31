@@ -1,0 +1,235 @@
+<!-- 1.3 セクション開始 -->
+<div class="slide divider-slide">
+    <h1>1.3 深層学習の基礎</h1>
+</div>
+
+<!-- 目次スライド -->
+<div class="slide">
+    <h2>本日の内容</h2>
+    <ol>
+        <li>深層学習の概要と定義</li>
+        <li>ニューラルネットワークの数学的表現</li>
+        <li>活性化関数の種類</li>
+        <li>誤差逆伝播法</li>
+        <li>学習を安定化するためのテクニック
+            <ul>
+                <li>バッチ正規化</li>
+                <li>残差接続</li>
+            </ul>
+        </li>
+        <li>勾配消失・爆発問題</li>
+    </ol>
+    <div class="note">
+        本節では、深層学習の基本概念、多層ニューラルネットワークの構造、学習アルゴリズム、そして深層学習モデルの訓練を安定化させるための重要なテクニックについて学びます。
+    </div>
+</div>
+
+<!-- 深層学習の概要スライド -->
+<div class="slide">
+    <h2>1. 深層学習の概要と定義</h2>
+    
+    <h3>深層学習とは</h3>
+    <ul>
+        <li>深層学習（deep learning）とは、<span class="highlight">多層ニューラルネットワーク</span>（multilayer neural network）という複数の層を持つニューラルネットワークを仮説として用いる統計的機械学習の方法全般を指す用語</li>
+        <li>多層ニューラルネットワークは、非常に複雑な関数も精度よく近似できる高い関数近似能力と、さまざまな問題を同一のフレームワークで処理できる広い適用可能性を持ったモデル</li>
+    </ul>
+    
+    <h3>主要な応用分野</h3>
+    <ul>
+        <li>画像認識や自然言語処理、音声認識などの分野で顕著な成功</li>
+        <li>構造データ（画像や文章など）からの表現学習の性能向上が大きな要因</li>
+        <li>それぞれのデータ構造に適したネットワークのアーキテクチャを用いることが重要</li>
+    </ul>
+    
+    <div class="note">
+        本節では、順伝播型（feedforward）または全結合型（fully connected）のニューラルネットワークを中心に説明します。
+    </div>
+</div>
+
+<!-- ニューラルネットワークの数学的表現スライド -->
+<div class="slide">
+    <h2>2. ニューラルネットワークの数学的表現</h2>
+    
+    <h3>多層ニューラルネットワークの基本構造</h3>
+    <p>L層のニューラルネットワークはL個の関数の合成として表現できます：</p>
+    <div style="text-align: center; font-size: 20px; margin: 20px 0;">
+        <span class="math">$h(x) = (h_{W_L} \circ h_{W_{L-1}} \circ \cdots \circ h_{W_1})(x)$</span>
+    </div>
+    
+    <p>各関数 $h_{W_l}$ はパラメータ行列 $W_l$、バイアスベクトル $b_l$、および活性化関数 $\sigma_l$ によって定義されます：</p>
+    
+    <div style="text-align: center; font-size: 18px; margin: 20px 0;">
+        <span class="math">$z_l = h_{W_l}(z_{l-1}) = (\sigma_l(W_{l1}z_{l-1} + b_{l1}), \ldots, \sigma_l(W_{ld_l}z_{l-1} + b_{ld_l}))^\top$</span>
+    </div>
+    
+    <ul>
+        <li>各関数 $h_{W_l} : \mathbb{R}^{d_{l-1}} \to \mathbb{R}^{d_l}$ はパラメータ行列 $W_l \in \mathbb{R}^{d_l \times d_{l-1}}$ とバイアスベクトル $b_l \in \mathbb{R}^{d_l}$、および活性化関数 $\sigma_l$ によって決定</li>
+        <li>$z_0 = x$ として、前層からの入力 $z_{l-1} \in \mathbb{R}^{d_{l-1}}$ を変換して出力 $z_l \in \mathbb{R}^{d_l}$ を得る</li>
+        <li>$z_l$ の各要素 $z_{lj}$ はニューラルネットを構成する最小単位であり、ユニット（unit）と呼ばれる</li>
+    </ul>
+    
+    <div class="image-box">
+        <img src="images/placeholder.svg" alt="多層ニューラルネットワークと活性化関数の例">
+        <p class="image-caption">図1.6：多層ニューラルネットワークと活性化関数の例</p>
+    </div>
+</div>
+
+<!-- 活性化関数スライド -->
+<div class="slide">
+    <h2>3. 活性化関数の種類</h2>
+    
+    <h3>活性化関数の役割</h3>
+    <ul>
+        <li>活性化関数は、前層からの入力を線形変換したものに対してさらに<span class="highlight">非線形変換</span>を施す</li>
+        <li>これによりモデルの表現性を高める役割がある</li>
+    </ul>
+    
+    <h3>代表的な活性化関数</h3>
+    <table>
+        <tr>
+            <th>関数</th>
+            <th>数式</th>
+        </tr>
+        <tr>
+            <td>ReLU</td>
+            <td class="math">$\sigma(u) = \max(0, u)$</td>
+        </tr>
+        <tr>
+            <td>シグモイド</td>
+            <td class="math">$\sigma(u) = \frac{1}{1+e^{-u}}$</td>
+        </tr>
+        <tr>
+            <td>tanh</td>
+            <td class="math">$\sigma(u) = \tanh(u) = \frac{e^u-e^{-u}}{e^u+e^{-u}}$</td>
+        </tr>
+        <tr>
+            <td>PReLU</td>
+            <td class="math">$\sigma(u, a) = \max(0, u) + a \min(0, u)$</td>
+        </tr>
+    </table>
+    
+    <div class="image-box">
+        <img src="images/placeholder.svg" alt="活性化関数のグラフ">
+        <p class="image-caption">図1.7：代表的な活性化関数のグラフ</p>
+    </div>
+</div>
+
+<!-- 誤差逆伝播法スライド -->
+<div class="slide">
+    <h2>4. 誤差逆伝播法</h2>
+    
+    <h3>多層ニューラルネットワークの学習</h3>
+    <ul>
+        <li>多層ニューラルネットワークモデルは、多くの場合、<span class="highlight">確率的勾配降下法</span>によって経験リスク最小化を行う</li>
+        <li>このとき、ニューラルネットワークのパラメータ$W_1, \ldots, W_L$による経験リスクの勾配を計算する必要がある</li>
+    </ul>
+    
+    <h3>誤差逆伝播法（Backpropagation）</h3>
+    <ul>
+        <li>勾配計算において、途中計算の効率的再利用を可能とする動的計画法のアルゴリズム</li>
+        <li>出力層から入力層へと誤差を伝搬させながら効率的に勾配計算を実現</li>
+    </ul>
+    
+    <div style="text-align: center; font-size: 18px; margin: 20px 0;">
+        <span class="math">$\frac{\partial L(x, y; h)}{\partial W_{lij}} = \sum_{k_{L}=1}^{d_L} \frac{\partial \ell(\hat{y}, y)}{\partial z_{L,k_L}} \cdot \frac{\partial z_{L,k_L}}{\partial W_{lij}}$</span>
+    </div>
+
+    <div class="note">
+        誤差逆伝播法は、計算グラフ上で連鎖律を用いて効率的に勾配を計算する手法です。深層学習の学習を高速化する鍵となる技術の一つです。
+    </div>
+</div>
+
+<!-- 勾配消失・爆発問題スライド -->
+<div class="slide">
+    <h2>5. 勾配消失・爆発問題</h2>
+    
+    <h3>勾配消失問題（Vanishing Gradient Problem）</h3>
+    <ul>
+        <li>誤差逆伝播法は、出力層から入力層に向かって繰り返し勾配の積和演算を行う</li>
+        <li>ある層の勾配がゼロベクトルとなると、そこで逆伝播が止まり、パラメータが更新されなくなる</li>
+        <li>この現象を勾配消失と呼ぶ</li>
+        <li>特にシグモイドやtanhなどの活性化関数では、入力の絶対値が大きくなるほど導関数が0に近づく</li>
+    </ul>
+    
+    <h3>勾配爆発問題（Exploding Gradient Problem）</h3>
+    <ul>
+        <li>ある層の勾配の成分が非常に大きな値をとってしまうことで逆伝播によるパラメータ更新が失敗する現象</li>
+        <li>パラメータ更新量が大きすぎて学習が不安定になる</li>
+    </ul>
+    
+    <h3>対策</h3>
+    <ul>
+        <li><span class="key-point">勾配消失への対策</span>：バッチ正規化、ReLUなどの勾配消失が起こりにくい活性化関数の利用</li>
+        <li><span class="key-point">勾配爆発への対策</span>：勾配のノルムが一定の範囲内に収まるように規格化する勾配クリッピング</li>
+        <li>これらの対策を施していても、非常に深い層では問題が発生するため、残差接続などの構造的な対策も重要</li>
+    </ul>
+</div>
+
+<!-- バッチ正規化スライド -->
+<div class="slide">
+    <h2>6. 学習を安定化するためのテクニック - バッチ正規化</h2>
+    
+    <h3>内部共変量シフト問題</h3>
+    <ul>
+        <li>多層ニューラルネットワークの学習において、パラメータの更新によって各層の出力の分布の差が層間で増大する</li>
+        <li>この現象を<span class="highlight">内部共変量シフト</span>（internal covariate shift）と呼ぶ</li>
+        <li>内部共変量シフトの具体的な影響：
+            <ul>
+                <li>層間で逆伝播される勾配のノルムの大きさに差が生じる</li>
+                <li>学習の低速化を誘発</li>
+                <li>深いネットワークでは、浅い層ほど学習が遅くなる傾向</li>
+                <li>活性化関数の有効な入力範囲から外れる可能性が高まる</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h3>バッチ正規化（Batch Normalization）</h3>
+    <p>バッチ正規化は各層の出力の分布をミニバッチ単位で正規化処理します：</p>
+    
+    <div style="text-align: center; font-size: 18px; margin: 20px 0;">
+        <span class="math">$\hat{u}_j = \gamma_j \cdot \frac{u_j - \mu_j}{\sqrt{\sigma_j^2 + \epsilon}} + \beta_j$</span>
+    </div>
+    
+    <ul>
+        <li><span class="math">$\mu_j$</span>, <span class="math">$\sigma_j^2$</span>：ミニバッチ内の$u_j$の平均と分散</li>
+        <li><span class="math">$\gamma_j$</span>, <span class="math">$\beta_j$</span>：$u_j$を正規化することで学習効果が消滅することを防ぐパラメータ</li>
+        <li>通常、$\gamma_j$と$\beta_j$は他のネットワークのパラメータとともに学習される</li>
+    </ul>
+    
+    <div class="note">
+        バッチ正規化により、以下の効果が得られます：
+        <ul>
+            <li>内部共変量シフトを防ぎ、学習を安定化</li>
+            <li>より大きな学習率を使用可能に</li>
+            <li>各層の出力を適切な範囲に保つことで活性化関数の効果を最大化</li>
+            <li>ミニバッチ内のランダム性により、弱い正則化効果も</li>
+        </ul>
+    </div>
+</div>
+
+<!-- 残差接続スライド -->
+<div class="slide">
+    <h2>7. 学習を安定化するためのテクニック - 残差接続</h2>
+    
+    <h3>残差接続（Residual Connection）</h3>
+    <p>残差接続は前層の入力を直接後続の層に渡すパス構造：</p>
+    
+    <div style="text-align: center; font-size: 18px; margin: 20px 0;">
+        <span class="math">$z_l = z_{l-1} + h_{W_l}(z_{l-1})$</span>
+    </div>
+    
+    <p>残差接続を持つニューラルネットワークを残差ネットワーク（residual network, ResNet）と呼びます。</p>
+    
+    <h3>勾配計算</h3>
+    <p>残差接続により勾配は以下のように計算されます：</p>
+    
+    <div style="font-size: 16px; margin: 10px 0;">
+        <span class="math">$\frac{\partial L}{\partial z_l} = \frac{\partial L}{\partial z_L} + \frac{\partial L}{\partial z_L} \cdot \frac{\partial z_L}{\partial z_l} \cdot \sum h_{W_{j+1}}(z_j)$</span>
+    </div>
+    
+    <p>第1項は連鎖律を経ずに第l層へ直接伝播されるため、第2項が0となったとしても勾配は消失せず、第l-1層以降へも伝播されます。</p>
+    
+    <div class="note">
+        この構造によって非常に深い層（100層以上）であっても安定して学習を行うことができるようになります。また、問題ごとのモデルの変更が基本的には層の増減という形で実現できるため、高い拡張性を持つという深層学習の特徴を活かせます。
+    </div>
+</div>
