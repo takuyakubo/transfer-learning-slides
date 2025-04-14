@@ -1075,9 +1075,9 @@
         <h3>負転移の数学的定義</h3>
         <div class="definition-box">
             <p><strong>定義2.7（負転移）</strong></p>
-            どんなアルゴリズム $A$に対しても
+            どんなアルゴリズム $A$(ドメインから仮説$h$を返す関数/手続き)に対しても
             <div class="equation">
-                <span class="math">$R_T(A(\mathbb{D}_S, \mathbb{D}_T)) > R_T(A(\emptyset, \mathbb{D}_T))$</span>
+                <span class="math">$R_T(A(\mathbb{D}_S, \mathbb{D}_T)) \leq \min\{R_T(A(\emptyset, z\mathbb{D}_T)), R_T(A(\mathbb{D}_S, \emptyset))\}$</span>
             </div>
             が成り立つ時、ドメイン間の負転移が起きているという。
         </div>
