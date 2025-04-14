@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']]
+          }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+    <title>転移学習 - 統合資料</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .slide {
+            width: 100%;
+            max-width: 900px;
+            min-height: 506px;
+            margin: 0 auto 50px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            page-break-after: always;
+            background: linear-gradient(to bottom, #ffffff, #f9f9f9);
+        }
+        .slide-title {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #0078d7;
+            color: white;
+            border-radius: 8px 8px 0 0;
+            margin: -20px -20px 20px -20px;
+        }
+        .divider-slide {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #4b0082;
+            border-radius: 8px;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 28px;
+            color: #0078d7;
+            margin-top: 30px;
+            border-bottom: 2px solid #0078d7;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 22px;
+            color: #333;
+            margin-top: 20px;
+        }
+        ul, ol {
+            margin-left: 25px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 0 3px;
+        }
+        .note {
+            background-color: #e1f5fe;
+            padding: 15px;
+            border-left: 5px solid #0078d7;
+            margin: 20px 0;
+        }
+        .two-col {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .col {
+            width: 48%;
+        }
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #0078d7;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        .container {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+        }
+        .container.left {
+            left: 0;
+        }
+        .container.right {
+            left: 50%;
+        }
+        .content {
+            padding: 15px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        .container.left .content {
+            border-left: 3px solid #0078d7;
+        }
+        .container.right .content {
+            border-right: 3px solid #0078d7;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 30px;
+        }
+        .key-point {
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .math {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+        .equation {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+        .image-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 15px 0;
+            text-align: center;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .image-caption {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+        .definition-box {
+            background-color: #f3f8ff;
+            border: 1px solid #0078d7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .image-container img {
+            max-width: 80%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .diagram {
+            width: 80%;
+            margin: 20px auto;
+            border: 2px solid #0078d7;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .diagram-row {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+        }
+        .diagram-row:last-child {
+            border-bottom: none;
+        }
+        .diagram-cell {
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .diagram-header {
+            background-color: #f2f9ff;
+            font-weight: bold;
+            border-bottom: 2px solid #0078d7;
+        }
+        .diagram-label-col {
+            width: 25%;
+            background-color: #fffde7;
+            border-right: 1px solid #ddd;
+        }
+        .diagram-content-col {
+            width: 37.5%;
+            border-right: 1px solid #ddd;
+        }
+        .diagram-content-col:last-child {
+            border-right: none;
+        }
+        .citation {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+        }
+        details {
+            margin: 1em 0;
+            padding: 0.5em;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        summary {
+            cursor: pointer;
+            padding: 0.5em;
+            font-weight: bold;
+            color: #0078d7;
+        }
+        
+        details[open] summary {
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 0.5em;
+        }
+    </style>
+</head>
+<body>
+    <!-- 表紙スライド -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>転移学習（Transfer Learning）</h1>
+            <p>機械学習プロフェッショナルシリーズ</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2>第2章 転移学習の基礎</h2>
+            <h3>統合資料</h3>
+            <p style="margin-top: 80px;">2025年4月14日</p>
+        </div>
+    </div>
+
+    <!-- 目次スライド -->
+    <div class="slide">
+        <h2>目次</h2>
+        <ol>
+            <li>2.1 転移学習の基本問題と目的</li>
+            <li>2.2.1 ドメインシフトと転移仮定</li>
+            <li>2.2.2 確率分布間の距離尺度に基づく不一致度</li>
+            <li>2.2.3 負転移（Negative Transfer）</li>
+            <li>2.3 何を転移するか</li>
+            <li>2.4 ドメイン適応問題の分類</li>
+        </ol>
+        <div class="note">
+            本資料では、転移学習の基礎的な概念から、具体的な手法や課題までを体系的に解説します。各セクションは独立して理解できるように構成されていますが、全体を通して転移学習の理論的基盤と実践的な応用について理解を深めることができます。
+        </div>
+    </div>
+
+    <!-- 2.1 転移学習の基本問題と目的 -->
+        <!-- 1.1 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>2.1 転移学習の基本問題と目的</h1>
+    </div>
+        <!-- 目次スライド -->
+        <div class="slide">
+            <h2>本日の内容</h2>
+            <ol>
+                <li>転移学習の基本問題</li>
+                <li>転移学習の目的</li>
+                <li>従来の機械学習と転移学習の違い</li>
+                <li>転移学習を成功させるための3つの基本問題
+                    <ul>
+                        <li>いつ転移するか（when to transfer）</li>
+                        <li>何を転移するか（what to transfer）</li>
+                        <li>どう転移するか（how to transfer）</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    
+        <!-- 転移学習の基本問題 セクション開始 -->
+        <div class="slide divider-slide">
+            <h1>転移学習の基本問題</h1>
+        </div>
+    
+        <!-- 基本問題スライド -->
+        <div class="slide">
+            <h2>転移学習の基本的な問題意識</h2>
+            
+            <h3>3つの基本的な問い</h3>
+            <ul>
+                <li><span class="highlight">何を（what）</span>転移するか</li>
+                <li><span class="highlight">いつ（when）</span>転移するか</li>
+                <li><span class="highlight">どうやって（how）</span>転移するか</li>
+            </ul>
+            
+            <h3>重要な概念</h3>
+            <ul>
+                <li><span class="key-point">ドメインシフト</span>：ドメインが異なることを数学的に定義した概念</li>
+                <li><span class="key-point">転移仮定</span>：転移が可能となる条件の定式化</li>
+                <li><span class="key-point">不一致度</span>：ドメインのずれの大きさを評価する指標</li>
+                <li><span class="key-point">負転移</span>：ドメインのずれが原因で生じる性能低下</li>
+            </ul>
+            
+            <div class="note">
+                転移学習は異なるドメイン間での知識の転移を扱うため、ドメイン間の関係性を理解することが重要です。本章では、これらの概念を定義し、転移学習の理論的基盤を構築します。
+            </div>
+        </div>
+    
+        <!-- 転移学習の目的スライド -->
+        <div class="slide">
+            <h2>転移学習の目的</h2>
+            
+            <h3>転移学習の数学的定義</h3>
+            <div class="equation">
+                <span class="math">転移学習の目的は、元ドメイン$\mathbb{D}_S$で獲得した知識を利用して目標ドメイン$\mathbb{D}_T$の期待リスク最小となる仮説を学習すること</span>
+            </div>
+
+            <details>
+                <summary>期待リスク(復習)</summary>
+                <div class="note">
+                    <p><span class="key-point">定義1.1（期待リスク）:</span> データ <span class="math">$(\mathbf{X}, Y)$</span> の従う確率分布 <span class="math">$P_{X,Y}$</span> のもとでの仮説 <span class="math">$h$</span> の期待リスク <span class="math">$R(h)$</span> は、<span class="math">$h$</span> に対する損失 <span class="math">$\mathcal{L}$</span> の期待値</p>
+                </div>
+                <div class="equation">
+                    <span class="math">$R(h) := \mathbb{E}_{(\mathbf{X}, Y) \sim P_{X,Y}}[ \mathcal{L}(\mathbf{X}, Y; h)] = \mathbb{E}_{(\mathbf{X}, Y) \sim P_{X,Y}}[ \ell(h(\mathbf{X}), Y)]$</span>
+                </div>
+            </details>
+            
+            <h3>元ドメインと目標ドメイン</h3>
+            <ul>
+                <li><span class="key-point">元ドメイン（Source Domain）</span>：知識獲得の出発点 $\mathbb{D}_S$</li>
+                <li><span class="key-point">目標ドメイン（Target Domain）</span>：知識適用の対象 $\mathbb{D}_T$</li>
+            </ul>
+
+            <details>
+                <summary>ドメイン(復習)</summary>
+            <div class="definition-box">
+                <p><strong>定義1.4（ドメイン）</strong></p>
+                <p>入力空間 $\mathcal{X}$ と出力空間 $\mathcal{Y}$ の直積空間 $\mathcal{X} \times \mathcal{Y}$ とそのうえで定義された同時分布 $P_{X,Y}$ の組 $\mathbb{D} = (\mathcal{X} \times \mathcal{Y}, P_{X,Y})$ をドメインと呼びます。ここで、$X, Y$ はそれぞれ入力および出力を表す確率変数です。</p>
+            </div>
+            </details>
+    
+            <h3>理想的なケース</h3>
+            <div class="note">
+                <p>もし元ドメインと目標ドメインが完全に一致していれば（$\mathcal{X}_T \times \mathcal{Y}_T = \mathcal{X}_S \times \mathcal{Y}_S$かつ$P^T_{X,Y} = P^S_{X,Y} = P_{X,Y}$）、転移学習の問題は元ドメインを訓練データ、目標ドメインをテストデータとする従来の機械学習の問題として考えることができます。</p>
+            </div>
+        </div>
+    
+        <!-- 従来の機械学習との違いスライド -->
+        <div class="slide">
+            <h2>従来の機械学習と転移学習の違い</h2>
+            
+            <h3>従来の機械学習の仮定</h3>
+            <ul>
+                <li>訓練データとテストデータが<span class="highlight">同一の確率分布$P_{X,Y}$</span>から<span class="highlight">独立に生成</span>されたもの</li>
+                <li>この仮定のもとで、訓練データ（元ドメイン）の経験リスク最小化で得られた仮説がテストデータ（目標ドメイン）に汎化することが正当化される</li>
+            </ul>
+            
+            <h3>転移学習の前提</h3>
+            <ul>
+                <li>一般に元ドメインは目標ドメインと<span class="highlight">類似しているが異なる</span>と考える</li>
+                <li>数学的に以下の状況を考えることに相当：
+                    <ul>
+                        <li><span class="math">$P^T_{X,Y} \neq P^S_{X,Y}$</span>（同質的ドメインシフト）</li>
+                        <li>または <span class="math">$\mathcal{X}_T \times \mathcal{Y}_T \neq \mathcal{X}_S \times \mathcal{Y}_S$</span>（異質的ドメインシフト）</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <div class="note">
+                転移学習では、元ドメインと目標ドメインのデータが同一分布からのサンプルではないため、単純に元ドメインで学習したモデルが目標ドメインでも機能するとは限りません。
+            </div>
+        </div>
+    
+        <!-- 3つの基本問題スライド -->
+        <div class="slide">
+            <h2>転移学習を成功させるための3つの基本問題</h2>
+            
+            <ol>
+                <li><span class="highlight">いつ転移するか</span>
+                    <ul>
+                        <li>転移を成功させるために元ドメインと目標ドメインがどのような性質を満たしている必要があるか</li>
+                        <li>似ているドメイン、似ていないドメインの定量的な区別</li>
+                        <li>転移学習が失敗するケースの特定</li>
+                    </ul>
+                </li>
+                <li><span class="highlight">何を転移するか</span>
+                    <ul>
+                        <li>どのような知識を転移するのか</li>
+                        <li>転移に適した知識の種類の特定</li>
+                    </ul>
+                </li>
+                <li><span class="highlight">どう転移するか</span>
+                    <ul>
+                        <li>どのように転移を実現するのか</li>
+                        <li>具体的なアルゴリズムの設計</li>
+                    </ul>
+                </li>
+            </ol>
+            
+            <div class="note">
+                本章では特に「いつ転移するか」と「何を転移するか」を説明し、具体的なアルゴリズムを議論する「どう転移するか」は次章以降で説明します。
+            </div>
+        </div>
+    
+        <!-- いつ転移するか セクション開始 -->
+        <div class="slide divider-slide">
+            <h1>2.2 いつ転移するか</h1>
+        </div>
+    
+        <!-- いつ転移するかの基本スライド -->
+        <div class="slide">
+            <h2>いつ転移するか（when to transfer）</h2>
+            
+            <h3>基本問題</h3>
+            <p>いつ転移するか（when to transfer）は、転移学習がどのような状況であれば成功するのかを掘り下げる問題です。具体的には、以下の点を検討します：</p>
+            
+            <ul>
+                <li>ドメインが<span class="highlight">似ている</span>、あるいは<span class="highlight">似ていない</span>とはどういうことか</li>
+                <li>転移学習が<span class="highlight">失敗する</span>とはどういうことか</li>
+                <li>どのような状況で転移学習が<span class="highlight">失敗しうる</span>か</li>
+            </ul>
+            
+            <div class="note">
+                「いつ転移するか」という問題は、転移学習を実践する際の重要な判断基準となります。元ドメインと目標ドメインの関係性によって、転移学習が有効かどうか、どのような方法が適切かが決まります。
+            </div>
+        </div>
+    
+        <!-- 2.2.1 ドメインシフトと転移仮定 -->
+        <div class="slide divider-slide">
+            <h1>2.2.1 ドメインシフトと転移仮定</h1>
+        </div>
+
+ <!-- ドメインシフトの概念 -->
+ <div class="slide">
+    <h2>ドメインシフトの概念</h2>
+    
+    <h3>ドメインシフト（Domain Shift）とは</h3>
+    <ul>
+        <li>元ドメイン（source domain）と目標ドメイン（target domain）の間の<span class="highlight">差異</span></li>
+        <li>通常の機械学習では、訓練データとテストデータが同一分布からサンプリングされることを仮定</li>
+        <li>転移学習では、この仮定を緩和し、ドメイン間での知識転移を考える</li>
+    </ul>
+    
+    <div class="definition-box">
+        <p><strong>ドメインシフトの形式的定義</strong></p>
+        <p>元ドメイン $\mathbb{D}_S = (\mathcal{X}_S \times \mathcal{Y}_S, P_{X,Y}^S)$ と目標ドメイン $\mathbb{D}_T = (\mathcal{X}_T \times \mathcal{Y}_T, P_{X,Y}^T)$ の差を「ドメインシフト」と呼びます。</p>
+    </div>
+    
+    <h3>ドメインシフトの種類</h3>
+    <ul>
+        <li>2種類の基本的なドメインシフトが存在する：
+            <ul>
+                <li><span class="key-point">同質的ドメインシフト</span>（homogeneous domain shift）</li>
+                <li><span class="key-point">異質的ドメインシフト</span>（heterogeneous domain shift）</li>
+            </ul>
+        </li>
+        <li>これらは転移学習で扱う問題の性質を大きく左右する</li>
+    </ul>
+    
+    <div class="note">
+        ドメインシフトの種類によって、転移学習の難しさと適切なアプローチが変わります。同質的か異質的かという基本的な区別が、転移学習手法選択の第一歩となります。
+    </div>
+</div>
+
+<!-- 同質的ドメインシフトと異質的ドメインシフト -->
+<div class="slide">
+    <h2>同質的ドメインシフトと異質的ドメインシフト</h2>
+    
+    <h3>同質的ドメインシフト（Homogeneous Domain Shift）</h3>
+    <div class="definition-box">
+        <p>$\mathcal{X}_T \times \mathcal{Y}_T = \mathcal{X}_S \times \mathcal{Y}_S$ かつ $P_{X,Y}^T \neq P_{X,Y}^S$</p>
+        <p>すなわち、データの<span class="highlight">サンプル空間は元ドメインと目標ドメインで共通</span>であり、両ドメインの違いはデータ生成分布のみである状況</p>
+    </div>
+    
+    <ul>
+        <li>データセットシフト（dataset shift）とも呼ばれる</li>
+        <li>例：同じカメラで撮影した屋内画像と屋外画像</li>
+        <li>分布シフト（distribution shift）と呼ぶこともある</li>
+        <li>さらに特定のタイプのシフトに細分化される：
+            <ul>
+                <li>共変量シフト（covariate shift）</li>
+                <li>クラス事前確率シフト（class prior shift）</li>
+                <li>サンプル選択バイアス（sample selection bias）など</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <div class="note">
+        同質的ドメインシフトは、転移学習の中でも比較的扱いやすい問題設定です。データの表現形式は同じで、分布のみが異なるため、既存の特徴表現を活用しやすいという特徴があります。
+    </div>
+</div>
+
+<!-- 異質的ドメインシフト -->
+<div class="slide">
+    <h2>同質的ドメインシフトと異質的ドメインシフト（続き）</h2>
+    
+    <h3>異質的ドメインシフト（Heterogeneous Domain Shift）</h3>
+    <div class="definition-box">
+        <p>$\mathcal{X}_T \times \mathcal{Y}_T \neq \mathcal{X}_S \times \mathcal{Y}_S$</p>
+        <p>すなわち、<span class="highlight">サンプル空間が元ドメインと目標ドメインで異なる</span>場合を扱う</p>
+    </div>
+    
+    <ul>
+        <li>入力特徴や出力ラベルの次元や意味が異なる</li>
+        <li>例：
+            <ul>
+                <li>テキスト情報から画像情報への転移（クロスモーダル転移）</li>
+                <li>異なる解像度の画像間での転移</li>
+                <li>異なる言語間での自然言語処理タスクの転移</li>
+            </ul>
+        </li>
+        <li>同質的ドメインシフトよりも難しい問題設定</li>
+        <li>特徴空間の変換や共通表現の学習が必要</li>
+    </ul>
+    
+    <div class="note">
+        異質的ドメインシフトでは、サンプル空間が異なるため、元ドメインと目標ドメインを単純に比較できません。この場合、両ドメインに共通する特徴空間を見つけるアプローチが重要になります。深層表現学習の発展により、この分野は大きく進展しています。
+    </div>
+</div>
+
+<!-- 極端なケース：ドメイン一致 -->
+<div class="slide">
+    <h2>極端なケース：ドメイン一致</h2>
+    
+    <h3>転移学習の最も極端なケース</h3>
+    <div class="equation">
+        <span class="math">$\mathbb{D}_S = \mathbb{D}_T$</span>
+    </div>
+    
+    <ul>
+        <li>元ドメインと目標ドメインが<span class="highlight">完全に一致</span>している状況</li>
+        <li>この場合は<span class="key-point">通常の機械学習</span>と同等になる</li>
+        <li>転移学習の特別な技術は不要</li>
+    </ul>
+    
+    <div class="note">
+        これは理論的な極限ケースであり、実際の応用では完全な一致はまれです。しかし、この極限ケースを理解することで、転移学習の理論的基盤を把握できます。
+    </div>
+    
+    <h3>なぜこの場合は単なる機械学習と同等か</h3>
+    <ul>
+        <li>両ドメインのデータが同じ確率分布に従っている</li>
+        <li>元ドメインで学習したモデルは、そのまま目標ドメインで最適な性能を発揮できる</li>
+        <li>追加の転移テクニックは必要ない</li>
+    </ul>
+</div>
+
+<!-- 近似的ドメイン類似性 -->
+<div class="slide">
+    <h2>近似的ドメイン類似性</h2>
+    
+    <h3>現実的なシナリオ</h3>
+    <div class="equation">
+        <span class="math">$\mathbb{D}_S \approx \mathbb{D}_T$</span>
+    </div>
+    
+    <ul>
+        <li>元ドメインと目標ドメインが<span class="highlight">適当な指標のもとで近い</span>場合</li>
+        <li>このとき、元ドメインから目標ドメインへの知識転移が<span class="key-point">成功する可能性が高い</span></li>
+    </ul>
+    
+    <h3>「近さ」の概念</h3>
+    <ul>
+        <li>ドメイン間の「近さ」は様々な方法で定義可能</li>
+        <li>同質的ドメインシフトの場合：
+            <ul>
+                <li>確率分布間の距離（KLダイバージェンス、Wasserstein距離など）</li>
+                <li>経験的確率分布の差異（最大平均差異など）</li>
+            </ul>
+        </li>
+        <li>異質的ドメインシフトの場合：
+            <ul>
+                <li>共通特徴空間での表現の類似性</li>
+                <li>特徴抽出関数の対応関係</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <div class="note">
+        実際の応用では、多くの場合、元ドメインと目標ドメインは完全には一致しませんが、ある程度の類似性があります。同質的か異質的かによって「近さ」の定義方法が異なり、それに応じて転移手法も変わってきます。
+    </div>
+</div>
+
+<!-- 転移仮定の必要性 -->
+<div class="slide">
+    <h2>転移仮定の必要性</h2>
+    
+    <h3>一般的な状況の課題</h3>
+    <ul>
+        <li>現実では $\mathbb{D}_S$ と $\mathbb{D}_T$ が近いことは<span class="highlight">保証されない</span></li>
+        <li>転移学習は「ドメイン間に何らかの関係性がある」という前提に基づく</li>
+        <li>この関係性についての仮説を<span class="key-point">転移仮定（transfer assumption）</span>と呼ぶ</li>
+    </ul>
+    
+    <div class="definition-box">
+        <p><strong>転移仮定の役割</strong></p>
+        <p>転移仮定は、元ドメインと目標ドメインの間に存在する<span class="highlight">特定の関係性</span>を定式化するものです。この仮定により、元ドメインで学習した知識を目標ドメインに転用する方法が決まります。</p>
+    </div>
+    
+    <h3>同質的ドメインシフトでの転移仮定例</h3>
+    <ul>
+        <li>共変量シフト: 入力の周辺分布は変化するが、条件付き分布は同じ</li>
+        <li>クラス事前確率シフト: 出力の周辺分布は変化するが、条件付き分布は同じ</li>
+        <li>サンプル選択バイアス: 目標ドメインのデータは元ドメインのデータの部分集合</li>
+    </ul>
+</div>
+
+<!-- 異質的ドメインシフトでの転移仮定 -->
+<div class="slide">
+    <h2>転移仮定の必要性（続き）</h2>
+    
+    <h3>異質的ドメインシフトでの転移仮定例</h3>
+    <ul>
+        <li>特徴空間変換: $f_S : \mathcal{X}_S \to \mathcal{Z}$ と $f_T : \mathcal{X}_T \to \mathcal{Z}$ が存在し、共通特徴空間 $\mathcal{Z}$ 上で同質的ドメインシフトの転移仮定が成立</li>
+        <li>特徴対応: 元ドメインの特徴と目標ドメインの特徴間に対応関係が存在</li>
+        <li>特徴分解: 両ドメインの特徴がドメイン固有部分とドメイン不変部分に分解可能</li>
+    </ul>
+    
+    <h3>表現学習の役割</h3>
+    <ul>
+        <li>深層ニューラルネットワークによる表現学習の性能向上により、異質的ドメインシフトへの対応が飛躍的に向上</li>
+        <li>特に深層モデルを用いた異質的ドメインシフトへの対応は現在の転移学習における主流の方法の一つ</li>
+    </ul>
+    
+    <div class="note">
+        異質的ドメインシフトは、同質的ドメインシフトに比べて難しい問題ですが、表現学習の進歩により大きく発展している分野です。両ドメインに共通する潜在空間を見つけることが鍵となります。
+    </div>
+</div>
+
+<!-- 転移学習の成功条件 -->
+<div class="slide">
+    <h2>転移学習の成功条件</h2>
+    
+    <h3>転移学習が成功するための条件</h3>
+    <div class="two-col">
+        <div class="col">
+            <h4>理想的な条件</h4>
+            <ul>
+                <li>完全ドメイン一致: $\mathbb{D}_S = \mathbb{D}_T$</li>
+                <li>近似的ドメイン一致: $\mathbb{D}_S \approx \mathbb{D}_T$</li>
+            </ul>
+        </div>
+        <div class="col">
+            <h4>現実的な条件</h4>
+            <ul>
+                <li>適切な転移仮定が存在する</li>
+                <li>その仮定を活用した転移手法が利用可能</li>
+            </ul>
+        </div>
+    </div>
+    
+    <h3>同質的・異質的ドメインシフトでの成功条件の違い</h3>
+    <ul>
+        <li>同質的ドメインシフトの場合:
+            <ul>
+                <li>分布の差異が小さいか、特定のパターンに従っている</li>
+                <li>共変量シフトやクラス事前確率シフトなどの仮定が成立</li>
+            </ul>
+        </li>
+        <li>異質的ドメインシフトの場合:
+            <ul>
+                <li>効果的な共通特徴空間が存在する</li>
+                <li>特徴変換関数が学習可能である</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <div class="note">
+        転移学習の成功は、適切な転移仮定の選択と、それに基づく効果的な転移手法の適用にかかっています。仮定が現実と合致しない場合、転移は失敗する可能性が高くなります。
+    </div>
+</div>
+
+<!-- 転移学習の成功条件（続き） -->
+<div class="slide">
+    <h2>転移学習の成功条件（続き）</h2>
+    
+    <h3>転移仮定の選択における考慮事項</h3>
+    <ul>
+        <li>問題設定や観測されたデータの性質</li>
+        <li>ドメインが同質的か異質的かの判断</li>
+        <li>ドメインに関する先見的な知識</li>
+        <li>どのような転移仮定が妥当かを慎重に見極める必要がある</li>
+    </ul>
+    
+    <h3>転移方法の適切な選択</h3>
+    <ul>
+        <li>転移仮定に基づいて適切な転移学習方法を選択</li>
+        <li>同質的ドメインシフトの場合: 
+            <ul>
+                <li>インスタンス重み付け法（共変量シフト仮定）</li>
+                <li>クラス比率調整法（クラス事前確率シフト仮定）</li>
+            </ul>
+        </li>
+        <li>異質的ドメインシフトの場合:
+            <ul>
+                <li>表現学習による共通特徴空間の発見</li>
+                <li>ドメイン対応付け（domain mapping）技術</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <div class="note">
+        適切な転移仮定と転移手法の選択は、問題の性質と利用可能なデータに強く依存します。複数の手法を試し、検証データで評価することが実践的なアプローチです。
+    </div>
+</div>
+
+<!-- まとめスライド -->
+<div class="slide">
+    <h2>まとめ: ドメインシフトと転移仮定</h2>
+    
+    <h3>本節の重要ポイント</h3>
+    <ol>
+        <li>転移学習の成功条件は<span class="highlight">ドメイン間の関係性</span>に大きく依存する</li>
+        <li>ドメインシフトには<span class="key-point">同質的</span>と<span class="key-point">異質的</span>の2種類がある
+            <ul>
+                <li>同質的: サンプル空間は同じだが分布が異なる</li>
+                <li>異質的: サンプル空間自体が異なる</li>
+            </ul>
+        </li>
+        <li>極端なケース（$\mathbb{D}_S = \mathbb{D}_T$）では通常の機械学習と同等</li>
+        <li>ドメインが近似的に一致（$\mathbb{D}_S \approx \mathbb{D}_T$）する場合、転移は成功しやすい</li>
+        <li>一般的には、ドメインシフトのタイプに応じた<span class="key-point">適切な転移仮定</span>の選択が鍵となる</li>
+        <li>異質的ドメインシフトでは特に、共通特徴空間の発見が重要な課題となる</li>
+    </ol>
+    
+    <div class="note">
+        2.2.1節で学んだドメインシフトと転移仮定の概念は、以降の章で紹介される様々な転移学習手法の理論的基盤となります。同質的・異質的ドメインシフトの区別と、それぞれに適した転移仮定の選択が、効果的な転移学習の鍵です。
+    </div>
+</div>
+
+<div class="slide divider-slide">
+    <h1>2.2.2 確率分布間の距離測度に基づく不一致度</h1>
+</div>
+
+   <!-- ドメインの不一致度 スライド -->
+   <div class="slide">
+    <h2>ドメインの不一致度とその重要性</h2>
+    
+    <h3>転移学習における前提</h3>
+    <ul>
+        <li>転移学習では、<span class="highlight">元ドメイン</span>と<span class="highlight">目標ドメイン</span>の分布が異なることを前提</li>
+        <li>転移仮定（例えば共変量シフト）は、分布の一致している部分と異なる部分を明示</li>
+        <li>しかし、転移仮定からは<span class="key-point">どの程度異なるか</span>は分からない</li>
+    </ul>
+    
+    <h3>不一致度（Discrepancy）の必要性</h3>
+    <ul>
+        <li>ドメイン間の分布のずれを<span class="highlight">定量的に評価</span>するための概念</li>
+        <li>主に二つのアプローチ：
+            <ul>
+                <li>確率密度比に基づく手法</li>
+                <li>確率分布間の距離尺度に基づく手法</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <div class="note">
+        分布の不一致度は理論的に重要なだけでなく、<span class="key-point">実用的なアルゴリズムの設計</span>にも直接関わります。分布のずれが大きいほど転移が難しくなり、ドメイン適応のために特別な工夫が必要になります。
+    </div>
+</div>
+
+<!-- 確率密度比 スライド -->
+<div class="slide">
+    <h2>確率密度比の概念</h2>
+    
+    <h3>確率密度比（Density Ratio）の定義</h3>
+    <div class="definition-box">
+        <p>確率密度比 $r(x)$ は、目標ドメインの確率密度関数 $p^T(x)$ と元ドメインの確率密度関数 $p^S(x)$ の比として定義されます：</p>
+        <div class="equation">
+            $r(x) = \frac{p^T(x)}{p^S(x)}$ &nbsp;&nbsp;&nbsp; (2.5)
+        </div>
+    </div>
+    
+    <h3>確率密度比の特性</h3>
+    <ul>
+        <li>$p^T(x) = p^S(x)$ のとき、すべての $x$ で $r(x) = 1$</li>
+        <li>$p^T(x) \neq p^S(x)$ のとき、入力 $x$ が目標ドメインの分布からの事例らしいほど $r(x)$ の値は大きくなる</li>
+        <li>元ドメインのデータ $x_1^S, ..., x_{n_S}^S$ に対して密度比 $r(x_i^S)$ を評価すれば、その値の大小によって目標ドメインとの近さを見積もることが可能</li>
+    </ul>
+    
+    <h3>課題</h3>
+    <ul>
+        <li>確率密度関数 $p^T(x)$ および $p^S(x)$ は一般に未知</li>
+        <li>密度比 $r(x_i^S)$ の値は観測データから推定する必要がある</li>
+    </ul>
+</div>
+
+<!-- 密度比推定 スライド -->
+<div class="slide">
+    <h2>確率密度比の概念（続き）</h2>
+    
+    <h3>密度比の推定方法</h3>
+    <ul>
+        <li>素朴な方法：$p^T(x)$ および $p^S(x)$ を個別に推定してそれらの比をとる</li>
+        <li>しかし、それぞれの推定誤差が比をとる操作によって増大する可能性がある</li>
+        <li>一般に高精度は望めない</li>
+    </ul>
+    
+    <h3>直接推定アプローチ</h3>
+    <ul>
+        <li>密度比 $r(x)$ をデータから直接推定する手法が開発されている</li>
+        <li>代表的な密度比推定のアプローチ：
+            <ul>
+                <li>密度比関数 $r(x)$ に対して線形基底関数モデルを仮定</li>
+                <li>$\hat{r}(x; \alpha) = \alpha^\top \varphi(x) = \sum_{l=1}^L \alpha_l \varphi_l(x)$ &nbsp;&nbsp; (2.6)</li>
+                <li>真の密度比 $r(x)$ との誤差を最小化してモデルパラメータ $\alpha$ を推定</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <div class="note">
+        式(2.6)において、$\varphi(x) = (\varphi_1(x), ..., \varphi_L(x))^\top$ は入力 $x$ に対する基底関数ベクトルを表します。基底関数としては、例えば目標ドメインの入力データを参照点として用いたガウスカーネルなどがよく用いられます。
+    </div>
+</div>
+
+<!-- 密度比推定手法 スライド -->
+<div class="slide">
+    <h2>密度比推定手法</h2>
+    
+    <h3>密度比推定の主要手法</h3>
+    
+    <h4>1. カルバック・ライブラー重要度推定法（KLIEP）</h4>
+    <ul>
+        <li>目標ドメインの確率密度関数を密度比モデルを用いて $\hat{p}^T(x) = \hat{r}(x; \alpha)p^S(x)$ と表し、真の確率密度関数とのカルバック・ライブラーダイバージェンス
+            <div class="equation">
+                $D_{\mathrm{KL}}(p^T(x) \parallel \hat{p}^T(x)) = \int p^T(x) \log \frac{p^T(x)}{\hat{r}(x; \alpha)p^S(x)} dx$
+            </div>
+            を最小化して $\alpha$ を推定するカルバック・ライブラー重要度推定法（Kullback-Leibler importance estimation procedure, KLIEP）がある
+        </li>
+        <li>ここで、(2.7) の2行目の第1項はモデルパラメータを含んでいないため、最適化においては定数となることに注意</li>
+        <li>よって、KLIEP の目的関数は第2項を観測データによって近似した
+            <div class="equation">
+                $\int p^T(x) \log \hat{r}(x; \alpha) dx \approx \frac{1}{n_T} \sum_{i=1}^{n_T} \log \hat{r}(x_i^T; \alpha)$ &nbsp;&nbsp; (2.8)
+            </div>
+            となる
+        </li>
+    </ul>
+</div>
+
+<!-- 密度比推定手法（続き） スライド -->
+<div class="slide">
+    <h2>密度比推定手法（続き）</h2>
+    
+    <h4>2. 制約なし最小二乗重要度適合法（uLSIF）</h4>
+    <ul>
+        <li>密度比推定のもう一つの主要なアプローチに制約なし最小二乗重要度適合法（unconstrained least-squares importance fitting, uLSIF）がある</li>
+        <li>この方法では、密度比モデル $\hat{r}(x; \alpha)$ と真の密度比 $r(x)$ の二乗誤差
+            <div class="equation">
+                $\frac{1}{2} \int (\hat{r}(x; \alpha) - r(x))^2 p^S(x) dx$
+            </div>
+            <div class="equation">
+                $= \frac{1}{2} \int \hat{r}(x; \alpha)^2 p^S(x) dx - \int \hat{r}(x; \alpha) p^T(x) dx + \frac{1}{2} \int r(x) p^T(x) dx$ &nbsp;&nbsp; (2.9)
+            </div>
+            を直接最小化してパラメータ $\alpha$ を推定する
+        </li>
+        <li>(2.9) において、2行目の第3項はパラメータを含まないため最適化においては定数となっている</li>
+        <li>したがって、第1項と第2項をそれぞれ観測データで近似した
+            <div class="equation">
+                $\frac{1}{2n_S} \sum_{i=1}^{n_S} \hat{r}(x_i^S; \alpha)^2 - \frac{1}{n_T} \sum_{i=1}^{n_T} \hat{r}(x_i^T; \alpha) + \frac{\lambda}{2} \|\alpha\|_2^2$ &nbsp;&nbsp; (2.10)
+            </div>
+            を最小化してパラメータを推定する
+        </li>
+    </ul>
+    
+    <div class="note">
+        (2.10) の第3項は $\lambda \geq 0$ を正則化パラメータとする正則化項です。(2.10) に密度比の線形基底関数モデル (2.6) を代入し、パラメータ $\alpha$ に関する2次形式の形に整理すると、最適解が解析的に求まります。
+    </div>
+</div>
+
+<!-- f-ダイバージェンス スライド -->
+<div class="slide">
+    <h2>f-ダイバージェンス</h2>
+    
+    <h3>f-ダイバージェンスの定義</h3>
+    <div class="definition-box">
+        <p><strong>定義2.1（f-ダイバージェンス）</strong></p>
+        <p>$\mathbb{R}_{\geq 0}$ を非負の実数全体とし、$\phi : \mathbb{R}_{\geq 0} \to \mathbb{R}$ を凸かつ下半連続で $\phi(1) = 0$ を満たすような関数とします。このとき、二つの確率分布 $P_X^T$ と $P_X^S$ の間の f-ダイバージェンス $D_\phi(P_X^S \parallel P_X^T)$ は、</p>
+        <div class="equation">
+            $D_\phi(P_X^S \parallel P_X^T) = \int p^T(x) \phi \left( \frac{p^S(x)}{p^T(x)} \right) dx$ &nbsp;&nbsp; (2.13)
+        </div>
+        <p>で定義されます。</p>
+    </div>
+    
+    <h3>f-ダイバージェンスの特性</h3>
+    <ul>
+        <li>$\phi$ が凸関数であることから、イェンセンの不等式によって
+            <div class="equation">
+                $D_\phi(P_X^S \parallel P_X^T) \geq \phi \left( \int p^T(x) \frac{p^S(x)}{p^T(x)} dx \right) = \phi(1) = 0$
+            </div>
+        </li>
+        <li>f-ダイバージェンスは非負性を持つ</li>
+        <li>f-ダイバージェンスは以下のような変分下界を持つ
+            <div class="equation">
+                $D_\phi(P_X^S \parallel P_X^T) \geq \sup_{g \in \mathcal{G}} [\mathbb{E}_{x \sim P_X^S}[g(x)] - \mathbb{E}_{x \sim P_X^T}[\phi^*(g(x))]]$ &nbsp;&nbsp; (2.14)
+            </div>
+            <ul>
+            <li>$\phi^*(y) = \sup_{x \in \mathbb{R}_{\geq 0}} \{xy - \phi(x)\}$ は $\phi$ のフェンシェル共役関数(ルジャンドル変換の拡張)</li>
+            <li>$\mathcal{G}$ は $\mathcal{X}$ から $\text{dom}(\phi^*)$ への関数全体</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<!-- f-ダイバージェンスの例 スライド -->
+<div class="slide">
+    <h2>f-ダイバージェンス（続き）</h2>
+    
+    <h3>代表的なf-ダイバージェンス</h3>
+    <p>関数 $\phi$ の取り方によってさまざまなダイバージェンスを表現できます。</p>
+    
+    <table>
+        <tr>
+            <th>名称</th>
+            <th>$\phi(x)$</th>
+            <th>特徴</th>
+        </tr>
+        <tr>
+            <td>カルバック・ライブラーダイバージェンス</td>
+            <td>$x \log x$</td>
+            <td>情報理論的解釈が可能、確率分布の情報量の差</td>
+        </tr>
+        <tr>
+            <td>イェンセン・シャノンダイバージェンス</td>
+            <td>$-(x+1)\log \frac{1+x}{2} + x \log x$</td>
+            <td>対称的な尺度、$P_X^S$ と $P_X^T$ の役割を入れ替えても値は変わらない</td>
+        </tr>
+        <tr>
+            <td>全変動距離</td>
+            <td>$\frac{1}{2}|x-1|$</td>
+            <td>直感的に解釈しやすい、分布間の最大確率差</td>
+        </tr>
+    </table>
+    
+    <h3>下界表現による推定</h3>
+    <ul>
+        <li>式(2.14)の下界表現によって、データから f-ダイバージェンスを推定する問題を下界の最大化問題、すなわち変分推論問題とみなして解くことも可能</li>
+        
+    </ul>
+</div>
+
+<!-- H-ダイバージェンス スライド -->
+<div class="slide">
+    <h2>H-ダイバージェンス</h2>
+    
+    <h3>H-ダイバージェンスの定義</h3>
+    <div class="definition-box">
+        <p><strong>定義2.2（H-ダイバージェンス）</strong></p>
+        <p>二つの確率分布 $P_X^T$ と $P_X^S$ の間の $\mathcal{H}$-ダイバージェンス $D_{\mathcal{H}\triangle\mathcal{H}}(P_X^S, P_X^T)$ は、</p>
+        <div class="equation">
+            $D_{\mathcal{H}\triangle\mathcal{H}}(P_X^S, P_X^T) = 2 \sup_{h \in \mathcal{H}} \left| P_X^S(I_h) - P_X^T(I_h) \right|$ &nbsp;&nbsp; (2.17)
+        </div>
+        <p>で定義されます。ここで、$I_h = \{x \in \mathcal{X} | h(x) = 1\}$ とおきました。</p>
+    </div>
+    
+    <h3>H-ダイバージェンスの解釈</h3>
+    <ul>
+        <li>目標ドメインと元ドメインで同じ仮説を用いたときにラベルが1と予測される入力集合を考え、その確率の差を評価</li>
+        <li>もっとも差のある仮説を選択した時の確率の差(の2倍)</li>
+        <li>定義から、$D_{\mathcal{H}\triangle\mathcal{H}}(P_X^S, P_X^T)$ は以下のように等価な変形が可能</li>
+    </ul>
+    
+    <div class="equation">
+        $D_{\mathcal{H}\triangle\mathcal{H}}(P_X^S, P_X^T) = 2 \sup_{h \in \mathcal{H}} \left| R_S(h, 1) - R_T(h, 1) \right|$ &nbsp;&nbsp; (2.18)
+    </div>
+    <div class="equation">
+        $= 2 \sup_{h \in \mathcal{H}} \left| 1 - (R_S(h, 0) + R_T(h, 1)) \right|$
+    </div>
+    
+    <p>ここで、$R_S(h, a) = \mathbb{E}_{x \sim P_X^S}[|h(x) - a|]$, $R_T(h, a) = \mathbb{E}_{x \sim P_X^T}[|h(x) - a|]$ としています。</p>
+</div>
+
+<!-- 経験的H-ダイバージェンス スライド -->
+<div class="slide">
+    <h2>H-ダイバージェンス（続き）</h2>
+    
+    <h3>H-ダイバージェンスの特性</h3>
+    <ul>
+        <li>$\mathcal{H}$が対称な仮説集合のとき、すなわち $h \in \mathcal{H}$ならば $1 - h \in \mathcal{H}$が成り立つとき、観測データに基づく経験的な$\mathcal{H}$-ダイバージェンスを以下のように表現できます</li>
+    </ul>
+    
+    <div class="equation">
+        $\hat{D}_{\mathcal{H}\triangle\mathcal{H}}(P_X^S, P_X^T) = 2 \left( 1 - \min_{h \in \mathcal{H}} \left( \frac{1}{n_S} \sum_{i=1}^{n_S} \mathbb{I}[h(x_i^S) \neq 0] + \frac{1}{n_T} \sum_{i=1}^{n_T} \mathbb{I}[h(x_i^T) \neq 1] \right) \right)$ &nbsp;&nbsp; (2.19)
+    </div>
+    
+
+    <p>    ここで、$\mathbb{I}[A]$ は $A$ が真のとき 1 を、$A$ が偽のとき 0 を返す指示関数です。</p>
+
+    
+    <h3>解釈とドメイン識別問題</h3>
+    <ul>
+        <li>(2.19) の min 以降の項は、仮説 $h$ が元ドメインの入力に対するラベルをすべて 0 と予測し、目標ドメインの入力に対するラベルをすべて 1 と予測すれば 0 となる</li>
+        <li>そうではない仮説を用いた場合、この項は 0 より大きな値を持ち、$\mathcal{H}$-ダイバージェンスはより小さくなる</li>
+        <li>$\mathcal{H}$-ダイバージェンスは $\mathcal{H}$ の仮説が元ドメインの入力と目標ドメインの入力をどれくらい見分けられるかという観点で $P_X^S$ と $P_X^T$ の類似度を評価していると解釈できる</li>
+    </ul>
+</div>
+
+<!-- 最大平均不一致度 スライド -->
+<div class="slide">
+    <h2>最大平均不一致度（MMD）</h2>
+    
+    <h3>再生核ヒルベルト空間</h3>
+    <div class="definition-box">
+        <p><strong>定義2.3（再生核ヒルベルト空間）</strong></p>
+        <p>$\mathcal{F}$ を $\mathcal{X}$ 上の関数 $f : \mathcal{X} \to \mathbb{R}$ を要素に持つヒルベルト空間とし、その内積を $\langle \cdot, \cdot \rangle_{\mathcal{F}}$ で表すとします。ある関数 $k : \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ が存在して (1) 任意の $x \in \mathcal{X}$ に対して $\phi_x = k(x, \cdot) \in \mathcal{F}$, (2) 任意の $f \in \mathcal{F}$ と $x \in \mathcal{X}$ に対して $f(x) = \langle f, \phi_x \rangle_{\mathcal{F}}$ が成り立つとき、$\mathcal{F}$ を $k$ を再生核に持つ再生核ヒルベルト空間と呼びます。</p>
+    </div>
+    
+    <h3>最大平均不一致度（MMD）の定義</h3>
+    <div class="definition-box">
+        <p><strong>定義2.4（最大平均不一致度 (MMD)）</strong></p>
+        <p>$\mathcal{F}$ を関数 $f : \mathcal{X} \to \mathbb{R}$ のなす再生核ヒルベルト空間とします。このとき、$P_X^T$ と $P_X^S$ の間の MMD は</p>
+        <div class="equation">
+            $D_{\text{MMD}}(P_X^S, P_X^T) = \sup_{f \in \mathcal{F}} \left| \mathbb{E}_{x^S \sim P_X^S}[f(x^S)] - \mathbb{E}_{x^T \sim P_X^T}[f(x^T)] \right|$ &nbsp;&nbsp; (2.20)
+        </div>
+        <p>で定義されます。</p>
+    </div>
+    
+    <div class="note">
+        すなわち、二つのドメインの分布の近さを、それぞれのドメインにおけるある関数の値の期待値の差で評価するのが MMD です。
+    </div>
+</div>
+
+<!-- MMDの特性と推定 スライド -->
+<div class="slide">
+    <h2>最大平均不一致度（MMD）（続き）</h2>
+    
+    <h3>MMDの理論的特性</h3>
+    <div class="definition-box">
+        <p><strong>補題2.5</strong></p>
+        <p>$P_X^T$, $P_X^S$ は距離空間 $\mathcal{X}$ 上のボレル確率測度とします。このとき、$P_X^T = P_X^S$ であることの必要十分な条件は、</p>
+        <div class="equation">
+            $\mathbb{E}_{x^S \sim P_X^S}[f(x^S)] = \mathbb{E}_{x^T \sim P_X^T}[f(x^T)]$
+        </div>
+        <p>が任意の有界な可測かつ可積分関数 $f : \mathcal{X} \to \mathbb{R}$ に対し成り立つことです。</p>
+    </div>
+    
+    <p>補題2.5より、$P_X^T = P_X^S$ を帰無仮説、$P_X^T \neq P_X^S$ を対立仮説とする二標本検定を考えるとき、MMD は帰無仮説の必要十分条件が正しいかどうかを評価する指標であると解釈できます。すなわち、MMD をこの仮説検定の検定統計量として用いることができます。</p>
+    
+    <h3>MMD の経験的推定</h3>
+    <p>観測データから MMD を推定する式：</p>
+    <div class="equation">
+        $\hat{D}_{\text{MMD}}(P_X^S, P_X^T) = \sup_{f \in \mathcal{F}} \left( \frac{1}{n_S} \sum_{i=1}^{n_S} f(x_i^S) - \frac{1}{n_T} \sum_{i=1}^{n_T} f(x_i^T) \right)$ &nbsp;&nbsp; (2.21)
+    </div>
+</div>
+
+<!-- 最適輸送理論 スライド -->
+<div class="slide">
+    <h2>最適輸送理論</h2>
+    
+    <h3>最適輸送理論の概要</h3>
+    <ul>
+        <li>最適輸送理論は「ある場所で採掘した土を別の場所で工事に用いるとき、輸送コストを最小にする輸送方法を求めよ」という問題が、モンジュによって数学的に定式化されたところから始まったとされる</li>
+        <li>元ドメインの分布 $P_X^S$ と目標ドメインの分布 $P_X^T$ に対して、
+            <div class="equation">
+                $\tau_{\#}P_X^S = P_X^T$ を満たす可測関数 $\tau : \mathcal{X} \to \mathcal{X}$
+            </div>
+            の中で輸送コスト
+            <div class="equation">
+                $\int_{\mathcal{X}} \|x - \tau(x)\| dP_X^S$ &nbsp;&nbsp; (2.22)
+            </div>
+            が最小となるものを求める問題として定式化できる
+        </li>
+    </ul>
+    
+    <h3>輸送写像</h3>
+    <ul>
+        <li>ここで、$\tau_{\#}P_X^S$ は関数 $\tau$ による分布 $P_X^S$ の押し出しと呼ばれるもので、$A \subset \mathcal{X}$ に対して $\tau_{\#}P_X^S(A) = P_X^S(\tau^{-1}(A))$ で定義される</li>
+        <li>この条件は、目標ドメインの地点 $A$ で受け取る土の量は、$A$ に土を送る元ドメインの地点 $\tau^{-1}(A)$ から運び出す土の量 $P_X^S(\tau^{-1}(A))$ と等しいことを要請するものである</li>
+        <li>これにより輸送の前後で土の量が変わらない（すなわち密度の総和が 1 であるという確率分布の性質が保たれる）ことが保証される</li>
+    </ul>
+</div>
+
+<!-- ワッサースタイン距離 スライド -->
+<div class="slide">
+    <h2>ワッサースタイン距離</h2>
+    
+    <h3>最適輸送理論の背景</h3>
+    <ul>
+        <li>最適輸送理論は「ある場所で採掘した土を別の場所で工事に用いるとき、輸送コストを最小にする輸送方法を求めよ」という問題がモンジュによって数学的に定式化されたところから始まった</li>
+        <li>転移学習の文脈では、元ドメインの分布 $P_X^S$ と目標ドメインの分布 $P_X^T$ に対して、$\tau_{\#}P_X^S = P_X^T$ を満たす可測関数 $\tau : \mathcal{X} \to \mathcal{X}$ の中で輸送コスト
+            <div class="equation">
+                $\int_{\mathcal{X}} \|x - \tau(x)\| dP_X^S$ &nbsp;&nbsp; (2.22)
+            </div>
+            が最小となるものを求める問題として定式化できる
+        </li>
+    </ul>
+    
+    <h3>カップリングとは</h3>
+    <ul>
+        <li>$\pi$ が $P_X^S$ と $P_X^T$ のカップリングであるとは、射影関数 $\mathrm{proj}_i(x_1, x_2) = x_i$, $i = 1, 2$ に対して $(\mathrm{proj}_1)_{\#}\pi = P_X^S$, $(\mathrm{proj}_2)_{\#}\pi = P_X^T$ が満たされることと定義される</li>
+        <li>機械学習の研究では、コスト関数の指数 $p$ が $1$ として考察されることが特に多い</li>
+        <li>これは、$p = 1$ のとき (2.23) の最小化問題が線形計画問題として書き下せるという事実や、後述するカントロヴィッチ・ルービンスタイン双対性が利用できるなどの利点があるから</li>
+    </ul>
+
+    <div class="image-container">
+        <img src="https://cdn.discordapp.com/attachments/1092575975767470110/1225066493621342218/monge_optimal_transport.png" alt="モンジュによる最適輸送問題のイメージ">
+        <p>図2.1 モンジュによる最適輸送問題のイメージ</p>
+    </div>
+</div>
+
+<!-- ワッサースタイン距離の定義 スライド -->
+<div class="slide">
+    <h2>ワッサースタイン距離（続き）</h2>
+    
+    <h3>ワッサースタイン距離の定義</h3>
+    <div class="definition-box">
+        <p><strong>定義2.6（ワッサースタイン距離）</strong></p>
+        <p>元ドメインの分布 $P_X^S$ と目標ドメインの分布 $P_X^T$ の間の $p$ 次ワッサースタイン距離は</p>
+        <div class="equation">
+            $D_{W,p}(P_X^S, P_X^T) = \inf_{\pi \in \Pi(P_X^S, P_X^T)} \left( \int \|x - x'\|^p d\pi(x, x') \right)^{1/p}$ &nbsp;&nbsp; (2.24)
+        </div>
+        <p>で定義されます。ここで、$\Pi(P_X^S, P_X^T)$ は $P_X^S$ と $P_X^T$ のカップリングの集合です。</p>
+    </div>
+    
+    <h3>ワッサースタイン距離の解釈</h3>
+    <ul>
+        <li>ワッサースタイン距離は $P_X^S$ と $P_X^T$ の間に引かれた最短線の長さを表すものと解釈でき、その観点で二つのドメインの近さを評価する</li>
+        <li>特に $p = 1$ のとき、$D_{W,1}$ を $D_W$ とも記し、次のカントロヴィッチ・ルービンスタイン双対性（Kantorovich-Rubinstein duality）を満たす</li>
+    </ul>
+    
+    <div class="equation">
+        $D_W(P_X^S, P_X^T) = \sup_{\varphi \in 1-\mathrm{Lip}} \left( \mathbb{E}_{x \sim P_X^S}[\varphi(x)] - \mathbb{E}_{x \sim P_X^T}[\varphi(x)] \right)$ &nbsp;&nbsp; (2.25)
+    </div>
+    
+    <p>ここで、1-Lip はリプシッツ定数が 1 であるようなリプシッツ連続な関数の集合を表します。</p>
+</div>
+
+<!-- ワッサースタイン距離の推定 スライド -->
+<div class="slide">
+    <h2>ワッサースタイン距離（続き）</h2>
+    
+    <h3>ワッサースタイン距離の経験的推定</h3>
+    <p>観測データを用いたワッサースタイン距離の経験的推定式：</p>
+    
+    <div class="equation">
+        $\frac{1}{n_S} \sum_{i=1}^{n_S} \varphi(x_i^S) - \frac{1}{n_T} \sum_{i=1}^{n_T} \varphi(x_i^T)$ &nbsp;&nbsp; (2.26)
+    </div>
+    
+    <h3>ワッサースタイン距離と敵対的学習</h3>
+    <ul>
+        <li>ワッサースタイン距離の (2.25) や (2.26) による表現は敵対的学習と非常に相性がよく、例えば4.4節で説明するワッサースタイン距離に基づく敵対的表現学習では、$\varphi$ として深層ニューラルネットワークを用いたカントロヴィッチ - ルービンスタイン双対性によって学習問題が定式化される</li>
+        <li>また、敵対的生成ネットワークの一つであるワッサースタイン GAN の目的関数もカントロヴィッチ - ルービンスタイン双対性に基づいて定式化されたものである</li>
+    </ul>
+    
+    <div class="note">
+        <p>ワッサースタイン距離は、分布間の幾何学的な距離を測る自然な方法を提供するため、特に生成モデルや分布マッチングの応用において重要な役割を果たしています。</p>
+    </div>
+</div>
+
+
+<!-- まとめのスライド -->
+<div class="slide">
+    <h2>まとめ - 確率分布間の距離尺度</h2>
+    
+    <h3>転移学習における重要性</h3>
+    <ul>
+        <li>転移学習では、元ドメインと目標ドメインの分布の差異を定量的に評価することが理論の基礎</li>
+        <li>これらの距離尺度は理論的性質だけでなく、実際のアルゴリズム設計にも直結</li>
+    </ul>
+    
+    <h3>主要な距離尺度の比較</h3>
+    <table>
+        <tr>
+            <th>距離尺度</th>
+            <th>主な特徴</th>
+            <th>応用例</th>
+        </tr>
+        <tr>
+            <td>f-ダイバージェンス</td>
+            <td>確率密度比に基づく評価、様々な具体形がある</td>
+            <td>GANなどの生成モデル</td>
+        </tr>
+        <tr>
+            <td>H-ダイバージェンス</td>
+            <td>ドメイン識別問題と関連</td>
+            <td>理論的汎化誤差境界、ドメイン不変表現学習</td>
+        </tr>
+        <tr>
+            <td>MMD</td>
+            <td>再生核ヒルベルト空間での平均埋め込みの差</td>
+            <td>二標本検定、ドメイン適応</td>
+        </tr>
+        <tr>
+            <td>ワッサースタイン距離</td>
+            <td>幾何学的な距離の観点、最適輸送理論に基づく</td>
+            <td>WGAN、敵対的表現学習</td>
+        </tr>
+    </table>
+    
+    <h3>今後の発展方向</h3>
+    <ul>
+        <li>計算効率のよい距離尺度の推定法</li>
+        <li>特定の応用ドメインに適した距離尺度の開発</li>
+        <li>深層学習と組み合わせた効率的なアルゴリズム</li>
+    </ul>
+</div>
+
+<div class="slide divider-slide">
+    <h1>2.2.3 負転移</h1>
+</div>
+
+    <!-- 2.2.3 負転移（Negative Transfer） -->
+    <div class="slide">
+        <h2>2.2.3 負転移（Negative Transfer）</h2>
+        
+        <h3>負転移とは</h3>
+        <ul>
+            <li>転移学習において、元ドメインからの知識転移が<span class="highlight">逆効果</span>となる現象</li>
+            <li>目標ドメインでの性能が、転移を行わない場合よりも<span class="key-point">低下</span>する</li>
+            <li>転移学習の重要な課題の一つ</li>
+        </ul>
+        
+        <h3>負転移の数学的定義</h3>
+        <div class="definition-box">
+            <p><strong>定義2.7（負転移）</strong></p>
+            どんなアルゴリズム $A$に対しても
+            <div class="equation">
+                <span class="math">$R_T(A(\mathbb{D}_S, \mathbb{D}_T)) > R_T(A(\emptyset, \mathbb{D}_T))$</span>
+            </div>
+            が成り立つ時、ドメイン間の負転移が起きているという。
+        </div>
+        <p>ただし実質的には次を考えれば十分か？</p>
+        <div class="equation">
+            <span class="math">$R_T(A(\mathbb{D}_S, \mathbb{D}_T)) > R_T(A(\emptyset, \mathbb{D}_T))$</span>
+        </div>
+        <ul>
+            <li>$R_T$：目標ドメインでの期待リスク</li>
+            <li>$A(\mathbb{D}_S, \mathbb{D}_T)$：元ドメインの知識を利用した学習アルゴリズム</li>
+            <li>$A(\emptyset, \mathbb{D}_T)$：元ドメインの知識を利用しない学習アルゴリズム</li>
+            <li>$A(\mathbb{D}_S, \emptyset)$：元ドメインの知識のみを利用した学習アルゴリズム</li>
+        </ul>
+        
+        <div class="note">
+            負転移は、元ドメインと目標ドメインの関係性が適切でない場合に発生します。転移学習を実践する際には、負転移の可能性を常に考慮する必要があります。
+        </div>
+    </div>
+
+    <!-- 負転移の原因 -->
+    <div class="slide">
+        <h2>2.2.3 負転移（続き）</h2>
+        
+        <h3>負転移の主な原因</h3>
+        <ul>
+            <li><span class="highlight">ドメイン間の不一致</span>
+                <ul>
+                    <li>元ドメインと目標ドメインの分布が大きく異なる</li>
+                    <li>ドメイン間の距離測度が大きい</li>
+                </ul>
+            </li>
+            <li><span class="highlight">不適切な転移仮定</span>
+                <ul>
+                    <li>ドメイン間の関係性に関する仮定が現実と合致しない</li>
+                    <li>転移仮定が強すぎる、または弱すぎる</li>
+                </ul>
+            </li>
+            <li><span class="highlight">転移手法の選択ミス</span>
+                <ul>
+                    <li>問題設定に適していない転移手法の選択</li>
+                    <li>パラメータ設定の不適切さ</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3>負転移の具体例</h3>
+        <ul>
+            <li>異なる医療施設間での診断モデルの転移
+                <ul>
+                    <li>患者の背景や測定方法が大きく異なる場合</li>
+                    <li>疾患の特徴が施設によって異なる場合</li>
+                </ul>
+            </li>
+            <li>異なる言語間での自然言語処理モデルの転移
+                <ul>
+                    <li>言語構造が大きく異なる場合</li>
+                    <li>文化的背景が異なる場合</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 負転移の防止策 -->
+    <div class="slide">
+        <h2>2.2.3 負転移（続き）</h2>
+        
+        <h3>負転移の防止策</h3>
+        <ul>
+            <li><span class="highlight">ドメイン間の関係性の事前評価</span>
+                <ul>
+                    <li>分布間の距離測度による定量的評価</li>
+                    <li>ドメイン間の類似性の可視化</li>
+                </ul>
+            </li>
+            <li><span class="highlight">適切な転移仮定の選択</span>
+                <ul>
+                    <li>問題設定に応じた転移仮定の検討</li>
+                    <li>複数の転移仮定の比較検討</li>
+                </ul>
+            </li>
+            <li><span class="highlight">転移手法の慎重な選択</span>
+                <ul>
+                    <li>問題設定に適した手法の選択</li>
+                    <li>パラメータの慎重な調整</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3>実践的なアプローチ</h3>
+        <ul>
+            <li>段階的な転移の実施
+                <ul>
+                    <li>小規模なデータでの事前検証</li>
+                    <li>徐々に転移の範囲を拡大</li>
+                </ul>
+            </li>
+            <li>転移の効果の継続的なモニタリング
+                <ul>
+                    <li>性能指標の定期的な評価</li>
+                    <li>必要に応じた転移手法の調整</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <div class="note">
+            負転移を完全に防ぐことは難しいですが、適切な事前評価と慎重な実装により、そのリスクを大幅に低減することができます。転移学習を実践する際には、常に負転移の可能性を念頭に置き、段階的なアプローチを取ることが重要です。
+        </div>
+    </div>
+
+    <!-- 2.3 何を転移するか セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>2.3 何を転移するか</h1>
+    </div>
+
+    <!-- 何を転移するかの説明スライド -->
+    <div class="slide">
+        <h2>「何を転移するか」の問題</h2>
+        
+        <h3>転移学習における基本問題</h3>
+        <ul>
+            <li>「何を転移するか」（what to transfer）は、元ドメインから目標ドメインへ転移する<span class="highlight">知識として何を用いるか</span>を決定する問題</li>
+            <li>転移する知識の種類によって、<span class="key-point">利用可能な問題設定や転移の実現方法が変わる</span></li>
+            <li>「いつ転移するか」とあわせて注意深く考慮する必要がある</li>
+        </ul>
+        
+        <h3>転移学習の性能指標</h3>
+        <div class="equation">
+            <span class="math">$R_T(A(\mathbb{D}_S, \mathbb{D}_T)) \leq \min\{R_T(A(\emptyset, \mathbb{D}_T)), R_T(A(\mathbb{D}_S, \emptyset))\}$</span>
+        </div>
+        <ul>
+            <li>負転移：上記の不等式が成り立たない状況（転移によってリスクが増大）</li>
+            <li>適切な転移方法の選択は負転移を防ぎ、転移学習を成功させる鍵</li>
+        </ul>
+        
+        <div class="note">
+            転移学習の成功には、ドメイン間の関係性を正確に把握し、それに適した転移方法を選択することが不可欠です。本節では3つの主要な転移方法について詳しく見ていきます。
+        </div>
+    </div>
+
+    <!-- 事例転移の概要スライド -->
+    <div class="slide">
+        <h2>2.3.1 事例転移（Instance Transfer）</h2>
+        
+        <h3>事例転移の基本概念</h3>
+        <ul>
+            <li>事例転移は元ドメインの<span class="highlight">ラベル付きデータを目標ドメインへ直接転移する</span>アプローチ</li>
+            <li>最も直接的な知識転移の形態</li>
+            <li>前提条件：元ドメインと目標ドメインが<span class="key-point">よく似ている</span>（$\mathbb{D}_S \approx \mathbb{D}_T$）</li>
+        </ul>
+        
+        <h3>事例転移の方法</h3>
+        <ol>
+            <li>元ドメインのデータ $\mathbb{D}_S$ を目標ドメインのデータ $\mathbb{D}_T$ と単純に結合</li>
+            <li>結合後のデータ $\mathbb{D}=\mathbb{D}_S \cup \mathbb{D}_T$ を単一のドメインとみなす</li>
+            <li>通常の教師あり学習問題として扱う</li>
+        </ol>
+        
+        <div class="note">
+            事例転移は概念的にシンプルですが、ドメイン間の分布の違いが大きい場合、単純な結合では効果的な転移ができない場合があります。そのため、適切な重み付けやデータ選択が必要になることもあります。
+        </div>
+    </div>
+
+    <!-- 特徴転移の概要スライド -->
+    <div class="slide">
+        <h2>2.3.2 特徴転移（Feature Transfer）</h2>
+        
+        <h3>特徴転移の基本概念</h3>
+        <ul>
+            <li>特徴転移は、<span class="highlight">表現学習によってデータから抽出した特徴量</span>を用いて元ドメインから目標ドメインへの知識転移を行うアプローチ</li>
+            <li>事例転移と比較した主な利点：より<span class="key-point">柔軟なドメイン間の接続</span>が可能</li>
+        </ul>
+        
+        <h3>事例転移と特徴転移の違い</h3>
+        <ul>
+            <li>事例転移：元ドメインと目標ドメインが空間的に同質（$\mathcal{X}_S\times \mathcal{Y}_S = \mathcal{X}_T\times \mathcal{Y}_T$）のときにのみ実行可能</li>
+            <li>特徴転移：入力空間$\mathcal{X}_S$と$\mathcal{X}_T$の次元が異なるような<span class="highlight">空間的に異質な場合</span>にも適用可能</li>
+        </ul>
+        
+        <div class="note">
+            特徴転移は、異なるデータ構造や次元を持つドメイン間で知識を転移する必要がある場合に特に有効です。例えば、異なるセンサーからのデータや、異なる表現形式のデータ間での転移に適しています。
+        </div>
+    </div>
+
+    <!-- パラメータ転移の概要スライド -->
+    <div class="slide">
+        <h2>2.3.3 パラメータ転移（Parameter Transfer）</h2>
+        
+        <h3>パラメータ転移の基本概念</h3>
+        <ul>
+            <li>パラメータ転移は、<span class="highlight">元ドメインで訓練した機械学習モデルのパラメータ</span>を目標ドメインに転移するアプローチ</li>
+            <li>転移対象となる機械学習モデルの例：
+                <ul>
+                    <li>回帰モデルや分類モデルなどの予測器</li>
+                    <li>特徴抽出器</li>
+                    <li>辞書学習によって得られた辞書行列</li>
+                </ul>
+            </li>
+            <li>適用範囲：モデルの種類を切り替えることで、<span class="key-point">同質的・異質的どちらのドメインシフト</span>の設定でも実行可能</li>
+        </ul>
+        
+        <div class="note">
+            深層学習の普及により、パラメータ転移は現在の転移学習の主流となっています。特に、大規模なモデルを事前学習し、そのパラメータを目標タスクに合わせて微調整する「事前学習+微調整」のアプローチが広く用いられています。
+        </div>
+    </div>
+
+    <!-- パラメータ転移の利点スライド -->
+    <div class="slide">
+        <h2>2.3.3 パラメータ転移（続き）</h2>
+        
+        <h3>パラメータ転移の主な利点</h3>
+        <ol>
+            <li><span class="highlight">データプライバシーの保護</span>
+                <ul>
+                    <li>生データや特徴量を複数のドメインで共有することなくモデルの学習が可能</li>
+                    <li>プライバシー保護などデータの秘匿性が要請される領域で特に有効</li>
+                </ul>
+            </li>
+            <li><span class="highlight">事前学習済みモデルの活用</span>
+                <ul>
+                    <li>深層学習の発展によって様々な事前学習済みモデルが開発・整備</li>
+                    <li>容易に実行可能になったことが普及の要因</li>
+                </ul>
+            </li>
+        </ol>
+        
+        <h3>現在の主流</h3>
+        <ul>
+            <li>これらの利点により、パラメータ転移は<span class="key-point">現在の転移学習の主流な方法</span>となっている</li>
+            <li>大規模事前学習モデル（GPT、BERT、VGGなど）からの転移が一般的</li>
+            <li>特にデータ量が少ない場合や計算資源が限られている場合に効果的</li>
+        </ul>
+        
+        <div class="note">
+            パラメータ転移は、医療分野や金融分野など、データプライバシーが重要な領域で特に価値があります。また、少量のデータでも高性能なモデルを構築したい場合や、計算リソースが限られている場合に、事前学習済みの大規模モデルからパラメータを転移することで、効率的に目標タスクを解決できます。
+        </div>
+    </div>
+
+    <!-- まとめスライド -->
+    <div class="slide">
+        <h2>2.3節のまとめ</h2>
+        
+        <h3>転移方法の比較</h3>
+        <ul>
+            <li>事例転移：最も直接的だが、ドメイン間の類似性が高い場合に限られる</li>
+            <li>特徴転移：異なるデータ構造間での転移が可能</li>
+            <li>パラメータ転移：現在の主流で、幅広い問題設定に対応可能</li>
+        </ul>
+        
+        <h3>選択のポイント</h3>
+        <ul>
+            <li>ドメイン間の関係性を正確に把握する</li>
+            <li>利用可能なデータや計算資源を考慮する</li>
+            <li>プライバシー要件などの制約を考慮する</li>
+        </ul>
+        
+        <div class="note">
+            次節では、これらの転移方法を具体的に実現するためのアルゴリズムや手法について詳しく見ていきます。
+        </div>
+    </div>
+
+    <!-- 2.4 ドメイン適応問題の分類 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>2.4 ドメイン適応問題の分類</h1>
+    </div>
+
+    <!-- ドメイン適応問題の分類の説明スライド -->
+    <div class="slide">
+        <h2>ドメイン適応問題の分類</h2>
+        
+        <h3>分類の基準</h3>
+        <ul>
+            <li>目標ドメインでの<span class="highlight">ラベル付きデータの有無</span>に基づいて分類</li>
+            <li>主な分類：
+                <ul>
+                    <li>教師ありドメイン適応（Supervised Domain Adaptation）</li>
+                    <li>半教師ありドメイン適応（Semi-supervised Domain Adaptation）</li>
+                    <li>教師なしドメイン適応（Unsupervised Domain Adaptation）</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3>各分類の特徴</h3>
+        <div class="diagram">
+            <div class="diagram-row diagram-header">
+                <div class="diagram-cell diagram-label-col">分類</div>
+                <div class="diagram-cell diagram-content-col">元ドメイン</div>
+                <div class="diagram-cell diagram-content-col">目標ドメイン</div>
+            </div>
+            <div class="diagram-row">
+                <div class="diagram-cell diagram-label-col">教師あり</div>
+                <div class="diagram-cell diagram-content-col">ラベル付きデータあり</div>
+                <div class="diagram-cell diagram-content-col">ラベル付きデータあり</div>
+            </div>
+            <div class="diagram-row">
+                <div class="diagram-cell diagram-label-col">半教師あり</div>
+                <div class="diagram-cell diagram-content-col">ラベル付きデータあり</div>
+                <div class="diagram-cell diagram-content-col">一部ラベル付きデータあり</div>
+            </div>
+            <div class="diagram-row">
+                <div class="diagram-cell diagram-label-col">教師なし</div>
+                <div class="diagram-cell diagram-content-col">ラベル付きデータあり</div>
+                <div class="diagram-cell diagram-content-col">ラベル付きデータなし</div>
+            </div>
+        </div>
+        
+        <div class="note">
+            ドメイン適応問題の分類は、利用可能なデータの種類と量によって適切な手法を選択する際の重要な指針となります。
+        </div>
+    </div>
+
+    <!-- 教師ありドメイン適応の説明スライド -->
+    <div class="slide">
+        <h2>2.4.1 教師ありドメイン適応</h2>
+        
+        <h3>特徴</h3>
+        <ul>
+            <li>目標ドメインでも<span class="highlight">十分なラベル付きデータ</span>が利用可能</li>
+            <li>元ドメインと目標ドメインの両方で教師あり学習が可能</li>
+            <li>最も単純なドメイン適応の設定</li>
+        </ul>
+        
+        <h3>主なアプローチ</h3>
+        <ul>
+            <li>ドメイン間の分布の違いを考慮した<span class="highlight">重み付け学習</span></li>
+            <li>ドメイン不変表現の学習</li>
+            <li>ドメイン間の特徴量の対応付け</li>
+        </ul>
+        
+        <h3>適用例</h3>
+        <ul>
+            <li>異なるセンサーからのデータの統合</li>
+            <li>異なる施設間での医療診断モデルの転移</li>
+            <li>異なる環境でのロボット制御</li>
+        </ul>
+        
+        <div class="note">
+            教師ありドメイン適応は、目標ドメインでも十分なラベル付きデータが利用できる場合に有効です。ただし、ラベル付きデータの収集コストが高い場合には、他のアプローチを検討する必要があります。
+        </div>
+    </div>
+
+    <!-- 半教師ありドメイン適応の説明スライド -->
+    <div class="slide">
+        <h2>2.4.2 半教師ありドメイン適応</h2>
+        
+        <h3>特徴</h3>
+        <ul>
+            <li>目標ドメインで<span class="highlight">限られた量のラベル付きデータ</span>のみ利用可能</li>
+            <li>ラベルなしデータを活用してモデルの性能を向上</li>
+            <li>実践的な設定として重要</li>
+        </ul>
+        
+        <h3>主なアプローチ</h3>
+        <ul>
+            <li>自己学習（Self-training）</li>
+            <li>共学習（Co-training）</li>
+            <li>グラフベースの半教師あり学習</li>
+        </ul>
+        
+        <h3>適用例</h3>
+        <ul>
+            <li>医療画像診断（一部の症例のみラベル付き）</li>
+            <li>自然言語処理（一部の文書のみラベル付き）</li>
+            <li>異常検知（正常データは豊富、異常データは少ない）</li>
+        </ul>
+        
+        <div class="note">
+            半教師ありドメイン適応は、ラベル付きデータの収集コストが高い実践的な設定で特に有用です。限られたラベル付きデータを効果的に活用する手法が重要となります。
+        </div>
+    </div>
+
+    <!-- 教師なしドメイン適応の説明スライド -->
+    <div class="slide">
+        <h2>2.4.3 教師なしドメイン適応</h2>
+        
+        <h3>特徴</h3>
+        <ul>
+            <li>目標ドメインで<span class="highlight">ラベル付きデータが全く利用できない</span></li>
+            <li>最も一般的で実践的な設定</li>
+            <li>最も難しい設定でもある</li>
+        </ul>
+        
+        <h3>主なアプローチ</h3>
+        <ul>
+            <li>ドメイン不変表現の学習</li>
+            <li>敵対的学習（Adversarial Learning）</li>
+            <li>自己教師あり学習（Self-supervised Learning）</li>
+        </ul>
+        
+        <h3>適用例</h3>
+        <ul>
+            <li>異なるドメイン間での画像認識</li>
+            <li>異なる言語間での自然言語処理</li>
+            <li>異なるセンサー間での信号処理</li>
+        </ul>
+        
+        <div class="note">
+            教師なしドメイン適応は、実践的な設定で最も一般的ですが、ラベル付きデータがないため、ドメイン間の関係性を効果的に活用する手法の開発が重要です。
+        </div>
+    </div>
+
+    <!-- 実践的な考慮事項スライド -->
+    <div class="slide">
+        <h2>2.4.4 実践的な考慮事項</h2>
+        
+        <h3>問題設定の選択</h3>
+        <ul>
+            <li>利用可能なデータの種類と量を考慮</li>
+            <li>計算資源と時間的制約を考慮</li>
+            <li>期待される性能と実現可能性のバランス</li>
+        </ul>
+        
+        <h3>実装上の注意点</h3>
+        <ul>
+            <li>データの前処理と正規化</li>
+            <li>ハイパーパラメータの調整</li>
+            <li>モデルの評価と検証</li>
+        </ul>
+        
+        <h3>実践的なアドバイス</h3>
+        <ul>
+            <li>段階的なアプローチの採用</li>
+            <li>複数の手法の比較検討</li>
+            <li>継続的なモニタリングと改善</li>
+        </ul>
+        
+        <div class="note">
+            実践的なドメイン適応では、理論的な側面だけでなく、実装上の課題や制約も考慮する必要があります。段階的なアプローチと継続的な改善が成功の鍵となります。
+        </div>
+    </div>
+
+    <!-- 2.4節のまとめスライド -->
+    <div class="slide">
+        <h2>2.4節のまとめ</h2>
+        
+        <h3>主要なポイント</h3>
+        <ul>
+            <li>ドメイン適応問題は、目標ドメインでのラベル付きデータの有無に基づいて分類される</li>
+            <li>各分類には適した手法とアプローチが存在する</li>
+            <li>実践的な設定では、データの制約と計算資源を考慮した選択が重要</li>
+        </ul>
+        
+        <h3>今後の展望</h3>
+        <ul>
+            <li>より効率的なドメイン適応手法の開発</li>
+            <li>実践的な課題への対応</li>
+            <li>新しい問題設定への拡張</li>
+        </ul>
+        
+        <div class="note">
+            ドメイン適応は、転移学習の重要な応用分野として、今後も発展が期待されます。実践的な課題に対応するための新しい手法の開発が求められています。
+        </div>
+    </div>
+
+</body>
+</html>
