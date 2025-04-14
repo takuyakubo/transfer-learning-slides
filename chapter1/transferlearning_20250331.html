@@ -14,78 +14,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
     <title>転移学習 統合スライド</title>
     <link href='../styles/base.css' rel='stylesheet' />
-    <style>
-        /* パスワード保護用のスタイル */
-        #password-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .password-container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-        .password-title {
-            color: #0078d7;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-        .password-input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .password-button {
-            background-color: #0078d7;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .password-button:hover {
-            background-color: #0056b3;
-        }
-        .password-message {
-            color: #d32f2f;
-            margin-top: 10px;
-            font-size: 14px;
-            min-height: 20px;
-        }
-        #content-container {
-            display: none;
-        }
-    </style>
+    <link href='../styles/pswd.css' rel='stylesheet' />
+    <script src='../scripts/pswdol.js'></script>
 </head>
 <body>
     <!-- パスワード保護オーバーレイ -->
-    <div id="password-overlay">
-        <div class="password-container">
-            <h2 class="password-title">転移学習スライド</h2>
-            <p>このコンテンツはパスワードで保護されています。</p>
-            <input type="password" id="password-input" class="password-input" placeholder="パスワードを入力してください">
-            <div class="password-message" id="password-message"></div>
-            <button id="password-submit" class="password-button">アクセス</button>
-        </div>
-    </div>
+    <div id="password-container"></div>
 
     <!-- メインコンテンツ（パスワード認証後に表示） -->
     <div id="content-container">
@@ -1190,52 +1124,6 @@
     </div>
     </div>
 
-    <script>
-        // パスワード保護機能
-        const correctPassword = "transfer2025"; // パスワードはここで設定
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            const passwordOverlay = document.getElementById('password-overlay');
-            const contentContainer = document.getElementById('content-container');
-            const passwordInput = document.getElementById('password-input');
-            const passwordSubmit = document.getElementById('password-submit');
-            const passwordMessage = document.getElementById('password-message');
-            
-            // ローカルストレージからログイン状態を確認
-            const isAuthenticated = localStorage.getItem('transferLearningAuth');
-            
-            if (isAuthenticated) {
-                // 認証済みの場合はコンテンツを表示
-                passwordOverlay.style.display = 'none';
-                contentContainer.style.display = 'block';
-            }
-            
-            // パスワード入力欄でEnterキーを押した場合も送信
-            passwordInput.addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    verifyPassword();
-                }
-            });
-            
-            // 送信ボタンをクリック
-            passwordSubmit.addEventListener('click', verifyPassword);
-            
-            function verifyPassword() {
-                const inputPassword = passwordInput.value;
-                
-                if (inputPassword === correctPassword) {
-                    // パスワードが正しい場合
-                    localStorage.setItem('transferLearningAuth', 'true');
-                    passwordOverlay.style.display = 'none';
-                    contentContainer.style.display = 'block';
-                } else {
-                    // パスワードが間違っている場合
-                    passwordMessage.textContent = 'パスワードが正しくありません。もう一度お試しください。';
-                    passwordInput.value = '';
-                    passwordInput.focus();
-                }
-            }
-        });
-    </script>
+    <script src="../scripts/pswd.js"></script>
 </body>
 </html>
