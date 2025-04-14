@@ -175,3 +175,64 @@ tr:nth-child(even) {
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+.diagram {
+    width: 80%;
+    margin: 20px auto;
+    border: 2px solid #0078d7;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.diagram-row {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+}
+.diagram-row:last-child {
+    border-bottom: none;
+}
+.diagram-cell {
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.diagram-header {
+    background-color: #f2f9ff;
+    font-weight: bold;
+    border-bottom: 2px solid #0078d7;
+}
+.diagram-label-col {
+    width: 25%;
+    background-color: #fffde7;
+    border-right: 1px solid #ddd;
+}
+.diagram-content-col {
+    width: 37.5%;
+    border-right: 1px solid #ddd;
+}
+.diagram-content-col:last-child {
+    border-right: none;
+}
+.citation {
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+}
+details {
+    margin: 1em 0;
+    padding: 0.5em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+summary {
+    cursor: pointer;
+    padding: 0.5em;
+    font-weight: bold;
+    color: #0078d7;
+}
+
+details[open] summary {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 0.5em;
+}
