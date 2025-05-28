@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']]
+          }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+    <link href='../styles/base.css' rel='stylesheet' />
+    <link href='../styles/pswd.css' rel='stylesheet' />
+    <script src='../scripts/pswdol.js'></script>
+    <title>転移学習 - 第4章統合資料</title>
+    <style>
+        /* base.cssにないスタイルのみを記述 */
+        .slide {
+            position: relative;
+        }
+        ul, ol {
+            font-size: 18px;
+        }
+        li {
+            margin-bottom: 15px;
+        }
+        .note {
+            font-size: 16px;
+        }
+        .key-point {
+            font-size: 20px;
+        }
+        .key-point-box {
+            background-color: #ffebee;
+            border: 2px solid #d32f2f;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .equation {
+            text-align: center;
+            margin: 25px 0;
+            font-size: 20px;
+        }
+        .image-placeholder {
+            border: 2px dashed #999;
+            background-color: #f5f5f5;
+            padding: 40px 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px auto;
+            max-width: 600px;
+        }
+        .image-placeholder h4 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .image-placeholder p {
+            color: #888;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        p {
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        .big-text {
+            font-size: 24px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        .algorithm-box {
+            background-color: #fffacd;
+            border: 1px solid #daa520;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .theorem-box {
+            background-color: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 12px;
+            color: #666;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            // Get all slides
+            const slides = document.querySelectorAll('.slide');
+            
+            // Add page numbers to each slide
+            slides.forEach(function(slide, index) {
+                const pageNumber = document.createElement('div');
+                pageNumber.className = 'page-number';
+                pageNumber.textContent = (index + 1).toString();
+                slide.appendChild(pageNumber);
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- パスワード保護オーバーレイ -->
+    <div id="password-container"></div>
+    
+    <!-- メインコンテンツ（パスワード認証後に表示） -->
+    <div id="content-container">
+    <!-- 表紙スライド -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>転移学習（Transfer Learning）</h1>
+            <p>機械学習プロフェッショナルシリーズ</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2>第4章 データに基づくドメイン適応の基礎</h2>
+            <h3>統合資料</h3>
+            <p style="margin-top: 80px;">2025年5月28日</p>
+        </div>
+    </div>
+
+    <!-- 総合目次スライド -->
+    <div class="slide">
+        <h2>第4章 統合目次</h2>
+        <ol>
+            <li><strong>4.1 データに基づくドメイン適応の概要</strong></li>
+            <li><strong>4.2 事例ベースのドメイン適応</strong>
+                <ul>
+                    <li>4.2.1 重要度重み付き学習</li>
+                    <li>4.2.2 深層学習に基づく重要度重み付け</li>
+                </ul>
+            </li>
+            <li><strong>4.3 特徴ベースのドメイン適応の基礎</strong>
+                <ul>
+                    <li>4.3.1 部分空間学習</li>
+                    <li>4.3.2 最大平均差異</li>
+                    <li>4.3.3 その他の手法</li>
+                </ul>
+            </li>
+            <li><strong>4.4 深層学習に基づく特徴ベースのドメイン適応</strong>
+                <ul>
+                    <li>4.4.1 深層ニューラルネットワークによる表現学習</li>
+                    <li>4.4.2 ドメイン不変特徴抽出</li>
+                    <li>4.4.3 深層適応ネットワーク</li>
+                    <li>4.4.4 相関整合</li>
+                </ul>
+            </li>
+            <li><strong>4.5 敵対的ドメイン適応</strong>
+                <ul>
+                    <li>4.5.1 敵対的学習の基礎</li>
+                    <li>4.5.2 ドメイン敵対的ニューラルネットワーク</li>
+                </ul>
+            </li>
+            <li><strong>4.6 まとめ</strong></li>
+        </ol>
+    </div>
+
+    <!-- 4.1 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>4.1 データに基づくドメイン適応の概要</h1>
+    </div>
+
+    <!-- ドメイン適応とは -->
+    <div class="slide">
+        <h2>データに基づくドメイン適応とは？</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">2つのアプローチ</p>
+        </div>
+        
+        <div class="two-col">
+            <div class="col">
+                <h3>事例ベース</h3>
+                <p>元ドメインのデータを目標ドメインに転移</p>
+            </div>
+            <div class="col">
+                <h3>特徴ベース</h3>
+                <p>特徴量を変換して新しい特徴表現を作成</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 基本的なアイデア -->
+    <div class="slide">
+        <h2>基本的なアイデア</h2>
+        
+        <div class="big-text">
+            <p><span class="highlight">共通の特徴空間を見つける</span></p>
+        </div>
+        
+        <ul>
+            <li>目標ドメインと元ドメインで共通の特徴空間を発見</li>
+            <li>その空間上で確率分布のマッチングを実行</li>
+        </ul>
+    </div>
+
+    <!-- 分布マッチング -->
+    <div class="slide">
+        <h2>分布マッチング</h2>
+        
+        <div class="equation">
+            <span class="math">$\mathbb{D}_T \approx \mathbb{D}_S$</span>
+        </div>
+        
+        <div class="image-placeholder">
+            <h4>必要な図：分布マッチングのイメージ図</h4>
+            <p>
+                ・左側：元ドメインのデータ分布（青色の点群）<br>
+                ・右側：目標ドメインのデータ分布（オレンジ色の点群）<br>
+                ・中央：矢印で変換を表現<br>
+                ・マッチング後：両ドメインの分布が重なった状態
+            </p>
+        </div>
+    </div>
+
+    <!-- 実現方法 -->
+    <div class="slide">
+        <h2>分布マッチングの実現方法</h2>
+        
+        <h3>事例ベースの方法</h3>
+        <ul>
+            <li>各事例の<span class="highlight">重み付け</span>による実現</li>
+        </ul>
+        
+        <h3>特徴ベースの方法</h3>
+        <ul>
+            <li><strong>非対称型</strong>：元ドメイン特徴を目標ドメインに合わせる</li>
+            <li><strong>対称型</strong>：両ドメインを共通の特徴空間に写像</li>
+        </ul>
+    </div>
+
+    <!-- まとめ -->
+    <div class="slide">
+        <h2>4.1節のまとめ</h2>
+        
+        <div class="note">
+            <p><strong>ゴール</strong>：予測モデルの学習に利用可能な統一されたデータ表現</p>
+        </div>
+        
+        <p class="big-text">本章では、これらの手法の<br>具体的なアルゴリズムを紹介</p>
+    </div>
+
+    <!-- 4.2 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>4.2 事例ベースのドメイン適応</h1>
+    </div>
+
+    <!-- 分布マッチングの概要 -->
+    <div class="slide">
+        <h2>分布マッチング (Distribution Matching)</h2>
+        
+        <h3>基本概念</h3>
+        <ul>
+            <li>空間上で両ドメインの特徴量の<span class="highlight">確率分布のマッチング</span>を行う</li>
+            <li>$\mathbb{D}_T \approx \mathbb{D}_S$ とできれば、変換後の元ドメインの特徴量は目標ドメインの特徴量と結合して予測モデルの学習に利用可能</li>
+        </ul>
+
+        <div class="image-box">
+            <p>[図: 分布マッチングのイメージ]</p>
+            <p class="image-caption">元ドメインと目標ドメインのデータ点が特徴空間上で混ざり合い、黒線が学習モデルを表し、分布マッチング後に両ドメインの特徴量の確率分布が揃う様子</p>
+        </div>
+
+        <div class="note">
+            <p><strong>図4.1:</strong> 分布マッチングのイメージ。マーカー + とマーカー ● がそれぞれクラスラベルを、黒実線が学習モデルを表します。目標ドメインと元ドメインの特徴量の確率分布を合わせることで統一ドメインのデータとみなし、予測モデルを学習します。</p>
+        </div>
+    </div>
+
+    <!-- 事例ベースと特徴ベース -->
+    <div class="slide">
+        <h2>分布マッチングの2つのアプローチ</h2>
+        
+        <h3>1. 事例ベースの方法</h3>
+        <ul>
+            <li>各事例の<span class="highlight">重み付けによって実現</span>される</li>
+            <li>特徴ベースの方法では元ドメインの特徴を目標ドメインの特徴に合わせるように変換する</li>
+        </ul>
+
+        <h3>2. 特徴ベースの方法</h3>
+        <ul>
+            <li>非対称型の方法：元ドメインの特徴を目標ドメインの特徴に合わせるように変換</li>
+            <li>対称型の方法：両ドメインの特徴を共通の特徴空間上に写像</li>
+        </ul>
+
+        <div class="note">
+            本節では、事例ベースと特徴ベースそれぞれに対して「どう転移するか」に対応する具体的なアルゴリズムの代表例を説明します。
+        </div>
+    </div>
+
+    <!-- 共変量シフトの仮定 -->
+    <div class="slide">
+        <h2>共変量シフトの仮定</h2>
+        
+        <h3>同質的ドメインシフト</h3>
+        <div class="definition-box">
+            <p><strong>仮定：</strong> $\mathcal{X}_T \times \mathcal{Y}_T = \mathcal{X}_S \times \mathcal{Y}_S$ かつ $P_{X,Y}^T \neq P_{X,Y}^S$ の設定を考え、転移仮定として共変量シフト</p>
+            <div class="equation">
+                $P_{Y|X}^T = P_{Y|X}^S, \quad P_X^T \neq P_X^S$
+            </div>
+            <p>を仮定します。</p>
+        </div>
+
+        <ul>
+            <li>転移学習の目的は<span class="highlight">目標ドメインにおける期待リスク最小な仮説の学習</span></li>
+            <li>共変量シフトの仮定のもとでは、ある仮説 $h$ の目標ドメインにおける期待リスク $R_T(h)$ を元ドメインの重み付き期待リスクとして書くことができる</li>
+        </ul>
+    </div>
+
+    <!-- 期待リスクの変形 -->
+    <div class="slide">
+        <h2>共変量シフト下での期待リスクの変形</h2>
+        
+        <h3>期待リスクの書き換え</h3>
+        <div class="equation">
+            $R_T(h) = \mathbb{E}_{(\mathbf{x},y) \sim P_{X,Y}^T}[\ell(h(\mathbf{x}), y)]$
+        </div>
+
+        <p>これを以下のように変形できます：</p>
+
+        <div class="equation">
+            $R_T(h) = \int\int_{(\mathbf{x},y)} \ell(h(\mathbf{x}), y) p^T(\mathbf{x}, y) d(\mathbf{x}, y)$
+        </div>
+
+        <div class="equation">
+            $= \int\int_{(\mathbf{x},y)} \ell(h(\mathbf{x}), y) p^T(y|\mathbf{x}) p^T(\mathbf{x}) \frac{p^S(\mathbf{x})}{p^S(\mathbf{x})} d(\mathbf{x}, y)$
+        </div>
+
+        <p>共変量シフトの仮定 $p^T(y|\mathbf{x}) = p^S(y|\mathbf{x})$ を使うと：</p>
+
+        <div class="equation">
+            $= \int\int_{(\mathbf{x},y)} \ell(h(\mathbf{x}), y) p^S(y|\mathbf{x}) p^S(\mathbf{x}) \frac{p^T(\mathbf{x})}{p^S(\mathbf{x})} d(\mathbf{x}, y)$
+        </div>
+    </div>
+
+    <!-- 重要度重み付け -->
+    <div class="slide">
+        <h2>重要度重み付け</h2>
+        
+        <h3>最終的な形式</h3>
+        <div class="equation">
+            $R_T(h) = \mathbb{E}_{(\mathbf{x},y) \sim P_{X,Y}^S} \left[ \frac{p^T(\mathbf{x})}{p^S(\mathbf{x})} \ell(h(\mathbf{x}), y) \right]$ <span style="margin-left: 20px;">(4.1)</span>
+        </div>
+
+        <div class="note">
+            <p>ここで、3行目から4行目への式変形で共変量シフトの仮定を使っています。上式の最右辺は、目標ドメインと元ドメインの入力分布に関する<span class="highlight">確率密度比 $p^T(\mathbf{x})/p^S(\mathbf{x})$</span> で重み付けをした元ドメインの期待リスクになっていることがわかります。</p>
+        </div>
+
+        <p><strong>結論：</strong> (4.1)を最小化する問題を解けば目標ドメインの仮説を学習することができる</p>
+    </div>
+
+    <!-- まとめ -->
+    <div class="slide">
+        <h2>4.2 まとめ</h2>
+        
+        <h3>事例ベースのドメイン適応の要点</h3>
+        <ul>
+            <li><span class="key-point">分布マッチング</span>：元ドメインと目標ドメインの特徴量の確率分布を合わせる</li>
+            <li><span class="key-point">共変量シフト</span>：$P_{Y|X}^T = P_{Y|X}^S$ だが $P_X^T \neq P_X^S$</li>
+            <li><span class="key-point">重要度重み付け</span>：確率密度比 $p^T(\mathbf{x})/p^S(\mathbf{x})$ を使った重み付け学習</li>
+        </ul>
+
+        <div class="note">
+            <p>事例ベースの方法では、各データ点に適切な重みを付けることで、元ドメインのデータを使って目標ドメインの予測モデルを学習できます。この重みは両ドメインの入力分布の確率密度比として計算されます。</p>
+        </div>
+
+        <div class="footer">
+            <p>次節では、この確率密度比をどのように推定するかについて具体的な手法を見ていきます。</p>
+        </div>
+    </div>
+
+    <!-- 4.2.1 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>4.2.1 重要度重み付き学習</h1>
+    </div>
+
+    <!-- 問題設定スライド -->
+    <div class="slide">
+        <h2>問題設定</h2>
+        
+        <h3>基本的な仮定</h3>
+        <ul>
+            <li>密度比 $r(x) = p^T(x)/p^S(x)$ をデータから推定</li>
+            <li>元ドメインのデータ $\mathcal{D}_S = \{(x_i^S, y_i^S)\}_{i=1}^{n_S}$ を利用</li>
+        </ul>
+        
+        <div class="definition-box">
+            <p><strong>目的：</strong>元ドメインごとに事例に対する重要度重み付けを学習し、目標ドメインの仮説を学習する</p>
+        </div>
+
+        <div class="equation">
+            $$\frac{1}{n_S}\sum_{i=1}^{n_S} \hat{r}(x_i^S)\ell(h(x_i^S), y_i^S)$$
+        </div>
+
+        <p>ここで、$\hat{r}(x)$ は推定された密度比</p>
+    </div>
+
+    <!-- 2段階アルゴリズムスライド -->
+    <div class="slide">
+        <h2>2段階学習アルゴリズム</h2>
+        
+        <div class="algorithm-box">
+            <h3>Step 1: 密度比の推定</h3>
+            <p>元ドメインと目標ドメインの入力データ $x_i^S, x_j^T$ から密度比の推定量 $\hat{r}(x)$ を学習</p>
+            <ul>
+                <li>KLIEP法</li>
+                <li>uLSIF法</li>
+            </ul>
+        </div>
+
+        <div class="algorithm-box">
+            <h3>Step 2: 重み付き経験リスク最小化</h3>
+            <p>Step1で学習した $\hat{r}(x)$ を用いて、重み付き経験リスク最小化問題を解く：</p>
+            <div class="equation">
+                $$\min_{h \in \mathcal{H}} \frac{1}{n_S}\sum_{i=1}^{n_S} \hat{r}(x_i^S)\ell(h(x_i^S), y_i^S) + \Omega(h)$$
+            </div>
+            <p>ここで、$\Omega(h)$ は仮説 $h$ に対する適当な正則化項</p>
+        </div>
+    </div>
+
+    <!-- IWLの特徴スライド -->
+    <div class="slide">
+        <h2>重要度重み付き学習（IWL）の特徴</h2>
+        
+        <h3>主な特徴</h3>
+        <ul>
+            <li><span class="highlight">目標ドメインのラベルデータは不要</span></li>
+            <li>重点サンプリングのアイデアに基づく</li>
+            <li>目標ドメインの事例に近い元ドメインの事例に大きな重みを与える</li>
+        </ul>
+
+        <div class="note">
+            <strong>利点：</strong>
+            <ul>
+                <li>元ドメインのデータのみを使って目標ドメインの仮説を学習可能</li>
+                <li>教師なしドメイン適応の方法の一つ</li>
+            </ul>
+        </div>
+
+        <h3>応用範囲</h3>
+        <ul>
+            <li>線形モデルから多層ニューラルネットワークまで様々な機械学習モデルに適用可能</li>
+            <li>事例に対して付与される仮説 $h$ とは独立であるため汎用的</li>
+        </ul>
+    </div>
+
+    <!-- マルチソースドメイン適応スライド -->
+    <div class="slide">
+        <h2>マルチソースドメイン適応への拡張</h2>
+        
+        <h3>複数の元ドメインがある場合</h3>
+        <p>$M$ 個の元ドメイン $\mathbb{D}_{S_1}, ..., \mathbb{D}_{S_M}$ がある場合の学習問題：</p>
+
+        <div class="equation">
+            $$\min_{h \in \mathcal{H}} \sum_{m=1}^{M} \frac{\beta_m}{n_{S_m}} \sum_{i=1}^{n_{S_m}} \hat{r}(x_i^{S_m})\ell(h(x_i^{S_m}), y_i^{S_m}) + \Omega(h)$$
+        </div>
+
+        <div class="definition-box">
+            <p><strong>重みパラメータ：</strong></p>
+            <p>$\boldsymbol{\beta} = (\beta_1, ..., \beta_M)^T$ は $\beta_m \geq 0$, $\sum_{m=1}^{M} \beta_m = 1$ を満たす</p>
+            <p>各元ドメイン $\mathbb{D}_{S_1}, ..., \mathbb{D}_{S_M}$ に対する重みを表す</p>
+        </div>
+
+        <p>ここで、$h_{S_m}$ を $m$ 番目の元ドメイン $\mathbb{D}_{S_m}$ を用いて推定された目標ドメインの仮説とする</p>
+    </div>
+
+    <!-- ドメイン間の類似度スライド -->
+    <div class="slide">
+        <h2>ドメイン間の類似度に基づく重み付け</h2>
+        
+        <h3>最適化問題</h3>
+        <p>目標ドメインの入力データと元ドメインの予測の差が最小になるように $\boldsymbol{\beta}$ を決定：</p>
+
+        <div class="equation">
+            $$\min_{\boldsymbol{\beta} \geq 0, \sum_m \beta_m = 1} \sum_{j=1}^{n_T} \left(\boldsymbol{y}_j^T \boldsymbol{\beta} - \boldsymbol{y}_j^T \boldsymbol{\beta}\right)^2 W_{ij}$$
+        </div>
+
+        <h3>類似度行列</h3>
+        <ul>
+            <li>$W_{ij}$ は目標ドメインの入力 $x_i^T$ と $x_j^T$ の類似度行列 $W$ の $(i,j)$ 成分</li>
+            <li>類似度の計算：$W_{ij} = \exp\left\{-\frac{\|x_i^T - x_j^T\|^2}{2\sigma^2}\right\}$（ガウスカーネル）</li>
+        </ul>
+
+        <div class="note">
+            最適化問題は二次計画問題であり、効率的に解くことができる
+        </div>
+    </div>
+
+    <!-- 2段階重み付け法スライド -->
+    <div class="slide">
+        <h2>2段階重み付け法（2SW-MDA）</h2>
+        
+        <h3>統合的なアプローチ</h3>
+        <div class="definition-box">
+            <p><strong>2-Stage Weighting framework for Multi-source Domain Adaptation (2SW-MDA)</strong></p>
+            <ol>
+                <li>元ドメインごとに事例に対する重要度重み付き学習（式4.3）により仮説を学習</li>
+                <li>ドメインに対する重み付き学習（式4.4）により統合された仮説を学習</li>
+            </ol>
+        </div>
+
+        <div class="image-box">
+            <p><strong>プレースホルダー：2段階重み付け法の概念図</strong></p>
+            <p class="image-caption">各元ドメインでのIWL → ドメイン間の重み付け → 統合仮説</p>
+        </div>
+
+        <p>この枠組みにより、複数の元ドメインを効果的に活用して目標ドメインでの予測性能を向上させることができる</p>
+    </div>
+
+    <!-- 4.2.2 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>4.2.2 深層学習に基づく重要度重み付け</h1>
+    </div>
+
+    <!-- 転移アダブーストの概要 -->
+    <div class="slide">
+        <h2>転移アダブーストとは</h2>
+        
+        <div class="definition-box">
+            <p><span class="key-point">転移アダブースト (Transfer AdaBoost)</span></p>
+            <p>ブースティング手法のアダブースト (adaptive boosting, AdaBoost) を拡張した転移学習手法</p>
+        </div>
+
+        <h3>特徴</h3>
+        <ul>
+            <li>仮説学習に悪影響を与える事例の重みを<span class="highlight">減らす</span></li>
+            <li>代表的な研究としてアンサンブル学習の一種であるブースティング手法を利用</li>
+            <li>2値分類問題 $\mathcal{Y} = \{-1, 1\}$ の場合を対象</li>
+        </ul>
+
+        <div class="note">
+            重要度重み付き学習のように事例に対する重みパラメータを直接推定する以外に、重みを反復的に調整するアプローチがあります。
+        </div>
+    </div>
+
+    <!-- アダブーストの基礎 -->
+    <div class="slide">
+        <h2>4.2.2.1 アダブースト</h2>
+        
+        <h3>アダブーストとは</h3>
+        <ul>
+            <li>弱学習器と呼ばれる単体では予測精度のあまり高くない単純な仮説を多数組み合わせて、予測精度の高い仮説を生成する学習法</li>
+            <li>代表的な弱学習器として決定株 (decision stump) を使用</li>
+        </ul>
+
+        <div class="definition-box">
+            <p><span class="key-point">決定株</span>: 深さ1の決定木</p>
+            <p>入力 $\mathbf{x} = (x_1, ..., x_d)$ に対して</p>
+            <div class="equation">
+                $h(\mathbf{x}) = a \times \text{sign}(x_k - b)$
+            </div>
+            <p>ここで、$a \in \{-1, 1\}$、$b \in \mathbb{R}$、$k \in \{1, ..., d\}$ はモデルパラメータ</p>
+        </div>
+    </div>
+
+    <!-- アダブーストのアルゴリズム -->
+    <div class="slide">
+        <h2>アダブーストのアルゴリズム</h2>
+        
+        <h3>通常のブースティングの学習</h3>
+        <p>データ $\{(\mathbf{x}_i, y_i)\}_{i=1}^n$ に対して次の重み付き経験リスク最小化問題を考えます：</p>
+        
+        <div class="equation">
+            $\hat{R}_\beta(h) = \frac{1}{n} \sum_{i=1}^n \beta_i \ell(h(\mathbf{x}_i), y_i)$
+        </div>
+
+        <div class="algorithm-box">
+            <p><strong>Step1:</strong> (4.8)を最小化して弱学習器 $h_j$ を学習します。</p>
+            <p style="text-align: center;">$h_j = \text{argmin}_h \hat{R}_\beta(h)$</p>
+            <br>
+            <p><strong>Step2:</strong> $h_j$ の信頼度 $\alpha_j$ を定めます。</p>
+            <p><strong>Step3:</strong> $h$ を $h \leftarrow h + \alpha_j h_j$ で更新します。</p>
+            <p><strong>Step4:</strong> 事例の重み $\beta$ を更新します。</p>
+        </div>
+
+        <div class="note">
+            重み $\beta = (\beta_1, ..., \beta_n)$ は各事例に対する重みであり、初期値はすべて $1/n$ とします。
+        </div>
+    </div>
+
+    <!-- 重みの更新式 -->
+    <div class="slide">
+        <h2>アダブーストにおける重みの更新</h2>
+        
+        <h3>弱学習器の重み $\alpha_j$ の決定</h3>
+        <div class="equation">
+            $\alpha_j \leftarrow \frac{1}{2} \log \frac{1 - \hat{R}_\beta(h_j)}{\hat{R}_\beta(h_j)}$
+        </div>
+
+        <h3>事例の重み $\beta_i$ の更新</h3>
+        <div class="equation">
+            $\beta_i \leftarrow \frac{\exp\{-h(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h(\mathbf{x}_{i'})y_{i'}\}}$, $i = 1, ..., n$
+        </div>
+
+        <div class="note">
+            <ul>
+                <li>弱学習器 $h_j$ の重み $\alpha_j$ は誤分類率 $\hat{R}_\beta(h_j)$ が小さいほど大きくなるように更新</li>
+                <li>$h_j(\mathbf{x}_i)y_i > 0$ （正しく分類）のときは重み $\beta_i$ が小さくなる</li>
+                <li>$h_j(\mathbf{x}_i)y_i < 0$ （誤分類）のときは重み $\beta_j$ が大きくなる</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 転移アダブーストの概要 -->
+    <div class="slide">
+        <h2>4.2.2.2 転移アダブースト</h2>
+        
+        <h3>転移アダブーストの設定</h3>
+        <ul>
+            <li>目標ドメインと元ドメインでそれぞれラベルありデータ</li>
+            <li>$\mathcal{D}_T = \{(\mathbf{x}_i^T, y_i^T)\}_{i=1}^{n_T}$: 目標ドメインのデータ</li>
+            <li>$\mathcal{D}_S = \{(\mathbf{x}_i^S, y_i^S)\}_{i=1}^{n_S}$: 元ドメインのデータ</li>
+        </ul>
+
+        <div class="note">
+            <span class="key-point">注意:</span> 目標ドメインのデータ数 $n_T$ は元ドメインのデータ数 $n_S$ に比べて非常に小さいことを想定します。
+        </div>
+
+        <h3>転移アダブーストの特徴</h3>
+        <ul>
+            <li>目標ドメインと元ドメインの分布の違いによる影響を軽減</li>
+            <li>新しい重み付けの方法を採用</li>
+        </ul>
+    </div>
+
+    <!-- 転移アダブーストのアルゴリズム -->
+    <div class="slide">
+        <h2>転移アダブーストのアルゴリズム</h2>
+        
+        <p>統合データ $\mathcal{D} = \mathcal{D}_T \cup \mathcal{D}_S$ を訓練データとし、弱学習器を訓練します。</p>
+        <p>重みベクトル $\beta = (\beta_1^S, ..., \beta_{n_S}^S, \beta_1^T, ..., \beta_{n_T}^T)$ とします。</p>
+
+        <div class="algorithm-box">
+            <p><strong>Step1:</strong> $\mathcal{D}$ に対して (4.8) を最小化して弱学習器 $h_j$ を訓練します。</p>
+            <br>
+            <p><strong>Step2:</strong> $h_j$ の目標ドメインのデータ $\mathcal{D}_T$ に対する誤差を</p>
+            <p style="text-align: center;">$\varepsilon_j = \sum_{i=1}^{n_T} \frac{\beta_i^T |h_j(\mathbf{x}_i^T) - y_i^T|}{\sum_{j=1}^{n_T} \beta_j^T}$</p>
+            <p>で計算します。</p>
+            <br>
+            <p><strong>Step3:</strong> $h_j$ の信頼度 $\alpha_j$ を $\alpha_j \leftarrow \varepsilon_j/(1 - \varepsilon_j)$ で定めます。</p>
+            <p style="text-align: center;">また、$\alpha = 1/(1 + \sqrt{2\log \frac{n_S}{J}})$ とおきます。</p>
+            <br>
+            <p><strong>Step4:</strong> 事例の重み $\beta$ を更新します。</p>
+        </div>
+    </div>
+
+    <!-- 重みの更新方法 -->
+    <div class="slide">
+        <h2>転移アダブーストにおける重みの更新</h2>
+        
+        <h3>重みの更新式</h3>
+        <div class="equation">
+            $\beta_i^S \leftarrow \beta_i^S \alpha^{|h_j(\mathbf{x}_i^S) - y_i^S|}$
+        </div>
+        <div class="equation">
+            $\beta_i^T \leftarrow \beta_i^T \alpha_j^{-|h_j(\mathbf{x}_i^T) - y_i^T|}$
+        </div>
+
+        <h3>最終的なアンサンブルモデル</h3>
+        <p>最後に $h_1, ..., h_J$ を以下のように統合して、アンサンブルモデル $h$ を構成します：</p>
+        
+        <div class="equation">
+            $h(\mathbf{x}) = \begin{cases}
+            1 & \text{if } \prod_{j=\lceil J/2 \rceil}^J \alpha_j^{-h_j(\mathbf{x})} \geq \prod_{j=\lceil J/2 \rceil}^J \alpha_j^{-1/2} \\
+            0 & \text{otherwise}
+            \end{cases}$
+        </div>
+
+        <div class="note">
+            <ul>
+                <li>各事例に対する重みは、弱学習器の目標ドメインのデータに対する誤差類率と個々の事例の分類結果に基づいて更新</li>
+                <li>誤分類された目標ドメインのデータは重みが大きくなるように、誤分類された元ドメインのデータは目標ドメインと関連が弱い事例とみなして重みが小さくなるように更新</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 転移アダブーストの利点 -->
+    <div class="slide">
+        <h2>転移アダブーストの特徴と拡張</h2>
+        
+        <h3>転移アダブーストの利点</h3>
+        <ul>
+            <li>アンサンブルモデル $h$ では、学習の前半の弱学習器は捨て、後半のものだけを用いて分類器が構成される</li>
+            <li>各事例の重みがある程度更新され、目標ドメインの分類に寄与する元ドメインの事例が相対的に大きな重みを持つようになる</li>
+            <li>$h$ の性能を低下を防ぐ働きがある</li>
+        </ul>
+
+        <h3>マルチソース転移アダブースト</h3>
+        <div class="definition-box">
+            <p><span class="key-point">マルチソース転移アダブースト (multi-source TrAdaBoost, MsTrAdaBoost)</span></p>
+            <p>$M$ 個の元ドメイン $\mathbb{D}_{S_1}, ..., \mathbb{D}_{S_M}$ に対して、個々の元ドメイン $\mathbb{D}_{S_m}$ と目標ドメイン $\mathbb{D}_T$ の組ごとに通常の転移アダブーストの手順で弱学習器を訓練</p>
+        </div>
+
+        <div class="note">
+            誤差 $\varepsilon_j$ が最も小さくなる弱学習器を $h_j$ として転移アダブーストの Step3 と Step4 を実行します。
+        </div>
+    </div>
+
+    <!-- 4.3 セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>4.3 特徴ベースのドメイン適応</h1>
+    </div>
+
+    <!-- 4.3.1 ドメイン不変特徴量の表現学習 -->
+    <div class="slide">
+        <h2>4.3.1 ドメイン不変特徴量の表現学習</h2>
+        
+        <h3>特徴ベースのドメイン適応の方法</h3>
+        <ul>
+            <li>特徴量を変換して目標ドメインと元ドメインを合わせるアプローチ</li>
+            <li>同質的ドメインシフトと異質的ドメインシフトのどちらの設定でも用いることができます</li>
+        </ul>
+
+        <h3>クロスドメインのテキスト分類問題の例</h3>
+        <ul>
+            <li>関連するドメインのラベルありデータを用いて目標ドメインでのテキスト分類器を学習</li>
+            <li>潜在トピックのようなドメイン間で共通する潜在的な特徴量を見つけることができれば、目標ドメインへの知識転移を円滑に行える</li>
+        </ul>
+
+        <div class="note">
+            オリジナルの特徴量を変換して新たな特徴表現を作るアプローチは、データの性質や構造を保ったままドメイン間の不一致度を最小化し、元ドメインと目標ドメインに共通する特徴表現を見つけることを目的としています。
+        </div>
+    </div>
+
+    <!-- ドメイン不変特徴量 -->
+    <div class="slide">
+        <h2>ドメイン不変特徴量とドメイン不変表現学習</h2>
+        
+        <div class="definition-box">
+            <p><span class="key-point">ドメイン不変特徴量 (domain invariant features)</span></p>
+            <p>元ドメインと目標ドメインに共通する特徴表現</p>
+        </div>
+
+        <div class="definition-box">
+            <p><span class="key-point">ドメイン不変表現学習 (domain invariant representation learning)</span></p>
+            <p>ドメイン不変特徴量を学習するための方法の一般的な呼称</p>
+        </div>
+
+        <h3>ドメイン不変表現学習の実現方法</h3>
+        <p>ドメイン不変表現学習は、以下の2ステップで実現することができます：</p>
+    </div>
+
+    <!-- 2ステップアプローチ -->
+    <div class="slide">
+        <h2>ドメイン不変表現学習の2ステップアプローチ</h2>
+        
+        <div class="algorithm-box">
+            <p><strong>Step1:</strong> 目標ドメインのデータ $\mathcal{D}_T = \{(\mathbf{x}_i^T, y_i^T)\}_{i=1}^{n_T}$</p>
+            <p>と元ドメインのデータ $\mathcal{D}_S = \{(\mathbf{x}_i^S, y_i^S)\}_{i=1}^{n_S}$ をそれぞれ特徴抽出器 $h_F^T: \mathcal{X}_T \times \mathcal{Y}_T \rightarrow \mathcal{F} \times \mathcal{Y}$、</p>
+            <p>$h_F^S: \mathcal{X}_S \times \mathcal{Y}_S \rightarrow \mathcal{F} \times \mathcal{Y}$ によって共通の特徴空間 $\mathcal{F} \times \mathcal{Y}$ 上に写像し、これを $\mathcal{D}_{F,T} = \{f_i^T, \tilde{y}_i^T\}_{i=1}^{n_T}$、</p>
+            <p>$\mathcal{D}_{F,S} = \{f_i^S, \tilde{y}_i^S\}_{i=1}^{n_S}$ とおきます。すなわち、</p>
+            <p>$(f_i^T, \tilde{y}_i^T) = h_F^T(\mathbf{x}_i^T, y_i^T)$、$(f_i^S, \tilde{y}_i^S) = h_F^S(\mathbf{x}_i^S, y_i^S)$</p>
+            <p>です。ここで、$\mathcal{F}$ と $\mathcal{Y}$ はそれぞれ目標ドメインと元ドメインに共通の入力と出力の空間を表します。</p>
+            <br>
+            <p><strong>Step2:</strong> 分布マッチングによって $\mathcal{D}_{F,T}$ と $\mathcal{D}_{F,S}$ の確率分布を合わせるように特徴変換を行います。特徴変換の指標としては、2.2.2節で導入したドメインの不一致度の最小化に基づくさまざまな方法が提案されています。</p>
+        </div>
+    </div>
+
+    <!-- 図解スライド -->
+    <div class="slide">
+        <h2>ドメイン不変表現学習のイメージ</h2>
+        
+        <div class="image-box">
+            <p style="font-size: 20px; font-weight: bold;">図 4.2 Step1のイメージ</p>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin: 20px 0;">
+                <div style="text-align: center;">
+                    <div style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #ff9800; display: flex; align-items: center; justify-content: center; background-color: #ffe0b2;">
+                        <span style="font-weight: bold;">目標ドメイン</span>
+                    </div>
+                    <p>+印: ラベル +1<br>●印: ラベル -1</p>
+                </div>
+                <div style="font-size: 30px;">→<br><span style="font-size: 16px;">特徴抽出</span></div>
+                <div style="text-align: center;">
+                    <div style="width: 200px; height: 150px; border: 3px dashed #333; border-radius: 20px; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5;">
+                        <span style="font-weight: bold;">共通の潜在空間</span>
+                    </div>
+                </div>
+                <div style="font-size: 30px;">←<br><span style="font-size: 16px;">特徴抽出</span></div>
+                <div style="text-align: center;">
+                    <div style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #2196f3; display: flex; align-items: center; justify-content: center; background-color: #e3f2fd;">
+                        <span style="font-weight: bold;">元ドメイン</span>
+                    </div>
+                    <p>+印: ラベル +1<br>●印: ラベル -1</p>
+                </div>
+            </div>
+            <div class="image-caption">
+                異質的ドメインシフトでは元ドメインと目標ドメインでサンプル空間が異なるため、まず共通の潜在空間へ写像する表現学習を行い、同質的ドメインシフトの設定に変換した後で分布マッチングによって $\mathbb{D}_T \approx \mathbb{D}_S$ となるような表現学習が行われます。
+            </div>
+        </div>
+
+        <div class="note">
+            直感的には、Step1 は異質的ドメインシフトを同質的ドメインシフトに変換するような表現学習を行っており（図 4.2）、Step2 は特徴空間 $\mathcal{F} \times \mathcal{Y}$ において同質的ドメインシフトの適当な転移仮定のもとで $\mathbb{D}_T \approx \mathbb{D}_S$ となるような表現学習を行っていると解釈することができます。
+        </div>
+    </div>
+
+    <!-- 4.3.2 最大平均差異 -->
+    <div class="slide divider-slide">
+        <h1>4.3.2 非対称型の特徴ベースのドメイン適応</h1>
+    </div>
+
+    <!-- 非対称型の特徴ベースのドメイン適応の概要 -->
+    <div class="slide">
+        <h2>非対称型の特徴ベースのドメイン適応</h2>
+        
+        <h3>概要</h3>
+        <ul>
+            <li>元ドメインの特徴を目標ドメインの特徴に変換する写像を構成することで知識転移を行う</li>
+            <li>そのためのいくつかの手法を紹介します</li>
+        </ul>
+
+        <div class="note">
+            非対称型の特徴ベースのドメイン適応では、元ドメインの特徴を目標ドメインの特徴に変換する写像を構成することで知識転移を行います。本節では、そのためのいくつかの手法を紹介します。
+        </div>
+    </div>
+
+    <!-- リスク最小化による翻訳学習 -->
+    <div class="slide">
+        <h2>4.3.2.1 リスク最小化による翻訳学習</h2>
+        
+        <h3>画像識別タスクにおけるドメイン適応</h3>
+        <ul>
+            <li>テキストデータ（元ドメイン）から画像データ（目標ドメイン）への知識転移</li>
+            <li>テキストの特徴から画像の特徴への変換を学習する方法</li>
+        </ul>
+
+        <div class="definition-box">
+            <p><span class="key-point">リスク最小化による翻訳学習 (translated learning via risk minimization, TLRisk)</span></p>
+            <p>元ドメインと目標ドメインでそれぞれラベルありデータ集合が観測されている場合の手法</p>
+        </div>
+    </div>
+
+    <!-- TLRiskの定式化 -->
+    <div class="slide">
+        <h2>TLRiskの定式化</h2>
+        
+        <h3>データ設定</h3>
+        <ul>
+            <li>$D_S = \{(\mathbf{x}_i^S, y_i^S)\}_{i=1}^{n_S}$: 元ドメインのデータ</li>
+            <li>$D_T = \{(\mathbf{x}_j^T, y_j^T)\}_{j=1}^{n_T}$: 目標ドメインのデータ</li>
+        </ul>
+
+        <h3>TLRiskの目的</h3>
+        <p>それぞれのドメインの入力データから何らかの特徴抽出器を用いて獲得された特徴を $f^S$, $f^T$ で表すことにします。</p>
+        
+        <p>TLRiskの目的は、$f^S$ から $f^T$ への確率的なドメイン翻訳器 $\phi(f^S, f^T) = p(f^T | f^S)$ を構成し、目標ドメインにおける分類器</p>
+        
+        <div class="equation">
+            $h_t(\mathbf{x}^T) = \text{argmin}_{y \in \mathcal{Y}} R(y, \mathbf{x}^T)$
+        </div>
+        
+        <p>を学習することです。</p>
+    </div>
+
+    <!-- 期待リスクの定義 -->
+    <div class="slide">
+        <h2>TLRiskにおける期待リスク</h2>
+        
+        <h3>期待リスクの定式化</h3>
+        <p>ここで、$R(y, \mathbf{x}^T)$ は以下で定義される期待リスクです：</p>
+        
+        <div class="equation">
+            $R(y, \mathbf{x}^T) \propto \mathbb{E}_{\theta_\mathcal{Y}|y}\mathbb{E}_{\theta_{\mathcal{X}_T}|\mathbf{x}^T}[\Delta(\theta_\mathcal{Y}, \theta_{\mathcal{X}_T})]$
+        </div>
+
+        <h3>記号の説明</h3>
+        <ul>
+            <li>$\theta_\mathcal{Y}$, $\theta_{\mathcal{X}_T}$: それぞれラベルの生成モデル $p(\mathbf{y}|\theta_\mathcal{Y})$ と目標ドメインの入力の生成モデル $p(\mathbf{x}|\theta_{\mathcal{X}_T})$ のモデルパラメータ</li>
+            <li>$\Delta(\theta_\mathcal{Y}, \theta_{\mathcal{X}_T})$: これらの関連度を表す尺度</li>
+        </ul>
+
+        <div class="note">
+            $\Delta$ の具体例として、$\theta_\mathcal{Y}$ および $\theta_{\mathcal{X}_T}$ を目標ドメインの特徴の生成モデル $p(f^T | \theta_\mathcal{Y})$, $p(f^T | \theta_{\mathcal{X}_T})$ のモデルパラメータとみなし、KLダイバージェンス $D_{KL}(p(f^T | \theta_\mathcal{Y}) || p(f^T | \theta_{\mathcal{X}_T}))$ を利用する方法が提案されています。
+        </div>
+    </div>
+
+    <!-- 他の手法はスペースの関係で省略し、最終セクションに移る -->
+
+    <!-- 4.6 まとめ -->
+    <div class="slide divider-slide">
+        <h1>4.6 まとめ</h1>
+    </div>
+
+    <!-- 第4章の総括 -->
+    <div class="slide">
+        <h2>第4章の総括</h2>
+        
+        <h3>本章で学んだこと</h3>
+        <ul>
+            <li><strong>事例ベースのドメイン適応</strong>
+                <ul>
+                    <li>重要度重み付き学習（IWL）</li>
+                    <li>転移アダブースト（TrAdaBoost）</li>
+                </ul>
+            </li>
+            <li><strong>特徴ベースのドメイン適応</strong>
+                <ul>
+                    <li>ドメイン不変表現学習</li>
+                    <li>非対称型・対称型の手法</li>
+                </ul>
+            </li>
+            <li><strong>深層学習ベースの手法</strong>
+                <ul>
+                    <li>深層ニューラルネットワークによる表現学習</li>
+                    <li>敵対的ドメイン適応</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <!-- ドメイン適応手法の比較 -->
+    <div class="slide">
+        <h2>ドメイン適応手法の比較</h2>
+        
+        <table>
+            <tr>
+                <th>手法の分類</th>
+                <th>主な手法</th>
+                <th>特徴</th>
+                <th>適用場面</th>
+            </tr>
+            <tr>
+                <td>事例ベース</td>
+                <td>IWL, TrAdaBoost</td>
+                <td>データ点に重みを付ける</td>
+                <td>共変量シフトがある場合</td>
+            </tr>
+            <tr>
+                <td>特徴ベース（非対称）</td>
+                <td>TLRisk, ARC-t, MMDT</td>
+                <td>元→目標への変換</td>
+                <td>目標ドメインにラベルがある場合</td>
+            </tr>
+            <tr>
+                <td>特徴ベース（対称）</td>
+                <td>aPLSA, HeMAP, HMA</td>
+                <td>共通空間への写像</td>
+                <td>両ドメインの構造を保持したい場合</td>
+            </tr>
+            <tr>
+                <td>深層学習ベース</td>
+                <td>DAN, CORAL, DANN</td>
+                <td>DNNによる自動特徴抽出</td>
+                <td>大規模データ、複雑なタスク</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 今後の展望 -->
+    <div class="slide">
+        <h2>今後の展望</h2>
+        
+        <h3>ドメイン適応研究の方向性</h3>
+        <ul>
+            <li><strong>理論的な保証の強化</strong>
+                <ul>
+                    <li>転移可能性の事前評価</li>
+                    <li>汎化誤差の理論的解析</li>
+                </ul>
+            </li>
+            <li><strong>実用的な拡張</strong>
+                <ul>
+                    <li>複数ドメインへの同時適応</li>
+                    <li>継続的なドメイン適応</li>
+                    <li>限定的なラベル情報での学習</li>
+                </ul>
+            </li>
+            <li><strong>新しいアプリケーション</strong>
+                <ul>
+                    <li>医療画像解析</li>
+                    <li>自動運転</li>
+                    <li>自然言語処理</li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="note">
+            ドメイン適応は転移学習の中核的な技術として、今後も発展が期待される分野です。
+        </div>
+    </div>
+</div>
+
+<script src="../scripts/pswd.js"></script>
+</body>
+</html>
