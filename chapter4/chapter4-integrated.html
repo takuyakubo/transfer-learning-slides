@@ -440,6 +440,169 @@
         <p class="big-text">本章では、これらの手法の<br>具体的なアルゴリズムを紹介</p>
     </div>
 
+    <!-- 手法の分類木構造 -->
+    <div class="slide">
+        <h2>ドメイン適応手法の分類</h2>
+        
+        <div style="margin: 40px 20px;">
+            <div style="display: flex; align-items: center; margin-bottom: 30px;">
+                <div style="background-color: #f0f0f0; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 18px;">
+                    ドメイン適応手法
+                </div>
+            </div>
+            
+            <div style="margin-left: 40px; position: relative;">
+                <!-- ルートからの縦線 -->
+                <div style="position: absolute; left: 0; top: -30px; width: 2px; height: 30px; background-color: #333;"></div>
+                
+                <!-- 同質的 -->
+                <div style="position: relative;">
+                    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                        <div style="width: 40px; height: 2px; background-color: #333;"></div>
+                        <div class="domain-homogeneous" style="padding: 10px 20px; border-radius: 6px; margin-left: -2px;">
+                            同質的ドメインシフト
+                        </div>
+                        <div style="margin-left: 20px; font-size: 16px;">
+                            <strong>IWL</strong>, <strong>TrAdaBoost</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 異質的 -->
+                <div style="position: relative;">
+                    <!-- 分岐の縦線 -->
+                    <div style="position: absolute; left: 0; top: -20px; width: 2px; height: 40px; background-color: #333;"></div>
+                    
+                    <div style="display: flex; align-items: flex-start;">
+                        <div style="width: 40px; height: 2px; background-color: #333; margin-top: 20px;"></div>
+                        <div>
+                            <div class="domain-heterogeneous" style="padding: 10px 20px; border-radius: 6px; margin-left: -2px;">
+                                異質的ドメインシフト
+                            </div>
+                            
+                            <div style="margin-left: 40px; margin-top: 20px; position: relative;">
+                                <!-- 異質的からの縦線 -->
+                                <div style="position: absolute; left: -40px; top: -20px; width: 2px; height: 75px; background-color: #666;"></div>
+                                
+                                <!-- 特徴の変換 -->
+                                <div style="position: relative;">
+                                    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                        <div style="width: 40px; height: 2px; background-color: #666;"></div>
+                                        <div style="background-color: #fff3cd; padding: 8px 16px; border-radius: 4px; margin-left: -2px;">
+                                            特徴の変換
+                                        </div>
+                                        <div style="margin-left: 20px; font-size: 16px;">
+                                            <strong>TLRisk</strong>, <strong>ARC-t</strong>, <strong>MMDT</strong>, <strong>CDKPL</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 共通の情報を利用 -->
+                                <div style="position: relative;">
+                                    <!-- 分岐の縦線 -->
+                                    <div style="position: absolute; left: -40px; top: -35px; width: 2px; height: 51px; background-color: #666;"></div>
+                                    
+                                    <div style="display: flex; align-items: flex-start;">
+                                        <div style="width: 40px; height: 2px; background-color: #666; margin-top: 16px;"></div>
+                                        <div>
+                                            <div style="background-color: #d4edda; padding: 8px 16px; border-radius: 4px; margin-left: -2px;">
+                                                共通の情報を利用
+                                            </div>
+                                            
+                                            <div style="margin-left: 40px; margin-top: 15px; position: relative;">
+                                                <!-- 共通の情報からの縦線 -->
+                                                <div style="position: absolute; left: -40px; top: -15px; width: 2px; height: 30px; background-color: #999;"></div>
+                                                
+                                                <!-- 潜在因子の学習 -->
+                                                <div style="position: relative;">
+                                                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                                        <div style="width: 30px; height: 2px; background-color: #999;"></div>
+                                                        <div style="background-color: #f8f9fa; padding: 6px 12px; border-radius: 4px; margin-left: -2px; border: 1px solid #dee2e6;">
+                                                            潜在因子
+                                                        </div>
+                                                        <div style="margin-left: 15px; font-size: 15px;">
+                                                            <strong>aPLSA</strong>, <strong>HeMAP</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- 特徴量の学習 -->
+                                                <div style="position: relative;">
+                                                    <!-- 分岐の縦線 -->
+                                                    <div style="position: absolute; left: -40px; top: -15px; width: 2px; height: 29px; background-color: #999;"></div>
+                                                    
+                                                    <div style="display: flex; align-items: flex-start;">
+                                                        <div style="width: 30px; height: 2px; background-color: #999; margin-top: 14px;"></div>
+                                                        <div>
+                                                            <div style="background-color: #f8f9fa; padding: 6px 12px; border-radius: 4px; margin-left: -2px; border: 1px solid #dee2e6;">
+                                                                特徴量
+                                                            </div>
+                                                            
+                                                            <div style="margin-left: 30px; margin-top: 15px; position: relative;">
+                                                                <!-- 特徴量からの縦線 -->
+                                                                <div style="position: absolute; left: -30px; top: -15px; width: 2px; height: 65px; background-color: #bbb;"></div>
+                                                                
+                                                                <!-- 一般の表現学習 -->
+                                                                <div style="position: relative;">
+                                                                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                                        <div style="width: 25px; height: 2px; background-color: #bbb;"></div>
+                                                                        <div style="background-color: #f0f0f0; padding: 5px 10px; border-radius: 3px; margin-left: -2px; font-size: 14px; border: 1px solid #ccc;">
+                                                                            一般の表現学習
+                                                                        </div>
+                                                                        <div style="margin-left: 10px; font-size: 14px;">
+                                                                            <strong>HMA</strong>, <strong>HFA</strong>, <strong><span class="key-point" style="font-size: inherit;">DIWL</span></strong>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- オートエンコーダー -->
+                                                                <div style="position: relative;">
+                                                                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                                        <div style="width: 25px; height: 2px; background-color: #bbb;"></div>
+                                                                        <div style="background-color: #e7f3ff; padding: 5px 10px; border-radius: 3px; margin-left: -2px; font-size: 14px;">
+                                                                            オートエンコーダー
+                                                                        </div>
+                                                                        <div style="margin-left: 10px; font-size: 14px;">
+                                                                            <strong><span class="key-point" style="font-size: inherit;">TLDA</span></strong>, <strong><span class="key-point" style="font-size: inherit;">MTAE</span></strong>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- 敵対的訓練 -->
+                                                                <div style="position: relative;">
+                                                                    <!-- 分岐の縦線 -->
+                                                                    <div style="position: absolute; left: -30px; top: -30px; width: 2px; height: 40px; background-color: #bbb;"></div>
+                                                                    
+                                                                    <div style="display: flex; align-items: center;">
+                                                                        <div style="width: 25px; height: 2px; background-color: #bbb;"></div>
+                                                                        <div style="background-color: #ffe7e7; padding: 5px 10px; border-radius: 3px; margin-left: -2px; font-size: 14px;">
+                                                                            敵対的訓練
+                                                                        </div>
+                                                                        <div style="margin-left: 10px; font-size: 14px;">
+                                                                            <strong><span class="key-point" style="font-size: inherit;">CoGAN</span></strong>, <strong><span class="key-point" style="font-size: inherit;">DANN</span></strong>, <strong><span class="key-point" style="font-size: inherit;">WDIRL</span></strong>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="note" style="margin-top: 30px;">
+            <p>※ <span class="key-point">赤字</span>は深層学習に基づく手法</p>
+        </div>
+    </div>
+
     <!-- 手法比較 -->
     <div class="slide">
         <h2>ドメイン適応手法の比較</h2>        
