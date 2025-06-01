@@ -315,7 +315,7 @@
         <div style="text-align: center; margin-top: 50px;">
             <h2>第4章 データに基づくドメイン適応の基礎</h2>
             <h3>統合資料</h3>
-            <p style="margin-top: 80px;">2025年5月28日</p>
+            <p style="margin-top: 80px;">2025年6月2日</p>
         </div>
     </div>
 
@@ -372,77 +372,65 @@
             <div class="col">
                 <h3>事例ベース</h3>
                 <p>元ドメインのデータを目標ドメインに転移</p>
+                <div style="margin-top: 10px;">
+                    <p style="font-size: 14px; color: #666; margin: 5px 0;"><strong>適用：</strong><span class="domain-homogeneous" style="padding: 2px 8px; border-radius: 4px; font-size: 14px;">同質的ドメインシフト</span></p>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <img src="img/sample-based.png" alt="事例ベースのドメイン適応" style="max-width: 100%; height: auto; max-height: 200px;">
+                </div>
             </div>
             <div class="col">
                 <h3>特徴ベース</h3>
                 <p>特徴量を変換して新しい特徴表現を作成</p>
+                <div style="margin-top: 10px;">
+                    <p style="font-size: 14px; color: #666; margin: 5px 0;"><strong>適用：</strong><span class="domain-homogeneous" style="padding: 2px 8px; border-radius: 4px; font-size: 14px;">同質的</span> <span class="domain-heterogeneous" style="padding: 2px 8px; border-radius: 4px; font-size: 14px;">異質的</span></p>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <img src="img/feature-base.png" alt="特徴ベースのドメイン適応" style="max-width: 100%; height: auto; max-height: 200px;">
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- 基本的なアイデア -->
-    <div class="slide">
-        <h2>基本的なアイデア</h2>
-        
-        <div class="big-text">
-            <p><span class="highlight">共通の特徴空間を見つける</span></p>
-        </div>
-        
-        <ul>
-            <li>目標ドメインと元ドメインで共通の特徴空間を発見</li>
-            <li>その空間上で確率分布のマッチングを実行</li>
-        </ul>
     </div>
 
     <!-- 分布マッチング -->
     <div class="slide">
         <h2>分布マッチング</h2>
         
-        <div class="equation">
+        <div class="equation" style="margin-bottom: 20px;">
             <span class="math">$\mathbb{D}_T \approx \mathbb{D}_S$</span>
         </div>
         
-        <div class="image-placeholder">
-            <h4>必要な図：分布マッチングのイメージ図</h4>
-            <p>
-                ・左側：元ドメインのデータ分布（青色の点群）<br>
-                ・右側：目標ドメインのデータ分布（オレンジ色の点群）<br>
-                ・中央：矢印で変換を表現<br>
-                ・マッチング後：両ドメインの分布が重なった状態
-            </p>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <img src="img/dist-matching.png" alt="分布マッチングのイメージ図" style="max-width: 70%; height: auto;">
         </div>
-    </div>
-
-    <!-- 実現方法 -->
-    <div class="slide">
-        <h2>分布マッチングの実現方法</h2>
         
-        <h3>事例ベースの方法</h3>
-        <ul>
-            <li>各事例の<span class="highlight">重み付け</span>による実現</li>
-        </ul>
+        <h3 style="text-align: center; margin-bottom: 20px;">実現方法</h3>
         
-        <h3>特徴ベースの方法</h3>
-        <ul>
-            <li><strong>非対称型</strong>：元ドメイン特徴を目標ドメインに合わせる</li>
-            <li><strong>対称型</strong>：両ドメインを共通の特徴空間に写像</li>
-        </ul>
+        <div class="two-col">
+            <div class="col">
+                <h4 style="font-size: 18px; color: #0078d7; margin-bottom: 10px;">事例ベースの方法</h4>
+                <ul>
+                    <li>各事例の<span class="highlight">重み付け</span>による実現</li>
+                </ul>
+            </div>
+            
+            <div class="col">
+                <h4 style="font-size: 18px; color: #0078d7; margin-bottom: 10px;">特徴ベースの方法</h4>
+                <ul>
+                    <li><strong>非対称型</strong>：元ドメイン特徴を目標ドメインに合わせる</li>
+                    <li><strong>対称型</strong>：両ドメインを共通の特徴空間に写像</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- まとめ -->
     <div class="slide">
-        <h2>4.1節のまとめ</h2>
+        <h2>4章の構造</h2>
         
         <div class="note">
             <p><strong>ゴール</strong>：予測モデルの学習に利用可能な統一されたデータ表現</p>
         </div>
-        
-        <p class="big-text">本章では、これらの手法の<br>具体的なアルゴリズムを紹介</p>
-    </div>
-
-    <!-- 手法の分類木構造 -->
-    <div class="slide">
-        <h2>ドメイン適応手法の分類</h2>
         
         <div style="margin: 40px 20px;">
             <div style="display: flex; align-items: center; margin-bottom: 30px;">
