@@ -392,37 +392,7 @@
         </div>
     </div>
 
-    <!-- 分布マッチング -->
-    <div class="slide">
-        <h2>分布マッチング</h2>
-        
-        <div class="equation" style="margin-bottom: 20px;">
-            <span class="math">$\mathbb{D}_T \approx \mathbb{D}_S$</span>
-        </div>
-        
-        <div style="text-align: center; margin-bottom: 30px;">
-            <img src="img/dist-matching.png" alt="分布マッチングのイメージ図" style="max-width: 70%; height: auto;">
-        </div>
-        
-        <h3 style="text-align: center; margin-bottom: 20px;">実現方法</h3>
-        
-        <div class="two-col">
-            <div class="col">
-                <h4 style="font-size: 18px; color: #0078d7; margin-bottom: 10px;">事例ベースの方法</h4>
-                <ul>
-                    <li>各事例の<span class="highlight">重み付け</span>による実現</li>
-                </ul>
-            </div>
-            
-            <div class="col">
-                <h4 style="font-size: 18px; color: #0078d7; margin-bottom: 10px;">特徴ベースの方法</h4>
-                <ul>
-                    <li><strong>非対称型</strong>：元ドメイン特徴を目標ドメインに合わせる</li>
-                    <li><strong>対称型</strong>：両ドメインを共通の特徴空間に写像</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+
 
     <!-- まとめ -->
     <div class="slide">
@@ -771,37 +741,30 @@
             <li>空間上で両ドメインの特徴量の<span class="highlight">確率分布のマッチング</span>を行う</li>
             <li>$\mathbb{D}_T \approx \mathbb{D}_S$ とできれば、変換後の元ドメインの特徴量は目標ドメインの特徴量と結合して予測モデルの学習に利用可能</li>
         </ul>
-
-        <div class="image-box">
-            <p>[図: 分布マッチングのイメージ]</p>
-            <p class="image-caption">元ドメインと目標ドメインのデータ点が特徴空間上で混ざり合い、黒線が学習モデルを表し、分布マッチング後に両ドメインの特徴量の確率分布が揃う様子</p>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <img src="img/dist-matching.png" alt="分布マッチングのイメージ図" style="max-width: 70%; height: auto;">
         </div>
-
-        <div class="note">
-            <p><strong>図4.1:</strong> 分布マッチングのイメージ。マーカー + とマーカー ● がそれぞれクラスラベルを、黒実線が学習モデルを表します。目標ドメインと元ドメインの特徴量の確率分布を合わせることで統一ドメインのデータとみなし、予測モデルを学習します。</p>
-        </div>
-    </div>
-
-    <!-- 事例ベースと特徴ベース -->
-    <div class="slide">
-        <h2>分布マッチングの2つのアプローチ</h2>
         
-        <h3>1. 事例ベースの方法</h3>
-        <ul>
-            <li>各事例の<span class="highlight">重み付けによって実現</span>される</li>
-            <li>特徴ベースの方法では元ドメインの特徴を目標ドメインの特徴に合わせるように変換する</li>
-        </ul>
-
-        <h3>2. 特徴ベースの方法</h3>
-        <ul>
-            <li>非対称型の方法：元ドメインの特徴を目標ドメインの特徴に合わせるように変換</li>
-            <li>対称型の方法：両ドメインの特徴を共通の特徴空間上に写像</li>
-        </ul>
-
-        <div class="note">
-            本節では、事例ベースと特徴ベースそれぞれに対して「どう転移するか」に対応する具体的なアルゴリズムの代表例を説明します。
+        <h3 style="text-align: center; margin-bottom: 20px;">実現方法</h3>
+        
+        <div class="two-col">
+            <div class="col">
+                <h4 style="font-size: 18px; color: #0078d7; margin-bottom: 10px;">事例ベースの方法</h4>
+                <ul>
+                    <li>各事例の<span class="highlight">重み付け</span>による実現</li>
+                </ul>
+            </div>
+            
+            <div class="col">
+                <h4 style="font-size: 18px; color: #0078d7; margin-bottom: 10px;">特徴ベースの方法</h4>
+                <ul>
+                    <li><strong>非対称型</strong>：元ドメイン特徴を目標ドメインに合わせる</li>
+                    <li><strong>対称型</strong>：両ドメインを共通の特徴空間に写像</li>
+                </ul>
+            </div>
         </div>
     </div>
+
 
     <!-- 共変量シフトの仮定 -->
     <div class="slide">
@@ -820,6 +783,15 @@
             <li>転移学習の目的は<span class="highlight">目標ドメインにおける期待リスク最小な仮説の学習</span></li>
             <li>共変量シフトの仮定のもとでは、ある仮説 $h$ の目標ドメインにおける期待リスク $R_T(h)$ を元ドメインの重み付き期待リスクとして書くことができる</li>
         </ul>
+        <details>
+            <summary>期待リスク(復習)</summary>
+            <div class="note">
+                <p><span class="key-point">定義1.1（期待リスク）:</span> データ <span class="math">$(\mathbf{X}, Y)$</span> の従う確率分布 <span class="math">$P_{X,Y}$</span> のもとでの仮説 <span class="math">$h$</span> の期待リスク <span class="math">$R(h)$</span> は、<span class="math">$h$</span> に対する損失 <span class="math">$\mathcal{L}$</span> の期待値</p>
+            </div>
+            <div class="equation">
+                <span class="math">$R(h) := \mathbb{E}_{(\mathbf{X}, Y) \sim P_{X,Y}}[ \mathcal{L}(\mathbf{X}, Y; h)] = \mathbb{E}_{(\mathbf{X}, Y) \sim P_{X,Y}}[ \ell(h(\mathbf{X}), Y)]$</span>
+            </div>
+        </details>
     </div>
 
     <!-- 期待リスクの変形 -->
@@ -912,7 +884,7 @@
 
     <!-- 2段階アルゴリズムスライド -->
     <div class="slide">
-        <h2>2段階学習アルゴリズム</h2>
+        <h2>IWLの2段階学習アルゴリズム</h2>
         
         <div class="algorithm-box">
             <h3>Step 1: 密度比の推定</h3>
@@ -931,6 +903,49 @@
             </div>
             <p>ここで、$\Omega(h)$ は仮説 $h$ に対する適当な正則化項</p>
         </div>
+        <details>
+            <summary>KLIERP法(復習)</summary>
+            <h4>1. カルバック・ライブラー重要度推定法（KLIEP）</h4>
+    <ul>
+        <li>目標ドメインの確率密度関数を密度比モデルを用いて $\hat{p}^T(x) = \hat{r}(x; \alpha)p^S(x)$ と表し、真の確率密度関数とのカルバック・ライブラーダイバージェンス
+            <div class="equation">
+                $D_{\mathrm{KL}}(p^T(x) \parallel \hat{p}^T(x)) = \int p^T(x) \log \frac{p^T(x)}{\hat{r}(x; \alpha)p^S(x)} dx$
+            </div>
+            を最小化して $\alpha$ を推定するカルバック・ライブラー重要度推定法（Kullback-Leibler importance estimation procedure, KLIEP）がある
+        </li>
+        <li>ここで、(2.7) の2行目の第1項はモデルパラメータを含んでいないため、最適化においては定数となることに注意</li>
+        <li>よって、KLIEP の目的関数は第2項を観測データによって近似した
+            <div class="equation">
+                $\int p^T(x) \log \hat{r}(x; \alpha) dx \approx \frac{1}{n_T} \sum_{i=1}^{n_T} \log \hat{r}(x_i^T; \alpha)$ &nbsp;&nbsp; (2.8)
+            </div>
+            となる
+        </li>
+    </ul>
+        </details>
+        <details>
+            <summary>uLSIF法(復習)</summary>
+            <h4>2. 制約なし最小二乗重要度適合法（uLSIF）</h4>
+            <ul>
+                <li>密度比推定のもう一つの主要なアプローチに制約なし最小二乗重要度適合法（unconstrained least-squares importance fitting, uLSIF）がある</li>
+                <li>この方法では、密度比モデル $\hat{r}(x; \alpha)$ と真の密度比 $r(x)$ の二乗誤差
+                    <div class="equation">
+                        $\frac{1}{2} \int (\hat{r}(x; \alpha) - r(x))^2 p^S(x) dx$
+                    </div>
+                    <div class="equation">
+                        $= \frac{1}{2} \int \hat{r}(x; \alpha)^2 p^S(x) dx - \int \hat{r}(x; \alpha) p^T(x) dx + \frac{1}{2} \int r(x) p^T(x) dx$ &nbsp;&nbsp; (2.9)
+                    </div>
+                    を直接最小化してパラメータ $\alpha$ を推定する
+                </li>
+                <li>(2.9) において、2行目の第3項はパラメータを含まないため最適化においては定数となっている</li>
+                <li>したがって、第1項と第2項をそれぞれ観測データで近似した
+                    <div class="equation">
+                        $\frac{1}{2n_S} \sum_{i=1}^{n_S} \hat{r}(x_i^S; \alpha)^2 - \frac{1}{n_T} \sum_{i=1}^{n_T} \hat{r}(x_i^T; \alpha) + \frac{\lambda}{2} \|\alpha\|_2^2$ &nbsp;&nbsp; (2.10)
+                    </div>
+                    を最小化してパラメータを推定する
+                </li>
+            </ul>
+    </ul>
+        </details>
     </div>
 
     <!-- IWLの特徴スライド -->
@@ -945,17 +960,18 @@
         </ul>
 
         <div class="note">
-            <strong>利点：</strong>
+            <strong>Point：</strong>
             <ul>
                 <li>元ドメインのデータのみを使って目標ドメインの仮説を学習可能</li>
-                <li>教師なしドメイン適応の方法の一つ</li>
+                <li> = 教師なしドメイン適応</li>
             </ul>
         </div>
 
         <h3>応用範囲</h3>
         <ul>
-            <li>線形モデルから多層ニューラルネットワークまで様々な機械学習モデルに適用可能</li>
-            <li>事例に対して付与される仮説 $h$ とは独立であるため汎用的</li>
+            <li>重みは事例に対して付与される仮説 $h$ とは独立であるため汎用的</li>
+            <li> = 線形モデルから多層ニューラルネットワークまで様々な機械学習モデルに適用可能</li>
+            
         </ul>
     </div>
 
@@ -1006,17 +1022,13 @@
         <h2>2段階重み付け法（2SW-MDA）</h2>
         
         <h3>統合的なアプローチ</h3>
+        ここまで内容を"SW-MDA"と呼ぶ。
         <div class="definition-box">
             <p><strong>2-Stage Weighting framework for Multi-source Domain Adaptation (2SW-MDA)</strong></p>
             <ol>
                 <li>元ドメインごとに事例に対する重要度重み付き学習（式4.3）により仮説を学習</li>
                 <li>ドメインに対する重み付き学習（式4.4）により統合された仮説を学習</li>
             </ol>
-        </div>
-
-        <div class="image-box">
-            <p><strong>プレースホルダー：2段階重み付け法の概念図</strong></p>
-            <p class="image-caption">各元ドメインでのIWL → ドメイン間の重み付け → 統合仮説</p>
         </div>
 
         <p>この枠組みにより、複数の元ドメインを効果的に活用して目標ドメインでの予測性能を向上させることができる</p>
@@ -1104,7 +1116,7 @@
 
         <h3>事例の重み $\beta_i$ の更新</h3>
         <div class="equation">
-            $\beta_i \leftarrow \frac{\exp\{-h(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h(\mathbf{x}_{i'})y_{i'}\}}$, $i = 1, ..., n$
+            $\beta_i \leftarrow \frac{\beta_i\exp\{-\alpha_j h(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \beta_i \exp\{-\alpha_jh( \mathbf{x}_{i'})y_{i'}\}}$, $i = 1, ..., n$
         </div>
 
         <div class="note">
@@ -1388,109 +1400,2151 @@
         </div>
     </div>
 
-    <!-- 他の手法はスペースの関係で省略し、最終セクションに移る -->
+       <!-- パラメータ推定 -->
+       <div class="slide">
+        <h2>パラメータの推定</h2>
+        
+        <h3>パラメータ空間が大きいとき</h3>
+        <p>(4.17) を直接計算することは難しいため、パラメータを最大事後確率推定 (maximum a posteriori estimation) した値</p>
+        
+        <div class="equation">
+            $\hat{\theta}_y = \text{argmax}_{\theta_\mathcal{Y}} p(\theta_\mathcal{Y}|y)$
+        </div>
+        
+        <div class="equation">
+            $\hat{\theta}_{\mathbf{x}^T} = \text{argmax}_{\theta_{\mathcal{X}_T}} p(\theta_{\mathcal{X}_T}|\mathbf{x}^T)$
+        </div>
+        
+        <p>を用いて、以下のように近似します：</p>
+        
+        <div class="equation">
+            $R(y, \mathbf{x}^T) \approx \Delta(\hat{\theta}_y, \hat{\theta}_{\mathbf{x}^T})p(\hat{\theta}_y|y)p(\hat{\theta}_{\mathbf{x}^T}|\mathbf{x}^T) \propto \Delta(\hat{\theta}_y, \hat{\theta}_{\mathbf{x}^T})$
+        </div>
+    </div>
 
+    <!-- パラメータ推定の詳細 -->
+    <div class="slide">
+        <h2>パラメータ推定の詳細</h2>
+        
+        <h3>リスク関数の最小化</h3>
+        <p>リスク関数として $\Delta(\hat{\theta}_y, \hat{\theta}_{\mathbf{x}^T}) = D_{KL}(p(f^T | \hat{\theta}_y) || p(f^T | \hat{\theta}_{\mathbf{x}^T}))$ を最小化することで分類器 $h_t$ を学習する流れを見ます。</p>
+
+        <h3>推定のための仮定</h3>
+        <p>推定のための仮定として、パラメータ、観測データおよびその特徴に対して、以下のようなマルコフ性が成り立つとします：</p>
+        
+        <div class="equation">
+            $\theta_\mathcal{Y} \rightarrow y \rightarrow f^S \rightarrow f^T \rightarrow \mathbf{x}_j^T \rightarrow \theta_{\mathcal{X}_T}$
+        </div>
+
+        <p>このとき、$p(f^T | \hat{\theta}_y)$ は</p>
+        
+        <div class="equation">
+            $p(f^T | \hat{\theta}_y) = \mathbb{E}_{f^S} \left[ \sum_{y'} p(f^T | f^S)p(f^S | y')p(y' | \hat{\theta}_y) \right] + \lambda \sum_{y'} p(f^T | y')p(y' | \hat{\theta}_y)$
+        </div>
+        
+        <p>で推定されます。</p>
+    </div>
+
+    <!-- 推定式の説明 -->
+    <div class="slide">
+        <h2>推定式の解釈</h2>
+        
+        <h3>推定式の構成要素</h3>
+        <ul>
+            <li>$p(f^T | f^S)$: 元ドメインの特徴 $f^S$ から目標ドメインの特徴 $f^T$ への変換器</li>
+            <li>$p(y' | \hat{\theta}_y)$: $y = y'$ のときに1、それ以外のときに0をとるディラック測度</li>
+            <li>$\lambda$: 目標ドメインのラベルありデータの推定への影響をコントロールするトレードオフパラメータ</li>
+        </ul>
+
+        <div class="note">
+            $p(f^S | y)$ および $p(f^T | y')$ は観測データから推定することができます。一方、$p(f^T | \hat{\theta}_{\mathbf{x}^T})$ は、
+            <div class="equation">
+                $p(f^T | \hat{\theta}_{\mathbf{x}^T}) = \mathbb{E}_{\mathbf{x}^{T'}} [p(f^T | \mathbf{x}^{T'})p(\mathbf{x}^{T'} | \hat{\theta}_{\mathbf{x}^T})]$
+            </div>
+            で推定されます。
+        </div>
+    </div>
+
+    <!-- 同時確率の推定 -->
+    <div class="slide">
+        <h2>同時確率の推定</h2>
+        
+        <h3>簡略化のための仮定</h3>
+        <p>ここで、$p(\mathbf{x}^{T'} | \hat{\theta}_{\mathbf{x}^T})$ は $\mathbf{x}^T = \mathbf{x}^{T'}$ のときに1、それ以外のときに0をとります。また、$p(f^T | \mathbf{x}^T)$ は目標ドメインの特徴抽出器を使って推定することができます。</p>
+
+        <p>以上で、$p(f^T, f^S)$ の学習法について説明します。$\phi(f^S, f^T)$ の学習方法について説明します。データから直接推定するためには、元ドメインの入力事例 $\mathbf{x}^S$ と目標ドメインの入力事例 $\mathbf{x}^T$ が与えられた下で条件付き独立であると仮定します。</p>
+
+        <div class="equation">
+            $\phi(f^T, f^S) = p(f^T | f^S) = \frac{p(f^T, f^S)}{p(f^T) p(f^S) / p(f^T, f^S)}$
+        </div>
+
+        <p>また、特徴間の同時確率 $p(f^T, f^S)$ がデータから直接推定できないため、...</p>
+    </div>
+
+    <!-- 共起推定 -->
+    <div class="slide">
+        <h2>他の同時確率推定方法</h2>
+        
+        <h3>共起データを用いた推定</h3>
+        <p>他の同時確率を使って推定することができます。例えば、元ドメインの入力事例と目標ドメインの特徴との間の共起 $p(f^T, \mathbf{x}^S)$ が得られている場合、$p(f^T, f^S) = p(f^T, \mathbf{x}^S)p(f^S | \mathbf{x}^S)\text{d}\mathbf{x}^S$ で両ドメインの特徴間の共起が推定されます。</p>
+
+        <div class="note">
+            このとき、$f^S$ と $f^T$ は入力 $\mathbf{x}$ が与えられた下で条件付き独立であると仮定しています。他の共起が得られている場合も同様です。
+        </div>
+    </div>
+
+    <!-- 非対称正則化付きドメイン変換 -->
+    <div class="slide">
+        <h2>4.3.2.2 非対称正則化付きドメイン変換</h2>
+        
+        <h3>TLRiskにおける学習の安定性</h3>
+        <p>TLRiskにおける学習の安定性は、利用可能な共起データの質に依存します。</p>
+
+        <div class="definition-box">
+            <p><span class="key-point">非対称正則化付きドメイン変換 (asymmetric regularized cross-domain transformation, ARC-t)</span></p>
+            <p>Kulis ら [164] は「両ドメインで同一のラベルを持つ事例は類似した特徴表現を持つはずである」という仮定の下で、ラベル情報から特徴の変換器を学習する方法を提案</p>
+        </div>
+
+        <h3>ARC-tの学習問題</h3>
+        <p>ARC-tの学習問題は以下のように定式化されます：</p>
+        
+        <div class="equation">
+            $\min_{W, \theta} \sum_{i,j} \ell((\mathbf{x}_i^S)^{\top} W \mathbf{x}_j^T) + \lambda \Omega(W)$
+        </div>
+    </div>
+
+    <!-- ARC-tの詳細 -->
+    <div class="slide">
+        <h2>ARC-tの詳細説明</h2>
+        
+        <h3>記号の説明</h3>
+        <ul>
+            <li>$W$: パラメータ行列</li>
+            <li>$\Omega$: 正則化項</li>
+            <li>損失関数 $\ell$: $\mathbf{x}_i^S$ と $\mathbf{x}_j^T$ が同一のラベルを持つ場合は $\ell((\mathbf{x}_i^S)^{\top} W \mathbf{x}_j^T) = (\max\{0, a - (\mathbf{x}_i^S)^{\top} W \mathbf{x}_j^T\})^2$</li>
+            <li>異なるラベルを持つ場合は $\ell((\mathbf{x}_i^S)^{\top} W \mathbf{x}_j^T) = (\max\{0, (\mathbf{x}_i^S)^{\top} W \mathbf{x}_j^T - b\})^2$ と定義</li>
+        </ul>
+
+        <div class="note">
+            内積 $(\mathbf{x}_i^S)^{\top} W \mathbf{x}_j^T$ は変換 $W$ による元ドメインと目標ドメインの類似度を表しています。$a$ と $b$ は類似度が、$\mathbf{x}_i^S$ と $\mathbf{x}_j^T$ が同一ラベルの場合は大きく、異なるラベルの場合は小さくなるように調整するためのハイパーパラメータです。
+        </div>
+    </div>
+
+    <!-- 補題4.1 -->
+    <div class="slide">
+        <h2>ARC-tの最適化問題の解析</h2>
+        
+        <p>いま、$K_S = (X^S)^{\top} X^S$、$K_T = (X^T)^{\top} X^T$ とします。このとき、ARC-tの最適化問題 (4.23) に関して、以下の補題が成り立ちます：</p>
+
+        <div class="theorem-box">
+            <p><span class="key-point">補題 4.1</span></p>
+            <p>(4.23) の正則化項 $\Omega(W)$ が、$W$ の特異値 $\sigma_1, ..., \sigma_P$ によって $\Omega(W) = \sum_{p=1}^P \omega_p(\sigma_p)$ の形で書ける凸関数であるとします。ここで、各 $\omega_p$ は大域最小値が0であるような実数値関数です。このとき、ある $n_S \times n_T$ 行列 $L$ が存在して、(4.23) の最適解 $W^*$ は</p>
+            <div class="equation">
+                $W^* = X^S K_S^{-1/2} L K_T^{-1/2} (X^T)^{\top}$
+            </div>
+            <p>の形で書くことができます。</p>
+        </div>
+
+        <div class="note">
+            補題4.1から、任意の2点 $\mathbf{x}^S$, $\mathbf{x}^T$ に対する類似度 $(\mathbf{x}^S)^{\top} W\mathbf{x}^T$ は、$W$ を $X^S K_S^{-1/2} L K_T^{-1/2} (X^T)^{\top}$ で置き換えることでベクトルの内積のみで計算可能であることがわかります。
+        </div>
+    </div>
+
+    <!-- 定理4.2 -->
+    <div class="slide">
+        <h2>ARC-tの最適化問題の簡略化</h2>
+        
+        <div class="theorem-box">
+            <p><span class="key-point">定理 4.2</span></p>
+            <p>補題4.1の条件が成り立つとし、$W^*$ を (4.23) の最適解としましょう。このとき、$L^*$ が最適化問題</p>
+            <div class="equation">
+                $\min_{L \in \mathbb{R}^{n_S \times n_T}} \ell(K_S^{1/2} L K_T^{1/2}) + \lambda \Omega(L)$
+            </div>
+            <p>の最適解ならば、$W^* = X^S K_S^{-1/2} L^* K_T^{-1/2} (X^T)^{\top}$ が成り立ちます。</p>
+        </div>
+
+        <div class="note">
+            しかし、補題4.1は行列 $L$ の存在は保証しているものの、その構成方法については述べていません。$L$ の構成に関しては、次の定理が成り立ちます。
+        </div>
+    </div>
+
+    <!-- 次元の呪い -->
+    <div class="slide">
+        <h2>次元の呪いと最適化問題</h2>
+        
+        <h3>計算量の課題</h3>
+        <p>以上より、最適化問題 (4.23) を直接解くのではなく、最適化問題 (4.25) を解いて $L$ を求めることで、変換行列 $W$ を得られることがわかりました。</p>
+
+        <p>(4.23) の代わりに (4.25) を考察する利点は、最適化問題がデータの次元によらずに定まる点にあります。元の最適化問題 (4.23) では、データの次元の増加に伴って指数的に推定パラメータの数が増大します。一方で、最適化問題 (4.25) の変数 $L$ はデータのサンプルサイズのみに依存するため、データの次元の増加による影響は (4.23) に比べて軽微です。</p>
+
+        <div class="note">
+            <span class="key-point">*1</span> これは次元の呪い (curse of dimensionality) とも呼ばれます。
+        </div>
+    </div>
+
+    <!-- 最大マージンドメイン変換 -->
+    <div class="slide">
+        <h2>4.3.2.3 最大マージンドメイン変換</h2>
+        
+        <h3>2ステップアプローチの背景</h3>
+        <p>TLRiskやARC-tは、ドメインの翻訳器を学習した後でラベル規則に対する仮説を学習するという、2ステップの方法でした。</p>
+
+        <div class="definition-box">
+            <p><span class="key-point">最大マージンドメイン変換 (max-margin domain transforms, MMDT)</span></p>
+            <p>Hoffman ら [133] は、これらを同時最適化するモデルを提案しています。</p>
+        </div>
+
+        <h3>MMDTの学習問題</h3>
+        <p>具体的には、ドメイン翻訳行列 $W$ と分類器のパラメータ $\theta$ をサポートベクトルマシン (support vector machine, SVM) 型の学習問題</p>
+        
+        <div class="equation">
+            $\min_{W, \theta} \frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2$
+        </div>
+        <div class="equation">
+            $\text{subject to } y_i^S(\mathbf{x}_i^S)^{\top} \theta \geq 1, i = 1, ..., n_S,$
+        </div>
+        <div class="equation">
+            $y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta \geq 1, j = 1, ..., n_T$
+        </div>
+        
+        <p>で同時に最適化します。ただし、(4.26) はそのままでは実行可能解の存在が保証されません。</p>
+    </div>
+
+    <!-- ソフトマージン制約 -->
+    <div class="slide">
+        <h2>ソフトマージン制約への拡張</h2>
+        
+        <h3>実行可能解を保証する問題の緩和</h3>
+        <p>そこで、実際にはソフトマージン制約に緩和した以下の問題を解いてパラメータを推定します：</p>
+        
+        <div class="equation">
+            $\min_{W, \theta} \frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2 + \lambda_1 \sum_{i=1}^{n_S} \max\{0, 1 - y_i^S(\mathbf{x}_i^S)^{\top} \theta\}$
+        </div>
+        <div class="equation">
+            $+ \lambda_2 \sum_{j=1}^{n_T} \max\{0, 1 - y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta\}$
+        </div>
+
+        <div class="note">
+            (4.27) は (4.26) と同様に非凸最適化問題でありますが、データによらずに実行可能な問題となっています。
+        </div>
+    </div>
+
+    <!-- リンケージによるクロスドメイン知識伝播 -->
+    <div class="slide">
+        <h2>4.3.2.4 リンケージによるクロスドメイン知識伝播</h2>
+        
+        <h3>ドメイン間の対応関係の活用</h3>
+        <p>TLRiskではドメイン翻訳器の学習のためにドメイン間の対応関係の情報が要求されました。一方、ARC-tやMMDTではドメイン間の対応関係の情報は要求されませんが、目標ドメインにおいて教師ありデータが十分に利用可能であることが前提でした。</p>
+
+        <div class="definition-box">
+            <p><span class="key-point">リンケージによるクロスドメイン知識伝播 (cross-domain knowledge propagation by linkages, CDKPL)</span></p>
+            <p>Qi ら [231] は、「そのとき利用可能な情報を適切に利用する」という、より柔軟なモデリングを提案</p>
+        </div>
+
+        <h3>CDKPLの特徴</h3>
+        <ul>
+            <li>ドメイン翻訳器 $T$ を、元ドメインの入力と目標ドメインの入力の組 $(\mathbf{x}^S, \mathbf{x}^T)$ に対して $\mathbf{x}^S$ と $\mathbf{x}^T$ の関連性の強さを表す実数値を対応させる関数 $T: \mathbb{R}^{d_S} \times \mathbb{R}^{d_T} \rightarrow \mathbb{R}$ として定義</li>
+            <li>両ドメインのデータに対して共通の潜在空間への射影</li>
+        </ul>
+    </div>
+
+    <!-- CDKPLの詳細 -->
+    <div class="slide">
+        <h2>CDKPLにおける潜在空間への射影</h2>
+        
+        <h3>射影の定式化</h3>
+        <div class="equation">
+            $\mathbf{x}_i^S \mapsto W^S \mathbf{x}_i^S, \quad \mathbf{x}_j^T \mapsto W^T \mathbf{x}_j^T$
+        </div>
+
+        <p>を考えます。ここで、$W^S$、$W^T$ は、$d_c$ を潜在空間の次元としたとき、それぞれ $d_c \times n_S$、$d_c \times n_T$ 行列です。</p>
+
+        <h3>ドメイン翻訳器の定義</h3>
+        <p>このとき、ドメイン翻訳器 $T$ は、射影後の両ドメインの入力 $W^S \mathbf{x}_i^S$、$W^T \mathbf{x}_j^T$ に対する潜在空間上の内積</p>
+        
+        <div class="equation">
+            $T(\mathbf{x}_i^S, \mathbf{x}_j^T) = (W^S \mathbf{x}_i^S)^{\top} W^T \mathbf{x}_j^T = (\mathbf{x}_i^S)^{\top} \tilde{W} \mathbf{x}_j^T$
+        </div>
+
+        <p>として実現できます。ここで、$\tilde{W} = (W^S)^{\top} W^T$ です。</p>
+
+        <div class="note">
+            定義から、$T$ を計算するためには、射影 $W^S$、$W^T$ を個別に学習する必要はなく、これらの積行列 $(W^S)^{\top} W^T$ を学習すれば十分であることがわかります。
+        </div>
+    </div>
+
+    <!-- 予測器の学習 -->
+    <div class="slide">
+        <h2>CDKPLにおける予測器の学習</h2>
+        
+        <h3>新たな目標ドメインの入力のラベル予測</h3>
+        <p>また、新たな目標ドメインの入力 $\mathbf{x}^T$ のラベルは、$T$ と元ドメインのラベルありデータ $\{\mathbf{x}_i^S, y_i^S\}_{i=1}^{n_S}$ を用いて、</p>
+        
+        <div class="equation">
+            $\text{sign}(f(\mathbf{x}^T)) = \text{sign}\left(\sum_{i=1}^{n_S} y_i^S T(\mathbf{x}_i^S, \mathbf{x}^T)\right)$
+        </div>
+
+        <p>で予測すると、予測器 $f$ は行列 $\tilde{W}$ を用いて</p>
+        
+        <div class="equation">
+            $f(\mathbf{x}^T) = \sum_{i=1}^{n_S} y_i^S (\mathbf{x}_i^S)^{\top} \tilde{W} \mathbf{x}_j^T$
+        </div>
+
+        <p>と書くことができます。</p>
+
+        <div class="note">
+            以上の準備の下で、ドメイン翻訳器 $T$ を学習するための最適化問題は、以下のように定式化されます。
+        </div>
+    </div>
+
+    <!-- 最適化問題 -->
+    <div class="slide">
+        <h2>CDKPLの最適化問題</h2>
+        
+        <div class="equation">
+            $\min_{\tilde{W} = (W^S)^{\top} W^T} \lambda_1 \sum_{j=1}^{n_T} \ell_1(y_j^T f(\mathbf{x}_j^T)) + \lambda_2 \sum_{i,j} \ell_2(c_{i,j} (\mathbf{x}_i^S)^{\top} \tilde{W} \mathbf{x}_j^T) + \|\tilde{W}\|_{\text{tr}}$
+        </div>
+
+        <h3>各項の説明</h3>
+        <ul>
+            <li><span class="key-point">第1項</span>: $\ell_1$ を損失関数＊2、$f$ を予測器としたときの目標ドメインにおけるラベル予測のための経験リスクを表しています</li>
+            <li><span class="key-point">第2項</span>: $\ell_2$ は単調減少関数、$c_{i,j}$ はTLRiskにおける同時確率 $p(\mathbf{x}_i^S, \mathbf{x}_j^T)$ のような $\mathbf{x}_i^S$ と $\mathbf{x}_j^T$ の共起の度合いを表すスコアです</li>
+            <li><span class="key-point">第3項</span>: $\|\tilde{W}\|_{\text{tr}} = \inf_{\tilde{W} = (W^S)^{\top} W^T} \frac{1}{2}(\|W^S\|_F^2 + \|W^T\|_F^2)$ で定義されるトレースノルム正則化項であり、$\tilde{W}$ に低ランク性を誘導します</li>
+        </ul>
+
+        <div class="note">
+            $\lambda_1$, $\lambda_2$ はハイパーパラメータであり、目標ドメインのラベル情報と両ドメインの入力間の共起情報をそれぞれどの程度重視するかを制御する役割を持ちます。特に、$\lambda_1 = 0$ とすると共起情報のみでドメイン翻訳器 $T$ を学習することに相当します。同様に、$\lambda_2 = 0$ とするとラベル情報のみで $T$ を学習することに相当します。したがって、(4.32) の定式化はTLRisk、ARC-tやMMDTの設定を含むより一般的なものであるといえます。<br><br>
+            <span class="key-point">＊2</span> 特にマージン損失 (margin loss) と呼ばれる損失関数を使います。
+        </div>
+    </div>
+
+       <!-- セクション開始 -->
+       <div class="slide divider-slide">
+        <h1>4.3.3 対称型の特徴ベースのドメイン適応</h1>
+    </div>
+
+    <!-- 4.3.3.1 潜在因子に基づく方法 スライド1 -->
+    <div class="slide">
+        <h2>4.3.3.1 潜在因子に基づく方法</h2>
+        
+        <h3>因子分析（Factor Analysis）</h3>
+        <ul>
+            <li>観測変数とそれらの間の関係を少数の潜在因子（latent factor）で表現する統計手法</li>
+            <li>ドメイン適応問題においては、元ドメインと目標ドメインでそれぞれ与えられた特徴表現から、両ドメインに共通する潜在因子を抽出</li>
+            <li>目標ドメインの特徴を元ドメインの知識を圧縮した潜在因子が存在する潜在空間に射影することで、特徴表現の質を向上させ各種タスクの性能を改善</li>
+        </ul>
+        
+        <div class="note">
+            以下では、因子分析に基づいたいくつかの対称型特徴ベースの手法を紹介します。
+        </div>
+    </div>
+
+    <!-- aPLSA スライド2 -->
+    <div class="slide">
+        <h2>アノテーションに基づく確率的潜在的意味解析（aPLSA）</h2>
+        
+        <h3>aPLSA (annotation-based probabilistic latent semantic analysis) [324]</h3>
+        <ul>
+            <li>ラベルなしテキスト文書の大規模コーパスを元ドメインとして、目標ドメインである画像データのクラスタリングの性能向上を目標とする手法</li>
+            <li>画像とテキストという多視点（multi-view）データを利用</li>
+            <li>具体的には、Flickr *3 上のタグ付けされた画像データに対して、画像とタグの両方を潜在空間に射影</li>
+            <li>その後、画像の低レベル特徴を決定付けている潜在因子をクラスタとして抽出</li>
+        </ul>
+        
+        <div class="footer">
+            *3 https://www.flickr.com/
+        </div>
+    </div>
+
+    <!-- aPLSAモデル スライド3 -->
+    <div class="slide">
+        <h2>aPLSAのモデル</h2>
+        
+        <p>手法の流れを詳細に見ていきましょう。以下では、$\mathcal{Z} = \{z_t\}_{t=1}^T$ を潜在変数、$X^T$, $X^S$ をそれぞれ画像データと付随するタグ、$f$ を画像の低レベル特徴とします。</p>
+        
+        <p>数学的には、このモデルの目標は各画像データ $x_j^T$ に対してある潜在因子 $z \in \mathcal{Z}$ を割り当てる確率的な対応</p>
+        
+        <div class="equation">
+            $g(x_j^T) = \argmax_{z \in \mathcal{Z}} P(z | x_j^T)$ (4.33)
+        </div>
+        
+        <p>を学習することです。このとき、潜在因子 $z$ は $x_j^T$ が属するクラスタの代表点と解釈することができます。</p>
+        
+        <h3>aPLSAのグラフィカルモデル</h3>
+        <div class="image-box">
+            <p>図4.3 aPLSAのグラフィカルモデル。潜在変数 $Z$ は、画像データ $X^T$ とそれに付随するタグ $X^S$ の両方に依存して決まります。</p>
+            <div style="text-align: center;">
+                <div style="display: inline-block; background: #f0f0f0; padding: 20px; border-radius: 10px;">
+                    <div style="margin: 10px;">$X^S$ → $Z$ ← $X^T$</div>
+                    <div style="margin: 10px;">↓</div>
+                    <div style="margin: 10px;">$f$</div>
+                    <p style="font-size: 12px;">$P(z | x^S)$, $P(z | x^T)$, $P(f | z)$</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- aPLSAモデルの詳細 スライド4 -->
+    <div class="slide">
+        <h2>aPLSAモデルの詳細</h2>
+        
+        <p>図4.3より、このモデルは画像 $x_j^T$ から潜在変数 $z$ を経由して特徴 $f$ を決定する項</p>
+        
+        <div class="equation">
+            $P(f | x_j^T) = \sum_{z \in \mathcal{Z}} P(f | z)P(z | x_j^T)$ (4.34)
+        </div>
+        
+        <p>と、タグ $x_i^S$ と特徴 $f^T$ との関係を潜在変数 $z$ で特徴付ける項</p>
+        
+        <div class="equation">
+            $P(f | x_i^S) = \sum_{z \in \mathcal{Z}} P(f | z)P(z | x_i^S)$ (4.35)
+        </div>
+        
+        <p>の二つから構成されていることがわかります。この二つの項を同時に考慮した尤度関数</p>
+        
+        <div class="equation">
+            $\mathcal{L} = \sum_t \left[ \lambda \sum_j \frac{A_{jt}}{\sum_k A_{jk}} \log P(f_t | x_j^T) + (1-\lambda) \sum_i \frac{B_{it}}{\sum_k B_{ik}} \log P(f_t | x_i^S) \right]$ (4.36)
+        </div>
+        
+        <p>をExpectation-Maximization (EM)アルゴリズムで最大化して、$P(f|z)$, $P(z | x_i^S)$, $P(z | x_j^T)$ を推定します。</p>
+    </div>
+
+    <!-- 異質的スペクトル写像 スライド5 -->
+    <div class="slide">
+        <h2>異質的スペクトル写像</h2>
+        
+        <h3>潜在因子を抽出するための方法</h3>
+        <p>行列分解（matrix factorization）もよく用いられます。</p>
+        
+        <h3>Shiらによる異質的スペクトル写像（heterogeneous spectral mapping, HeMAP）[263]</h3>
+        <ul>
+            <li>行列分解によって元ドメインと目標ドメインに共通の潜在空間を学習する方法</li>
+            <li>その学習問題は以下のように定式化されます：</li>
+        </ul>
+        
+        <div class="equation">
+            $\min_{Z^S, Z^T} \mathcal{L}(Z^S, X^S) + \mathcal{L}(Z^T, X^T) + \mathcal{L}(Z^S, Z^T)$ (4.37)
+        </div>
+        
+        <p>ここで、第1項および第2項は各ドメインにおける再構成誤差 $\mathcal{L}(Z^r, X^r) = ||X^r - Z^rP^r||^2, r = S, T$ であり、潜在表現 $Z$ が元の特徴 $X$ の情報をできるだけ保持することを要請する損失関数です。</p>
+    </div>
+
+    <!-- HeMAPの詳細 スライド6 -->
+    <div class="slide">
+        <h2>HeMAPの詳細</h2>
+        
+        <p>$P^S$, $P^T$ は射影行列を表しており、元の特徴 $X$ から潜在表現 $Z$ を抽出します。第3項は</p>
+        
+        <div class="equation">
+            $\mathcal{L}(Z^S, Z^T) = \frac{1}{2} \left( ||X^S - Z^T P^S||^2 + ||X^T - Z^S P^T||^2 \right)$
+        </div>
+        
+        <p>と定義され、「元ドメインの潜在表現 $Z^S$ と目標ドメインの潜在表現 $Z^T$ が似ている」という暗黙の仮定を実現するためのペナルティの役割を持ちます。</p>
+        
+        <div class="note">
+            <p>HeMAPの実行には、aPLSAのように元ドメインと目標ドメインの間で対応のあるデータが要求されることはありません。</p>
+            <p>しかし、転移の効果を十分高めるためには元ドメインと目標ドメインがよく似ていることが重要であり、事前に適当な指標でドメイン間類似度を検証しておくことが望ましいといえます。</p>
+        </div>
+    </div>
+
+    <!-- 4.3.3.2 多様体アラインメント スライド7 -->
+    <div class="slide">
+        <h2>4.3.3.2 多様体アラインメント</h2>
+        
+        <h3>多様体アラインメント（manifold alignment）</h3>
+        <ul>
+            <li>「元ドメインと目標ドメインのデータが共通の多様体上に分布している」という多様体仮説（manifold assumption）に基づくアプローチ</li>
+            <li>両ドメインのデータをその幾何学的な構造を保つように共通の低次元多様体上に射影する</li>
+        </ul>
+        
+        <h3>データの幾何学的な構造</h3>
+        <ul>
+            <li>データ点の間の類似度として表現される</li>
+            <li>同じドメインに属するデータの間の類似度と、異なるドメインに属するデータの間の類似度の2種類が考えられます</li>
+            <li>前者の構造は、カーネル関数などを用いて入力の間の類似度を評価することで射影の前後で保存することは容易</li>
+            <li>後者の構造を保つためには、ラベル情報などによって両ドメインのデータの間に対応関係を付けておく必要があります</li>
+        </ul>
+    </div>
+
+    <!-- 異質的な多様体アラインメント スライド8 -->
+    <div class="slide">
+        <h2>異質的な多様体アラインメント（HMA）</h2>
+        
+        <h3>異質的な多様体アラインメント（heterogeneous manifold alignment, HMA）[303]</h3>
+        <p>元ドメインと目標ドメインのデータをそれぞれ共通の次元の部分空間に移す写像 $f_S$ と $f_T$ を学習することが目標です。</p>
+        
+        <p>このとき、ドメイン内の構造の保存は以下の式で表現されます。</p>
+        
+        <div class="equation">
+            $O_{\text{intra}} = \frac{1}{2} \mu \sum_{a \in \{S,T\}} \sum_{i,i'=1}^{n_a} ||f_a(x_i^a) - f_a(x_{i'}^a)||^2 W_a(i, i')$ (4.38)
+        </div>
+        
+        <p>ここで、$W_S(i, i')$ は元ドメインの事例 $x_i^S$ と $x_{i'}^S$ の間の類似度を表します。</p>
+    </div>
+
+    <!-- HMAの詳細 スライド9 -->
+    <div class="slide">
+        <h2>HMAの詳細</h2>
+        
+        <p>例えば、$W_S(i, i') = e^{-||x_i^S - x_{i'}^S||^2}$ を用いることができます。</p>
+        
+        <p>目標ドメインの類似度 $W_T$ についても同様です。また、$\mu$ は重みパラメータを表します。</p>
+        
+        <h3>ドメイン間の構造の保存</h3>
+        <p>ドメイン間類似度：</p>
+        <ul>
+            <li>$W_s(i,j) = \begin{cases} 1 & x_i^S と x_j^T が同じラベルを持つ場合 \\ 0 & \text{otherwise} \end{cases}$</li>
+            <li>条件を入れ替えたドメイン間非類似度：</li>
+            <li>$W_d(i,j) = \begin{cases} 1 & x_i^S と x_j^T が異なるラベルを持つ場合 \\ 0 & \text{otherwise} \end{cases}$</li>
+        </ul>
+        
+        <p>を用いて</p>
+        
+        <div class="equation">
+            $O_{\text{inter}}^c = \frac{1}{2} \sum_{a,b \in \{S,T\}} \sum_{i=1}^{n_a} \sum_{j=1}^{n_b} ||f_a(x_i^a) - f_b(x_j^b)||^2 W_c(i,j), \quad c = s, d$ (4.39)
+        </div>
+        
+        <p>で表現されます。</p>
+    </div>
+
+    <!-- HMAの最適化 スライド10 -->
+    <div class="slide">
+        <h2>HMAの最適化</h2>
+        
+        <p>直感的には、元ドメインと目標ドメインで同じラベルを持つ力は近くに、異なるラベルを持つ力は離れるように射影されることを要請する定式化になっています。</p>
+        
+        <p>以上の準備の下で、射影 $f_S$, $f_T$ を学習するための損失関数は以下で定義されます。</p>
+        
+        <div class="equation">
+            $O(f_S, f_T) = \frac{O_{\text{inter}}^s + O_{\text{intra}}}{O_{\text{inter}}^d}$ (4.40)
+        </div>
+        
+        <p>$O(f_S, f_T)$ を最小にする $f_S$, $f_T$ について、$f_S$, $f_T$ が線形の射影行列の場合には以下の理論的な性質が示されています [303]。</p>
+        
+        <div class="definition-box">
+            <strong>定理 4.3</strong><br>
+            $D_s(i,i) = \sum_j W_s(i,j)$, $D_d(i,i) = \sum_j W_d(i,j)$, $D_a(i,i) = \sum_j W_a(i,j)$ とし、$L_s = D_s - W_s$, $L_d = D_d - W_d$, $L_a = D_a - W_a$, $a = S,T$ を対応するグラフラプラシアンとします。<br>
+            $L = \text{diag}(L_S, L_T)$, $Z = \text{diag}(X^S, X^T)$ とおくとき、(4.40)を最小にする射影 $\phi = (f_S, f_T)^T$ は、一般化固有値分解<br>
+            $Z(\mu L + L_s)Z^T \phi = \lambda Z L_d Z^T \phi$<br>
+            における非ゼロな最小固有値に対応する固有ベクトルとして与えられます。
+        </div>
+    </div>
+
+    <!-- その他のアライメント手法 スライド11 -->
+    <div class="slide">
+        <h2>その他のアライメント手法</h2>
+        
+        <p>目標ドメインにラベルありデータが少ししかないか、またはまったく存在しないとき、$W_S$ および $W_d$ をうまく設定できないため、上述した方法によるアラインメントを実行するのが困難な場合があります。</p>
+        
+        <h3>対応関係の再定義</h3>
+        <ul>
+            <li>別の方法で元ドメインと目標ドメインのデータの間に対応関係を付けることで、同様の手順で射影を学習することができます</li>
+            <li>そういった対応関係も事前にわからない場合はどうすればよいでしょうか</li>
+        </ul>
+        
+        <h3>一つの方向性</h3>
+        <p>各ドメインの局所的な構造、すなわちデータ点の近傍の構造をドメイン間で比較するというものです [302]。</p>
+        
+        <p>いま、$R_{x_i^a}$, $a = S, T$ を、$\ell$, $\ell'$ 成分が $R_{x_i^a}(\ell, \ell') = \text{dist}(z_\ell, z_{\ell'})$ であるような $(k + 1) \times (k + 1)$ 行列とします。</p>
+        
+        <p>ここで、$z_1 = x_i^a$, $\{z_2, ..., z_{k+1}\}$ は $x_i^a$ の $k$ 近傍点です。$\text{dist}$ は距離関数であり、Wangら [303] はユークリッド距離を用いています。</p>
+    </div>
+
+    <!-- 距離の定義 スライド12 -->
+    <div class="slide">
+        <h2>距離の定義とドメイン間対応関係</h2>
+        
+        <p>$R_{x_i^a}$ は、高次元な $x_i^a$ の近傍の幾何学的な構造を行列として表現していると解釈できます。このとき、$R_{x_i^S}$ と $R_{x_j^T}$ の間の距離は以下で定義できます。</p>
+        
+        <div class="equation">
+            $\text{dist}(R_{x_i^S}, R_{x_j^T}) = \min_{1 \leq h \leq k!} \min\{\text{dist}_1(h), \text{dist}_2(h)\}$ (4.41)
+        </div>
+        
+        <p>ここで、$\text{dist}_1(h) = ||\{R_{x_j^T}\}_h - k_1\{R_{x_i^S}\}_h||_F$, $\text{dist}_2(h) = ||\{R_{x_i^S} - k_2\{R_{x_j^T}\}_h\}||_F$ であり、</p>
+        
+        <div class="equation">
+            $k_1 = \frac{\text{tr}(\{R_{x_i^S}\{R_{x_j^T}\}_h)}{\text{tr}(\{R_{x_i^S} R_{x_i^S})}, \quad k_2 = \frac{\text{tr}(\{R_{x_j^T}\}_h^T\{R_{x_i^S})}{\text{tr}(\{R_{x_j^T}\}_h^T\{R_{x_j^T}\}_h)}$
+        </div>
+        
+        <p>です。$\{R_{x_j^T}\}_h$ は、$k!$ 通りある $x_j^a$ の $k$ 近傍点の並べ方の $h$ 番目に対応する局所構造行列を表します。</p>
+        
+        <p>(4.41)で定義される $\text{dist}(R_{x_i^S}, R_{x_j^T})$ を $(i,j)$ 成分に持つような $W$ をドメイン間の対応関係を表す行列として用いることで、既知の対応関係がある場合と同様に、固有値問題の解として射影を得ることができます。</p>
+    </div>
+
+    <!-- 4.3.3.3 カーネル法による表現学習 スライド13 -->
+    <div class="slide">
+        <h2>4.3.3.3 カーネル法による表現学習に基づくドメイン適応</h2>
+        
+        <h3>カーネル法</h3>
+        <p>データ解析を行う際にデータの非線形性や高次モーメントを取り込むための方法論です。</p>
+        
+        <h3>カーネル法に基づく転移学習手法の例</h3>
+        <p>異質的転移学習の方法である<span class="highlight">異質的特徴拡張（heterogeneous feature augmentation）[86]</span>を紹介します。</p>
+        
+        <p>以下では、2個分類問題における教師あり転移学習の設定を考えます。すなわち、元ドメインと目標ドメインそれぞれからラベルありデータ</p>
+        <ul>
+            <li>$\mathcal{D}_S = \{(x_i^S, y_i^S)\}_{i=1}^{n_S} \in \mathcal{X}_S \times \mathcal{Y}_S$</li>
+            <li>$\mathcal{D}_T = \{(x_i^T, y_i^T)\}_{i=1}^{n_T} \in \mathcal{X}_T \times \mathcal{Y}_T$ が得られているとします。</li>
+        </ul>
+        
+        <p>ここで $x_j^S$, $x_j^T$ はそれぞれ $d_S$, $d_T$ 次元のベクトル（$d_S \neq d_T$）であり、$y_i^S, y_i^T \in \{-1, 1\}$ です。$\mathcal{X}_S$ と $\mathcal{X}_T$ の次元が異なるため、これは異質的転移学習の問題となっています。</p>
+    </div>
+
+    <!-- 異質的特徴拡張 スライド14 -->
+    <div class="slide">
+        <h2>異質的特徴拡張の定式化</h2>
+        
+        <h3>写像関数の定義</h3>
+        <p>元ドメインと目標ドメインの入力 $x^S$, $x^T$ に対する射影行列をそれぞれ $P^S \in \mathbb{R}^{d_C \times d_S}$, $P^T \in \mathbb{R}^{d_C \times d_T}$ とし、特徴写像 $\varphi_S$, $\varphi_T$ をそれぞれ</p>
+        
+        <div class="equation">
+            $\varphi_S(x^S) = \begin{bmatrix} P^S x^S \\ x^S \\ \mathbf{0}_{d_T} \end{bmatrix}, \quad \varphi_T(x^T) = \begin{bmatrix} P^T x^T \\ \mathbf{0}_{d_S} \\ x^T \end{bmatrix}$ (4.42)
+        </div>
+        
+        <p>で定義します。ここで、$\mathbf{0}_{d_S}$, $\mathbf{0}_{d_T}$ はそれぞれ $d_S$, $d_T$ 次元のゼロベクトルを表します。</p>
+        
+        <div class="note">
+            <p>このとき、$\varphi_S(x^S)$, $\varphi_T(x^T)$ は同じ次元のベクトルであり、</p>
+            <ul>
+                <li>第1成分 $P^S x^S$, $P^T x^T$ が両ドメインが共有する特徴</li>
+                <li>第2成分 $x^S$, $\mathbf{0}_{d_S}$ が元ドメインに固有の特徴</li>
+                <li>第3成分 $\mathbf{0}_{d_T}$, $x^T$ が目標ドメインに固有の特徴</li>
+            </ul>
+            <p>をそれぞれ表現していることに相当します。</p>
+        </div>
+    </div>
+
+    <!-- サポートベクトルマシン型の定式化 スライド15 -->
+    <div class="slide">
+        <h2>サポートベクトルマシン型の定式化</h2>
+        
+        <p>さて、$\varphi_S(x^S)$, $\varphi_T(x^T)$ はもはやある一つのドメインの特徴ベクトルとみなせるため、従来の機械学習手法を適用することができます。</p>
+        
+        <p>ここでは、文献 [86] で提案されているサポートベクトルマシン型の定式化を説明します。</p>
+        
+        <p>いま、$\mathbf{w} = [\mathbf{w}^C, \mathbf{w}^S, \mathbf{w}^T]^T$ を $\varphi_S(x^S)$, $\varphi_T(x^T)$ に対するカーネル線形モデルの重みベクトルとします。</p>
+        
+        <p>$\mathbf{w}^C$, $\mathbf{w}^S$, $\mathbf{w}^T$ はそれぞれ両ドメイン共通、元ドメイン、目標ドメインの特徴に対する重みを表しています。このとき、以下のような最適化問題を考えます。</p>
+    </div>
+
+    <!-- 最適化問題 スライド16 -->
+    <div class="slide">
+        <h2>最適化問題の定式化</h2>
+        
+        <div class="equation">
+            $\min_{P_S, P_T} \min_{\mathbf{w}, b, \xi_i^S, \xi_i^T} \frac{1}{2}||\mathbf{w}||^2 + C\left(\sum_{i=1}^{n_S} \xi_i^S + \sum_{i=1}^{n_T} \xi_i^T\right)$
+        </div>
+        
+        <p>subject to</p>
+        <ul>
+            <li>$y_i^S(\mathbf{w}^T \varphi_S(x_i^S) + b) \geq 1 - \xi_i^S$, $\xi_i^S \geq 0$</li>
+            <li>$y_i^T(\mathbf{w}^T \varphi_T(x_i^T) + b) \geq 1 - \xi_i^T$, $\xi_i^T \geq 0$</li>
+            <li>$||P^S||_F^2 \leq \lambda_S$, $||P^T||_F^2 \leq \lambda_T$</li>
+        </ul>
+        
+        <p>(4.43)</p>
+        
+        <div class="note">
+            <p>(4.43)は、内側の最小化がSVMによる予測モデルの学習を表し、外側の最小化が異質的転移のための射影行列 $P^S$, $P^T$ の最適化を表す同時最適化問題です。</p>
+            <p>射影行列も最適化することで、データに適合する特徴抽出を行えるように問題が設計されているところがポイントといえます。</p>
+            <p>最適化問題 (4.43)は、内側の最適化に関する双対問題を考えると以下のような等価な問題へ変換することができます。</p>
+        </div>
+    </div>
+
+    <!-- 双対問題への変換 スライド17 -->
+    <div class="slide">
+        <h2>双対問題への変換</h2>
+        
+        <div class="equation">
+            $\min_H \max_{\mathbf{1}_{n_S+n_T}} \boldsymbol{\alpha} - \frac{1}{2}(\boldsymbol{\alpha} \circ \mathbf{y})^T K_H(\boldsymbol{\alpha} \circ \mathbf{y})$
+        </div>
+        
+        <p>subject to $\mathbf{y}^T \boldsymbol{\alpha} = 0$, $\mathbf{0}_{n_S+n_T} \leq \boldsymbol{\alpha} \leq C\mathbf{1}_{n_S+n_T}$, $\text{tr}(H) \leq \lambda_S + \lambda_T$ (4.44)</p>
+        
+        <p>ここで、$H = [P^S, P^T]^T[P^S, P^T] \in \mathbb{R}^{(d_S+d_T) \times (d_S+d_T)}$ は半正定値行列であり、$K_H$, $L_S$, $L_T$ はそれぞれ</p>
+        
+        <div class="equation">
+            $K_H = \begin{bmatrix} (X^S)^T X^S + L_S^T H L_S & L_S^T H L_T \\ L_T^T H L_S & (X^T)^T X^T + L_T^T H L_T \end{bmatrix}$
+        </div>
+        
+        <div class="equation">
+            $L_S = \begin{bmatrix} I_{d_S} \\ \mathbf{0}_{d_T \times d_S} \end{bmatrix} X^S, \quad L_T = \begin{bmatrix} \mathbf{0}_{d_S \times d_T} \\ I_{d_T} \end{bmatrix} X^T$
+        </div>
+        
+        <p>で定義される行列です。SVMの双対変数 $\boldsymbol{\alpha}$ を固定したとき、</p>
+    </div>
+
+    <!-- 半正定値計画問題 スライド18 -->
+    <div class="slide">
+        <h2>半正定値計画問題による解法</h2>
+        
+        <p>(4.44)は行列 $H$ に関する半正定値計画（semi-definite programming, SDP）問題となることがわかります。</p>
+        
+        <p>これより、$\boldsymbol{\alpha}$ を止めた $H$ の更新と、$H$ を止めた $\boldsymbol{\alpha}$ の更新を繰り返す交互最適化によって (4.44)の解を得ることができます。</p>
+    </div>
+
+       <!-- セクション開始 -->
+       <div class="slide divider-slide">
+        <h1>4.4 深層表現学習に基づく特徴ベースのドメイン適応</h1>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>4.4.1 深層ニューラルネットワークによる表現学習の進化</h1>
+    </div>
+
+    <!-- スライド1: 深層学習の革新的変化 -->
+    <div class="slide">
+        <h2>深層学習がもたらした表現学習の革新</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">深層ニューラルネットワークは表現学習の可能性を大きく広げました</p>
+        </div>
+        
+        <h3>機械学習のパラダイムシフト</h3>
+        <div class="two-col">
+            <div class="col">
+                <h4>従来の機械学習</h4>
+                <ul>
+                    <li>手動で設計した特徴量</li>
+                    <li>固定された特徴表現</li>
+                    <li>特徴設計の専門知識が必要</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>深層学習</h4>
+                <ul>
+                    <li><span class="highlight">データから特徴を自動学習</span></li>
+                    <li>階層的な特徴表現</li>
+                    <li>エンドツーエンド学習</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- スライド2: カーネル法 = 2層NN -->
+    <div class="slide">
+        <h2>カーネル法の新しい解釈</h2>
+        
+        <div class="big-text">カーネル法 = 全結合型2層ニューラルネットワーク</div>
+        
+        <div class="definition-box">
+            <p><strong>図4.5の解釈：</strong></p>
+            <ul>
+                <li>入力層 → 中間層：<span class="highlight">特徴写像 φ(x) による固定変換</span></li>
+                <li>中間層 → 出力層：<span class="highlight">予測器 f(x) = w^T φ(x)</span></li>
+            </ul>
+        </div>
+        
+        <div class="note">
+            <p>つまり、カーネル法では第1層の重み（特徴抽出器）を固定し、第2層の重み（予測モデル）のみを学習する</p>
+        </div>
+    </div>
+
+    <!-- スライド3: カーネル法 vs 一般のNN -->
+    <div class="slide">
+        <h2>カーネル法と一般のニューラルネットワークの違い</h2>
+        
+        <table>
+            <tr>
+                <th>項目</th>
+                <th>カーネル法</th>
+                <th>一般のニューラルネットワーク</th>
+            </tr>
+            <tr>
+                <td>特徴抽出器<br>（入力層→中間層）</td>
+                <td><span class="highlight">ユーザが選択・固定</span><br>カーネル関数による</td>
+                <td><span class="highlight">データから学習</span><br>重みを最適化</td>
+            </tr>
+            <tr>
+                <td>予測モデル<br>（中間層→出力層）</td>
+                <td>学習する</td>
+                <td>学習する</td>
+            </tr>
+            <tr>
+                <td>特徴表現の柔軟性</td>
+                <td>限定的</td>
+                <td>高い</td>
+            </tr>
+        </table>
+        
+        <div class="key-point-box">
+            <p class="key-point">一般のNNでは全ての層の重みを学習できる！</p>
+        </div>
+    </div>
+
+    <!-- スライド4: 深層学習のアーキテクチャ -->
+    <div class="slide">
+        <h2>深層学習：データに適したアーキテクチャ</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">データの種類に応じて適切なアーキテクチャを選択</p>
+        </div>
+        
+        <h3>代表的な深層学習アーキテクチャ</h3>
+        <table>
+            <tr>
+                <th>データ種類</th>
+                <th>適したアーキテクチャ</th>
+                <th>特徴</th>
+            </tr>
+            <tr>
+                <td><strong>画像データ</strong></td>
+                <td>畳み込みニューラルネットワーク<br>(CNN)</td>
+                <td>局所的な特徴を階層的に抽出</td>
+            </tr>
+            <tr>
+                <td><strong>配列データ</strong></td>
+                <td>リカレントニューラルネットワーク<br>(RNN)</td>
+                <td>時系列の依存関係を学習</td>
+            </tr>
+        </table>
+        
+        <div class="note">
+            <p>これらのアーキテクチャにより、<span class="highlight">データに適合する特徴を自動的に抽出</span>できます</p>
+        </div>
+    </div>
+
+    <!-- スライド5: 階層的特徴抽出（AlexNet） -->
+    <div class="slide">
+        <h2>階層的特徴抽出の実例：AlexNet</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">図4.6：畳み込みニューラルネットワークによる階層的特徴抽出</p>
+        </div>
+        
+        <h3>各層で学習される特徴</h3>
+        <div class="definition-box">
+            <ul>
+                <li><strong>畳み込み層1：</strong>線、色などの<span class="highlight">低レベル特徴</span></li>
+                <li><strong>畳み込み層3：</strong>テクスチャなどの<span class="highlight">中レベル特徴</span></li>
+                <li><strong>畳み込み層5：</strong>認識対象の一部などの<span class="highlight">高レベル特徴</span></li>
+                <li><strong>全結合層8：</strong>認識対象のクラスに対応した<span class="highlight">抽象的特徴</span></li>
+            </ul>
+        </div>
+        
+        <div class="note">
+            <p>これらの特徴が<strong>エンドツーエンド</strong>で自動的に獲得される！</p>
+        </div>
+    </div>
+
+    <!-- スライド6: 転移学習への応用アイデア -->
+    <div class="slide">
+        <h2>転移学習のための表現学習</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">複数のドメインに共通する特徴抽出器や特徴表現を獲得する</p>
+        </div>
+        
+        <h3>カーネル法 vs ニューラルネットワーク</h3>
+        <table>
+            <tr>
+                <th>手法</th>
+                <th>アプローチ</th>
+                <th>利点・制約</th>
+            </tr>
+            <tr>
+                <td><strong>カーネル法</strong></td>
+                <td>共通の潜在空間への<br>射影を最適化</td>
+                <td>❌ 特徴表現の獲得に制約</td>
+            </tr>
+            <tr>
+                <td><strong>ニューラル<br>ネットワーク</strong></td>
+                <td>・中間層をドメイン間で共有<br>・特徴空間で分布マッチング</td>
+                <td>✅ 柔軟な特徴表現の獲得<br>✅ データから適応的に学習</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- スライド7: 深層学習によるドメイン適応 -->
+    <div class="slide">
+        <h2>深層表現学習によるドメイン適応</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">図4.7：複数のドメインで共通の特徴空間を共有</p>
+        </div>
+        
+        <h3>深層表現学習のアプローチ</h3>
+        <div class="definition-box">
+            <p><strong>基本的なアイデア：</strong></p>
+            <ul>
+                <li>ドメインA、B、Cで<span class="highlight">共通の特徴表現</span>を中間層で獲得</li>
+                <li>各ドメイン固有の出力層は個別に学習</li>
+                <li>ドメイン間で<span class="highlight">知識の転移</span>が可能に</li>
+            </ul>
+        </div>
+        
+        <div class="note">
+            <p>以下では、この考え方に基づく具体的な手法を紹介します</p>
+        </div>
+    </div>
+ <!-- セクション開始 -->
+ <div class="slide divider-slide">
+    <h1>4.4.2 中間層における分布マッチング</h1>
+</div>
+
+<!-- スライド1: 導入 -->
+<div class="slide">
+    <h2>中間層での分布マッチングとは？</h2>
+    
+    <div class="key-point-box">
+        <p class="key-point">ニューラルネットワークの中間層で獲得される特徴空間で分布マッチングを行う</p>
+    </div>
+    
+    <div class="image-placeholder">
+        図4.7（再掲）：複数のドメインでニューラルネットワークの中間層で獲得される特徴空間を共有することで、ドメイン間で共通の特徴表現を学習
+    </div>
+    
+    <div class="note">
+        <p>4.4.1節では、深層ニューラルネットワークによる表現学習の可能性を見ました。本節では、その<span class="highlight">中間層で具体的にどのように分布マッチングを行うか</span>を学びます。</p>
+    </div>
+</div>
+
+<!-- スライド2: 4.4.2.1 MMD最小化による分布マッチング -->
+<div class="slide">
+    <h2>4.4.2.1 MMD最小化による分布マッチング</h2>
+    
+    <h3>Tzengらによる先駆的研究 [295]</h3>
+    
+    <div class="definition-box">
+        <p><strong>図4.8の説明：</strong></p>
+        <ul>
+            <li>ドメイン適応の場面でドメイン間の特徴量分布差を測る</li>
+            <li>ソース（青）：Amazon、Webcam</li>
+            <li>ターゲット（黄）：DSLR</li>
+            <li>異なるドメイン間での特徴分布の不一致を視覚化</li>
+        </ul>
+    </div>
+    
+    <div class="note">
+        <p>中間層における分布マッチングを行いつつ分類器を学習することで、中間層に<span class="highlight">ドメイン不変な特徴表現を獲得</span>できます。</p>
+    </div>
+</div>
+
+<!-- スライド3: MMDの数式 -->
+<div class="slide">
+    <h2>MMD（Maximum Mean Discrepancy）とは</h2>
+    
+    <div class="key-point-box">
+        <p class="key-point">MMD：2つの分布間の距離を測る指標</p>
+    </div>
+    
+    <h3>MMD損失の定式化</h3>
+    <div class="formula-box">
+        $$D_{MMD}(X_S, X_T) = \left\| \frac{1}{|X_S|} \sum_{x \in X_S} \phi(x) - \frac{1}{|X_T|} \sum_{x \in X_T} \phi(x) \right\|^2_{\mathcal{H}_k} \quad (4.45)$$
+    </div>
+    
+    <p>ここで：</p>
+    <ul>
+        <li>$X_S$：ソースドメインのデータ</li>
+        <li>$X_T$：ターゲットドメインのデータ</li>
+        <li>$\phi$：特徴写像（カーネル関数により定義）</li>
+        <li>$\mathcal{H}_k$：再生核ヒルベルト空間</li>
+    </ul>
+    
+    <div class="note">
+        <p>異なるドメインにおける同一クラスからの結果を同様に扱うことがドメイン不一致の問題の鍵です。</p>
+    </div>
+</div>
+
+<!-- スライド4: 動的重要度重み付き学習 -->
+<div class="slide">
+    <h2>4.4.2.2 動的重要度重み付き学習</h2>
+    
+    <div class="key-point-box">
+        <p class="key-point">異質的ドメインシフトに対応する新しいアプローチ</p>
+    </div>
+    
+    <h3>課題：同質的 vs 異質的ドメインシフト</h3>
+    <div class="two-col">
+        <div class="col">
+            <h4>同質的ドメインシフト</h4>
+            <ul>
+                <li>両ドメインで同じ特徴空間</li>
+                <li>表現学習が容易</li>
+            </ul>
+        </div>
+        <div class="col">
+            <h4>異質的ドメインシフト</h4>
+            <ul>
+                <li>ドメイン間で特徴空間が異なる</li>
+                <li>写像の学習が必要</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="definition-box">
+        <p><strong>解決策：</strong>定理4.4（Fang et al.）に基づく動的重要度重み付き学習</p>
+        <p>特徴抽出器$f$により表現$z$の確率分布を、元データ$(x,y)$の分布から誘導する</p>
+    </div>
+</div>
+
+<!-- スライド5: 定理4.4 -->
+<div class="slide">
+    <h2>定理4.4（Fang et al.の Theorem 1）</h2>
+    
+    <div class="definition-box">
+        <p>$f: \mathcal{X} \times \mathcal{Y} \to \mathcal{Z}$ が固定された決定論的な写像で、さらに逆写像が存在するとき：</p>
+        $$\frac{p^T(x,y)}{p^S(x,y)} = \frac{p^T(z)}{p^S(z)}$$
+        <p>が成り立つ。ここで、$p^S(z)$ および $p^T(z)$ は、それぞれ元ドメインの分布 $p^S(x,y)$ および目標ドメインの分布 $p^T(x,y)$ から誘導された $\mathcal{Z}$ 上の分布を表す。</p>
+    </div>
+    
+    <div class="note">
+        <p>この定理により、<span class="highlight">特徴抽出器の設計が分布シフトの補正において重要</span>であることが理論的に保証されます。</p>
+    </div>
+</div>
+
+<!-- スライド6: DWLアルゴリズム -->
+<div class="slide">
+    <h2>動的重要度重み付き学習（DIWL）アルゴリズム</h2>
+    
+    <h3>Fangらの提案手法 [91]</h3>
+    
+    <div class="algorithm-box">
+        <h4>Step 1: データの準備</h4>
+        <ul>
+            <li>元ドメインとターゲットドメインのデータを $M+1$ 個のミニバッチに分割</li>
+            <li>$\mathcal{M}_0^S, \mathcal{M}_0^T$ を用いてモデル $h_w$ を事前学習</li>
+        </ul>
+        
+        <h4>Step 2: 動的重み付き学習（$m = 0, 1, ..., M$ に対して）</h4>
+        <ol>
+            <li><strong>特徴量抽出：</strong>モデル $h_{w_m}$ により $z = \ell(h_{w_m}(x), y)$ で両ドメインのデータを特徴量に変換</li>
+            <li><strong>重要度重み計算：</strong>各 $z_{m+1}^S$ に対する重要度重み $r_{i,m+1}$ を推定</li>
+            <li><strong>モデル更新：</strong>重み付きデータでモデルを更新</li>
+        </ol>
+    </div>
+</div>
+
+<!-- スライド7: 重み付き学習の詳細 -->
+<div class="slide">
+    <h2>DWLの重み更新式</h2>
+    
+    <div class="key-point-box">
+        <p class="key-point">ミニバッチ $\mathcal{M}_{m+1}^S$ と推定した重要度重み $r_{i,m+1}$ を用いてモデルを更新</p>
+    </div>
+    
+    <div class="formula-box">
+        $$w_{m+1} = \arg\min_w \frac{1}{|\mathcal{M}_{m+1}^S|} \sum_{i_{m+1}=1}^{|\mathcal{M}_{m+1}^S|} r_{i,m+1} \ell(h_w(x_{i_{m+1}}^S), y_{i_{m+1}}^S)$$
+    </div>
+    
+    <h3>特徴</h3>
+    <ul>
+        <li>ターゲットドメインの少量のラベルありデータが取得できる場合を想定</li>
+        <li>重み付き経験リスク最小化と分布マッチングによる推定を交互に繰り返す</li>
+        <li>深層モデルの中間層出力を使う場合と同様に分布マッチングを行う</li>
+    </ul>
+    
+    <div class="image-placeholder">
+        図4.9：動的重要度重み付き学習のフレームワーク<br>
+        元ドメインと目標ドメインの少量のラベルデータを利用し、特徴抽出器と分類器を同時に学習
+    </div>
+</div>
+
+<!-- スライド8: MMDによる重要度推定 -->
+<div class="slide">
+    <h2>MMDを用いた重要度重みの推定</h2>
+    
+    <h3>DWLにおける重要度推定の詳細</h3>
+    
+    <div class="definition-box">
+        <p><strong>カーネル関数による重み付きカーネル平均：</strong></p>
+        <ul>
+            <li>元ドメインの重み付きカーネル平均：$\mu^S = \mu[P_{X,Y}^S r_Z] = \mathbb{E}_{P_{X,Y}^S r_Z}[\phi(z)]$</li>
+            <li>目標ドメインのカーネル平均：$\mu^T = \mu[P_{X,Y}^T] = \mathbb{E}_{P_{X,Y}^T}[\phi(z)]$</li>
+        </ul>
+    </div>
+    
+    <div class="formula-box">
+        <p><strong>MMDの計算式（式4.46）：</strong></p>
+        $$\|\mu^S - \mu^T\|_{\mathcal{H}_k}^2 = \left\| \frac{1}{n_S} \sum_{i=1}^{n_S} r_i \phi(z_i^S) - \frac{1}{n_T} \sum_{i=1}^{n_T} \phi(z_i^T) \right\|_{\mathcal{H}_k}^2$$
+        $$\propto r^T K r - 2k^T r + \text{const.}$$
+    </div>
+    
+    <p>ここで、$K$ はカーネル行列、$k$ は元・目標ドメイン間のカーネルベクトルです。</p>
+</div>
+
+<!-- スライド9: 深層オートエンコーダへの応用 -->
+<div class="slide">
+    <h2>4.4.3 深層オートエンコーダに基づく表現学習によるドメイン適応</h2>
+    
+    <div class="key-point-box">
+        <p class="key-point">教師なし転移学習への拡張</p>
+    </div>
+    
+    <h3>設定</h3>
+    <ul>
+        <li>元ドメイン：教師ありデータ $\mathcal{D}_S = \{x_i^S, y_i^S\}_{i=1}^{n_S}$</li>
+        <li>目標ドメイン：<span class="highlight">教師なしデータ</span> $\{x_i^T\}_{i=1}^{n_T}$ のみ</li>
+        <li>出力：$c$ クラスのカテゴリ変数 $y_i^S \in \{1, ..., c\}$</li>
+    </ul>
+    
+    <div class="note">
+        <p><strong>深層オートエンコーダによる転移学習（TLDA）[356]</strong>について、次のセクションで詳しく説明します。</p>
+    </div>
+</div>
+   <!-- セクション開始 -->
+   <div class="slide divider-slide">
+    <h1>4.4.3 深層オートエンコーダに基づく表現学習</h1>
+</div>
+
+<!-- スライド1: 教師なし転移学習の設定 -->
+<div class="slide">
+    <h2>教師なし転移学習の課題設定</h2>
+    
+    <div class="key-point-box">
+        <p class="key-point">目標ドメインにはラベルなしデータのみ！</p>
+    </div>
+    
+    <h3>多クラス識別問題の設定</h3>
+    <div class="definition-box">
+        <ul>
+            <li>元ドメイン：教師ありデータ $\mathcal{D}_S = \{x_i^S, y_i^S\}_{i=1}^{n_S}$</li>
+            <li>目標ドメイン：<span class="highlight">教師なしデータ</span> $\{x_i^T\}_{i=1}^{n_T}$ のみ観測</li>
+            <li>出力：$c$ クラスのカテゴリ変数 $y_i^S \in \{1, ..., c\}$</li>
+        </ul>
+    </div>
+    
+    <div class="note">
+        <p>この制約のもとで、どのように効果的な転移学習を実現するか？<br>
+        → <strong>深層オートエンコーダによる転移学習（TLDA）[356]</strong>がその答えです。</p>
+    </div>
+</div>
+
+<!-- スライド2: TLDAの3つの目的 -->
+<div class="slide">
+    <h2>TLDA（Transfer Learning with Deep Autoencoders）の基本戦略</h2>
+    
+    <div class="key-point-box">
+        <p class="key-point">TLDAは3つの目的を同時に達成する統合モデル</p>
+    </div>
+    
+    <h3>TLDAの3つの主要目的</h3>
+    <ol>
+        <li class="highlight">知識共有のために符号化と復号化のモデルパラメータをドメイン間で共有</li>
+        <li class="highlight">表現学習を行う際に元ドメインと目標ドメインの距離を最小化</li>
+        <li class="highlight">獲得される特徴表現にクラスラベルの識別情報を取り込む</li>
+    </ol>
+    
+    <div class="note">
+        <p>これらの3点を目的として提案されたモデルにより、ネットワークの中間層を両ドメインで共有することでこれを実現します。</p>
+    </div>
+</div>
+
+<!-- スライド3: TLDAのネットワーク構造 -->
+<div class="slide">
+    <h2>TLDAのネットワーク構造</h2>
+    
+    <div class="image-placeholder">
+        図4.10：深層オートエンコーダによる教師あり転移学習<br>
+        元ドメインと目標ドメインで符号化と復号化の重みをそれぞれ共有することで、両ドメインで共有可能な潜在表現を獲得
+    </div>
+    
+    <h3>符号化・復号化の定式化</h3>
+    <div class="formula-box">
+        <p>活性化関数 $\sigma(\cdot)$ を用いて：</p>
+        <ul style="list-style: none;">
+            <li>$\xi_i^r = \sigma(W_{E_i} x_i^r + b_{E_i})$, $z_i^r = \sigma(W_{E_2} \xi_i^r + b_{E_2})$ （符号化）</li>
+            <li>$\xi_i^r = \sigma(W_{D_1} z_i^r + b_{D_1})$, $\hat{x}_i^r = \sigma(W_{D_2} \xi_i^r + b_{D_2})$ （復号化）</li>
+        </ul>
+    </div>
+    
+    <div class="note">
+        <p>活性化関数 $\sigma$ には非負性を仮定し、特にシグモイド関数などが用いられます。</p>
+    </div>
+</div>
+
+<!-- スライド4: TLDAの目的関数 -->
+<div class="slide">
+    <h2>TLDAの最小化目的関数</h2>
+    
+    <div class="key-point-box">
+        <p class="key-point">4つの項から構成される統合的な目的関数</p>
+    </div>
+    
+    <div class="formula-box">
+        $$\mathcal{J} = J_1(x, \hat{x}) + \alpha J_2(\xi^S, \xi^T) + \beta J_3(\theta, \xi^S) + \gamma J_4(W_E, b_E, W_D, b_D) \quad (4.47)$$
+    </div>
+    
+    <h3>各項の役割</h3>
+    <table>
+        <tr>
+            <th>項</th>
+            <th>役割</th>
+            <th>数式</th>
+        </tr>
+        <tr>
+            <td><strong>$J_1$</strong></td>
+            <td>再構成誤差</td>
+            <td>$J_1(x, \hat{x}) = \sum_{r \in \{S,T\}} \sum_{i=1}^{n_r} \|x_i^r - \hat{x}_i^r\|^2$</td>
+        </tr>
+        <tr>
+            <td><strong>$J_2$</strong></td>
+            <td>分布間距離<br>(KLダイバージェンス)</td>
+            <td>$J_2(\xi^S, \xi^T) = D_{KL}(P^S\|P^T) + D_{KL}(P^T\|P^S)$</td>
+        </tr>
+        <tr>
+            <td><strong>$J_3$</strong></td>
+            <td>ソフトマックス損失関数</td>
+            <td>$J_3(\theta, \xi^S) = -\frac{1}{n_S} \sum_{i=1}^{n_S} \sum_{j=1}^{c} 1\{y_i^S = j\} \log \frac{e^{\theta_j^T \xi_i^S}}{\sum_{l=1}^c e^{\theta_l^T \xi_i^S}}$</td>
+        </tr>
+        <tr>
+            <td><strong>$J_4$</strong></td>
+            <td>L2正則化項</td>
+            <td>各重みパラメータのL2ノルムの和</td>
+        </tr>
+    </table>
+</div>
+
+<!-- スライド5: KLダイバージェンスの計算 -->
+<div class="slide">
+    <h2>潜在表現の分布マッチング</h2>
+    
+    <h3>KLダイバージェンスによる分布間距離</h3>
+    
+    <div class="definition-box">
+        <p><strong>埋め込み表現の経験分布：</strong></p>
+        <ul>
+            <li>ソース：$P^S = \frac{(P^S)'}{{\sum(P^S)'}}, \quad (P^S)' = \frac{1}{n_S} \sum_{i=1}^{n_S} \xi_i^S$</li>
+            <li>ターゲット：$P^T = \frac{(P^T)'}{{\sum(P^T)'}}, \quad (P^T)' = \frac{1}{n_T} \sum_{i=1}^{n_T} \xi_i^T$</li>
+        </ul>
+    </div>
+    
+    <div class="note">
+        <p>この項の最小化は、潜在空間において元ドメインと目標ドメインの分布を近付けるように作用します。<span class="highlight">元ドメインのラベル情報を潜在表現に取り込む</span>役割を持ちます。</p>
+    </div>
+</div>
+
+<!-- スライド6: マルチタスクオートエンコーダ -->
+<div class="slide">
+    <h2>マルチタスクオートエンコーダ（MTAE）への拡張</h2>
+    
+    <div class="key-point-box">
+        <p class="key-point">完全に教師なしの設定で転移学習を実現</p>
+    </div>
+    
+    <h3>MTAE [105]の特徴</h3>
+    <ul>
+        <li>元ドメインにもラベルありデータなし</li>
+        <li>図4.11のように、<span class="highlight">出力層をドメインの個数分用意</span></li>
+        <li>通常のオートエンコーダに対応するドメイン内再構成層（$r = k$）</li>
+        <li>ドメイン間で共通な特徴を抽出するためのドメイン間再構成層（$r \neq k$）を同時に学習</li>
+    </ul>
+    
+    <div class="image-placeholder">
+        図4.11：マルチタスクオートエンコーダによる複数ドメインデータの表現学習<br>
+        入力に対して、各ドメインのデータであることを想定したデコーダを学習
+    </div>
+</div>
+
+<!-- スライド7: MTAEの定式化 -->
+<div class="slide">
+    <h2>MTAEの学習定式化</h2>
+    
+    <h3>潜在表現と出力の計算</h3>
+    <div class="formula-box">
+        <p>入力層の符号化パラメータ $(W_E, b_E)$ がすべてのドメインで共有される：</p>
+        <ul style="list-style: none;">
+            <li>潜在表現：$\xi_i = \sigma(W_E x_i + b_E)$</li>
+            <li>$k$番目ドメインへの出力：$\hat{x}_i^k = \sigma(W_{D_k} \xi_i + b_{D_k})$, $k = 1, ..., K$ (4.48)</li>
+        </ul>
+    </div>
+    
+    <h3>MTAEの目的関数</h3>
+    <div class="formula-box">
+        $$\mathcal{J} = \sum_{k=1}^K J(x^r, \hat{x}^k) + \alpha J_2(W_E, b_E, W_D, b_D) \quad (4.49)$$
+    </div>
+    
+    <p>第1項の $\sum_{k=1}^K J(x^r, \hat{x}^k)$ は再構成誤差であり、$r = k$ のときドメイン内再構成、$r \neq k$ のときドメイン間再構成を表します。</p>
+</div>
+    <!-- セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>4.4.4 敵対的学習に基づく表現学習</h1>
+    </div>
+
+    <!-- スライド1: GANの基本概念 -->
+    <div class="slide">
+        <h2>敵対的生成ネットワーク（GAN）の登場</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">GANは深層ニューラルネットワークによってデータの生成分布を学習する革命的モデル</p>
+        </div>
+        
+        <h3>GAN [110] の構成要素</h3>
+        <div class="gan-box">
+            <ul>
+                <li><strong>生成器（Generator）</strong>：データ生成分布を近似するモデル</li>
+                <li><strong>識別器（Discriminator）</strong>：データの真贋を判定するモデル</li>
+            </ul>
+            <p style="margin-top: 15px;">→ <span class="highlight">ミニマックス問題として定式化</span>（敵対的訓練）</p>
+        </div>
+        
+        <h3>転移学習におけるGANの望ましい性質</h3>
+        <ul>
+            <li>データの生成器を学習できる</li>
+            <li>二つのネットワークに対する敵対的訓練によって学習される</li>
+        </ul>
+        
+        <div class="note">
+            <p>前者は元ドメインのデータと見分けがつかないような目標ドメインの中間的な特徴表現を生成可能にする</p>
+        </div>
+    </div>
+
+    <!-- スライド2: CoGANの概要 -->
+    <div class="slide">
+        <h2>CoGAN：結合敵対的生成ネットワーク</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">複数ドメインの同時分布を学習する革新的アプローチ</p>
+        </div>
+        
+        <div class="image-placeholder">
+            図4.12：CoGANによる二つの生成モデルの同時分布の学習<br>
+            GAN1が元ドメインの生成モデル、GAN2が目標ドメインの生成モデル<br>
+            生成器の入力に近い層の重み（赤矢印）を二つのGANで共有<br>
+            対になっている画像（一方のドメインにのみある画像）から同時分布を学習
+        </div>
+        
+        <h3>CoGANの重要な特徴</h3>
+        <ul>
+            <li>個別にサンプリングされた画像データのみで学習可能</li>
+            <li>生成器 $G_1(z; \theta_{g_1})$ と $G_2(z; \theta_{g_2})$ で同じ乱数 $z$ を使用</li>
+            <li>識別器 $D_1(x; \theta_{d_1})$ と $D_2(x; \theta_{d_2})$ は各ドメインを識別</li>
+        </ul>
+    </div>
+
+    <!-- スライド3: DANNの理論的背景 -->
+    <div class="slide">
+        <h2>DANN：ドメイン敵対的ニューラルネットワーク</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">GANの学習方法に着目し、ドメイン不変な特徴表現学習を実現</p>
+        </div>
+        
+        <h3>Ben-David [32] による理論的背景</h3>
+        <div class="formula-box">
+            <p>目標ドメインの期待リスクの上界：</p>
+            $$R_T(h) \leq R_S(h) + D_{\mathcal{H}\Delta\mathcal{H}}(P_X^S, P_X^T) + \inf_{h \in \mathcal{H}} \{R_S(h) + R_T(h)\} \quad (4.50)$$
+        </div>
+        
+        <div class="note">
+            <p>この上界の3項を参照すると：</p>
+            <ol>
+                <li><strong>第1項</strong>：仮説 $h$ に対する元ドメインの期待リスク</li>
+                <li><strong>第2項</strong>：両ドメインの入力分布に関する不一致度</li>
+                <li><strong>第3項</strong>：両ドメインのラベル関数の不一致度</li>
+            </ol>
+        </div>
+        
+        <p>→ DANNでは右辺第1、2項を最小化してドメイン不変な特徴を獲得し、$R_T(h)$を小さくする仮説を学習</p>
+    </div>
+
+    <!-- スライド4: DANNのアーキテクチャ -->
+    <div class="slide">
+        <h2>DANNのネットワーク構造</h2>
+        
+        <div class="image-placeholder">
+            図4.13：DANNのネットワークモデル<br>
+            特徴抽出器 $G_f$ がGANにおける生成器に相当<br>
+            ラベル識別器 $G_y$ と ドメイン識別器 $G_d$ が存在<br>
+            勾配反転層（GRL）によって $\mathcal{L}_d$ の勾配を反転
+        </div>
+        
+        <h3>DANNの3つの構成要素</h3>
+        <table>
+            <tr>
+                <th>コンポーネント</th>
+                <th>パラメータ</th>
+                <th>役割</th>
+            </tr>
+            <tr>
+                <td>特徴抽出器 $G_f(\cdot; \theta_f)$</td>
+                <td>$\theta_f = (W, b) \in \mathbb{R}^{D \times d} \times \mathbb{R}^D$</td>
+                <td>ドメイン不変な特徴表現を抽出</td>
+            </tr>
+            <tr>
+                <td>ラベル識別器 $G_y(\cdot; \theta_y)$</td>
+                <td>$\theta_y = (V, c) \in \mathbb{R}^{L \times D} \times \mathbb{R}^L$</td>
+                <td>クラスラベルを予測</td>
+            </tr>
+            <tr>
+                <td>ドメイン識別器 $G_d(\cdot; \theta_d)$</td>
+                <td>$\theta_d = (u, z) \in \mathbb{R}^D \times \mathbb{R}$</td>
+                <td>元/目標ドメインを識別</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- スライド5: DANNの損失関数 -->
+    <div class="slide">
+        <h2>DANNの学習定式化</h2>
+        
+        <h3>各コンポーネントの出力</h3>
+        <div class="formula-box">
+            <ul style="list-style: none;">
+                <li>$G_f(x; \theta_f) := \mathrm{sigm}(Wx + b)$</li>
+                <li>$G_y(G_f(x; \theta_f); \theta_y) := \mathrm{softmax}(VG_f(x; \theta_f) + c)$</li>
+                <li>$G_d(G_f(x; \theta_f); \theta_d) := \mathrm{sigm}(u^T G_f(x; \theta_f) + z)$</li>
+            </ul>
+        </div>
+        
+        <h3>損失関数の定義</h3>
+        <div class="algorithm-box">
+            <h4>ラベル識別損失 $\mathcal{L}_y$</h4>
+            $$\mathcal{L}_y(G_y(G_f(x_i; \theta_f); \theta_y), y_i) = \log \frac{1}{[G_y(G_f(x_i; \theta_f); \theta_y)]_{y_i}}$$
+            
+            <h4>ドメイン識別損失 $\mathcal{L}_d$</h4>
+            $$\mathcal{L}_d(G_d(G_f(x_i; \theta_f); \theta_d), d_i) = d_i \log \frac{1}{G_d(G_f(x_i; \theta_f); \theta_d)} + (1-d_i) \log \frac{1}{1-G_d(G_f(x_i; \theta_f); \theta_d)}$$
+            
+            <p>ここで、$x_i, y_i, d_i$ はそれぞれ入力ベクトル、ラベル、ドメインを表す</p>
+        </div>
+    </div>
+
+    <!-- スライド6: DANNの最適化 -->
+    <div class="slide">
+        <h2>DANNの最適化戦略</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">ミニマックス問題による敵対的学習</p>
+        </div>
+        
+        <h3>最適化目的</h3>
+        <div class="formula-box">
+            $$\min_{\theta_f, \theta_y} \frac{1}{n_S} \sum_{i=1}^{n_S} \mathcal{L}_y(G_y(G_f(x_i^S; \theta_f); \theta_y), y_i^S) + \lambda \Omega(\theta_f) \quad (4.51)$$
+            
+            <p>ここで、$\Omega(\theta_f)$ は特徴抽出器のパラメータに対する正則化項</p>
+        </div>
+        
+        <h3>$\mathcal{H}$-ダイバージェンスの最小化</h3>
+        <p>元ドメインと目標ドメインの特徴表現 $\mathcal{F}_S(G_f) = \{G_f(x) | x \in \mathcal{X}_S\}$ および $\mathcal{F}_T(G_f) = \{G_f(x) | x \in \mathcal{X}_T\}$ について：</p>
+        
+        <div class="formula-box">
+            $$\hat{D}_H(P_F^S || P_F^T) = 2\left(1 - \min_h \left[\frac{1}{n_S} \sum_{i=1}^{n_S} \mathbb{1}[h(f_i^S) = 0] + \frac{1}{n_T} \sum_{i=1}^{n_T} \mathbb{1}[h(f_i^T) = 1]\right]\right)$$
+        </div>
+    </div>
+
+    <!-- スライド7: DANNの学習アルゴリズム -->
+    <div class="slide">
+        <h2>DANNの学習手順</h2>
+        
+        <h3>正則化項の導入</h3>
+        <div class="formula-box">
+            $$\Omega(\theta_f) = \max_{\theta_d} \left[\frac{1}{n_S} \sum_{i=1}^{n_S} \mathcal{L}_d(G_d(G_f(x_i^S; \theta_f); \theta_d), d_i) - \frac{1}{n_T} \sum_{i=1}^{n_T} \mathcal{L}_d(G_d(G_f(x_i^T; \theta_f); \theta_d), d_i)\right] \quad (4.52)$$
+        </div>
+        
+        <h3>統合目的関数</h3>
+        <div class="formula-box">
+            $$E(\theta_f, \theta_y, \theta_d) = \frac{1}{n_S} \sum_{i=1}^{n_S} \mathcal{L}_y(G_y(G_f(x_i; \theta_f); \theta_y), y_i) - \lambda \left(\frac{1}{n_S} \sum_{i=1}^{n_S} \mathcal{L}_d(G_d(G_f(x_i^S; \theta_f); \theta_d), d_i) + \frac{1}{n_T} \sum_{i=1}^{n_T} \mathcal{L}_d(G_d(G_f(x_i^T; \theta_f); \theta_d), d_i)\right) \quad (4.53)$$
+        </div>
+        
+        <div class="key-point-box">
+            <p class="key-point">ミニマックス問題として定式化</p>
+            $$\min_{\theta_f, \theta_y} \max_{\theta_d} E(\theta_f, \theta_y, \theta_d) \quad (4.54)$$
+        </div>
+    </div>
+
+    <!-- スライド8: 勾配反転層（GRL） -->
+    <div class="slide">
+        <h2>勾配反転層（Gradient Reversal Layer, GRL）</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">DANNの技術的イノベーション：単一ネットワークでミニマックス最適化を実現</p>
+        </div>
+        
+        <h3>GRLの動作原理</h3>
+        <ul>
+            <li>順方向計算：恒等写像として作用（入力をそのまま出力）</li>
+            <li>逆伝播時：勾配に $-1$ を掛けて符号を反転</li>
+        </ul>
+        
+        <div class="algorithm-box">
+            <h4>パラメータ更新則</h4>
+            <ul style="list-style: none;">
+                <li>$\theta_f \leftarrow \theta_f - \mu \left(\frac{\partial \mathcal{L}_y}{\partial \theta_f} - \lambda \frac{\partial \mathcal{L}_d}{\partial \theta_f}\right)$</li>
+                <li>$\theta_y \leftarrow \theta_y - \mu \frac{\partial \mathcal{L}_y}{\partial \theta_y}$</li>
+                <li>$\theta_d \leftarrow \theta_d - \mu \lambda \frac{\partial \mathcal{L}_d}{\partial \theta_d}$</li>
+            </ul>
+            <p style="margin-top: 10px;">※ 通常のSGDと同様に各損失の勾配を確率的勾配に置き換え</p>
+        </div>
+        
+        <div class="note">
+            <p>GRLにより、$\theta_f$ はラベルの識別には寄与しても、ドメインの識別には寄与しない特徴表現を抽出するように学習されます</p>
+        </div>
+    </div>
+
+    <!-- スライド9: ワッサースタイン距離への拡張 -->
+    <div class="slide">
+        <h2>ワッサースタイン距離に基づく不変表現学習</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">より安定した学習を実現する新たなアプローチ</p>
+        </div>
+        
+        <h3>Shen ら [262] による拡張</h3>
+        <p>ワッサースタイン距離を最小化するような敵対的表現学習を提案</p>
+        
+        <div class="formula-box">
+            <h4>1-ワッサースタイン距離（カントロヴィッチ-ルビンスタイン双対性）</h4>
+            $$D_W(P_F^S, P_F^T) = \sup_{G_d \in 1\text{-Lip}} \left[\mathbb{E}_{x \sim P_X^S}[G_d(G_f(x; \theta_f); \theta_d)] - \mathbb{E}_{x \sim P_X^T}[G_d(G_f(x; \theta_f); \theta_d)]\right] \quad (4.56)$$
+        </div>
+        
+        <div class="method-comparison">
+            <h4>ドメインクリティック損失</h4>
+            $$\mathcal{L}_\text{WD}(P_F^S, P_F^T) = \frac{1}{n_S} \sum_{i=1}^{n_S} G_d(G_f(x_i^S; \theta_f); \theta_d) - \frac{1}{n_T} \sum_{i=1}^{n_T} G_d(G_f(x_i^T; \theta_f); \theta_d) \quad (4.57)$$
+            
+            <p>ドメイン識別器 $G_d$ のパラメータ $\theta_d$ について最大化すると、ワッサースタイン距離 $D_{W,1}(P_F^S, P_F^T)$ の経験近似が得られます</p>
+        </div>
+    </div>
+
+    <!-- スライド10: リプシッツ制約の実装 -->
+    <div class="slide">
+        <h2>リプシッツ制約の実装</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">Gulrajaniら [116] による勾配ペナルティ法</p>
+        </div>
+        
+        <h3>従来のクリッピング手法の問題</h3>
+        <div class="note">
+            <p>ワッサースタインGANの訓練において、クリッピングによってモデル容量が低下し、勾配消失や勾配発散の問題が発生する可能性が指摘されています</p>
+        </div>
+        
+        <h3>勾配ペナルティによる解決</h3>
+        <div class="formula-box">
+            <p>ドメイン敵対的学習では、ドメイン識別器の勾配∇$G_d(f; \theta_d)$ に対して以下のような制約を加えます：</p>
+            $$\mathcal{L}_\text{grad}(\hat{f}) = (||\nabla_f G_d(\hat{f}; \theta_d)||_2 - 1)^2, \quad \hat{f} = f^S, f^T, f' \quad (4.59)$$
+            
+            <p>ここで、$f' = G_f(x'; \theta_f)$ および $f^S, f^T$ を結ぶ線分からランダムにサンプリングされた特徴量</p>
+        </div>
+        
+        <h3>WDIRL (Wasserstein Distance-based Invariant Representation Learning)</h3>
+        <div class="formula-box">
+            $$\min_{\theta_f} \max_{\theta_d} \mathcal{L}_\text{WD}(P_F^S, P_F^T) - \gamma \mathcal{L}_\text{grad}(\hat{f}) \quad (4.60)$$
+        </div>
+    </div>
+
+    <!-- スライド11: 多クラス分類への拡張 -->
+    <div class="slide">
+        <h2>多クラス分類問題への拡張</h2>
+        
+        <h3>目標ドメインのラベル識別器の同時学習</h3>
+        <p>DANNと同様に目標ドメインのラベル識別器 $G_y(\cdot; \theta_y)$ を同時学習します</p>
+        
+        <div class="definition-box">
+            <h4>1クラス分類から多クラス分類への拡張</h4>
+            <p>交差エントロピー損失：</p>
+            $$\mathcal{L}_y(\theta_f, \theta_y) = -\frac{1}{n_S} \sum_{i=1}^{n_S} \sum_{k=1}^{l} \mathbb{1}[y_i^S = k] \log[G_y(G_f(x_i^S; \theta_f); \theta_y)]_k \quad (4.61)$$
+            
+            <p>ここで、$[G_y(G_f(x; \theta_f); \theta_y)]_k$ はソフトマックス出力 $G_y(G_f(x; \theta_f); \theta_y)$ の $k$ 番目の要素</p>
+        </div>
+        
+        <h3>統合的な最適化問題</h3>
+        <div class="formula-box">
+            $$\min_{\theta_f, \theta_y} \left\{\mathcal{L}_y(\theta_f, \theta_y) + \lambda \max_{\theta_d} \left[\mathcal{L}_\text{WD}(P_X^S, P_X^T) - \gamma \mathcal{L}_\text{grad}(\hat{f})\right]\right\} \quad (4.62)$$
+        </div>
+    </div>
+
+    <!-- スライド12: アルゴリズムの更新手順 -->
+    <div class="slide">
+        <h2>ワッサースタイン距離に基づく転移学習アルゴリズム</h2>
+        
+        <div class="algorithm-box">
+            <h4>各パラメータの更新手順</h4>
+            <ol>
+                <li>$\theta_d \leftarrow \theta_d + \alpha_1 \nabla_{\theta_d}[\mathcal{L}_\text{WD}(P_X^S, P_X^T) - \gamma \mathcal{L}_\text{grad}(\hat{f})]$</li>
+                <li>$\theta_y \leftarrow \theta_y - \alpha_2 \nabla_{\theta_y} \mathcal{L}_y(\theta_f, \theta_y)$</li>
+                <li>$\theta_f \leftarrow \theta_f - \alpha_2 \nabla_{\theta_f}[\mathcal{L}_y(\theta_f, \theta_y) + \mathcal{L}_\text{WD}(P_X^S, P_X^T)]$</li>
+            </ol>
+        </div>
+        
+        <h3>理論的保証</h3>
+        <div class="note">
+            <p>ワッサースタイン距離に基づく不変表現学習は、定理3.15で得られたワッサースタイン距離に基づく目標ドメインの期待リスクの上界と自然に関係します</p>
+            <p>不変表現学習によって $P_X^S$ と $P_X^T$ 間のワッサースタイン距離を小さくすることで、定理3.15の期待リスク上界を小さくすることができます</p>
+        </div>
+    </div>
+
+    <!-- スライド13: 深層学習ベースのドメイン適応の意義 -->
+    <div class="slide">
+        <h2>深層学習に基づく特徴ベースのドメイン適応</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">ニューラルネットワークの中間層で両ドメインに共通な不変特徴表現を獲得する手法に注目</p>
+        </div>
+        
+        <h3>手法の特徴と利点</h3>
+        <ul>
+            <li>不変性は汎用性も高く実用的なアプローチ</li>
+            <li>深層ニューラルネットワークの表現学習能力を活用</li>
+            <li>教師なし設定での転移学習が可能</li>
+        </ul>
+        
+        <h3>限界の認識</h3>
+        <div class="note">
+            <p>不変性のみを指標とする学習では不十分である可能性がいくつかの研究で指摘されています</p>
+            <p>今後の研究で、より洗練された手法の開発が期待されています</p>
+        </div>
+        
+        <div class="big-text">次節：4.5 不変性に基づく教師なしドメイン適応の限界</div>
+    </div>
+       <!-- セクション開始 -->
+       <div class="slide divider-slide">
+        <h1>4.5.1 実験的な限界の示唆</h1>
+    </div>
+
+    <!-- スライド1: 不変表現学習の課題 -->
+    <div class="slide">
+        <h2>不変表現学習の課題と限界</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">不変性のみを指標とする学習では不十分である可能性</p>
+        </div>
+        
+        <h3>4.4.4節までの振り返り</h3>
+        <ul>
+            <li>ニューラルネットワークの中間層で両ドメインに共通な不変特徴表現を獲得する方法に注目</li>
+            <li>DANNに代表される敵対的生成ネットワークに基づく不変な特徴量の獲得は実用性の観点からも重要視</li>
+            <li>不変表現学習は汎用性も高く実用的なアプローチ</li>
+        </ul>
+        
+        <div class="warning">
+            <p><strong>しかし、不変な特徴表現が抽出できていればドメイン適応を行うには十分なのでしょうか？</strong></p>
+        </div>
+        
+        <p>本節では、特徴表現の不変性のみではドメイン適応を行ううえでは不十分な場合があることを例示します。</p>
+    </div>
+
+    <!-- スライド2: 理論的背景と問題点 -->
+    <div class="slide">
+        <h2>DANNの理論的背景と同時リスクの無視</h2>
+        
+        <div class="formula-box">
+            <p>目標ドメインの期待リスク上界（4.50）：</p>
+            $$R_T(h) \leq R_S(h) + D_{\mathcal{H}\Delta\mathcal{H}}(P_X^S, P_X^T) + \inf_{h \in \mathcal{H}} \{R_S(h) + R_T(h)\}$$
+        </div>
+        
+        <h3>DANNなどの不変表現学習の問題点</h3>
+        <div class="problem-box">
+            <p>多くの不変表現学習手法は目標ドメインの期待リスク上界(4.50)やその変種に基づいて開発されています。</p>
+            <p><strong>しかし</strong>、教師なし転移学習の設定では上界の右辺第3項は扱うことのできない定数項としてそのまま上界に残ってしまうことになります。</p>
+        </div>
+        
+        <div class="note">
+            <p>この項を無視して(4.50)の右辺第1、2項のみを最小化するアプローチがうまくドメイン適応を実現するためには、例えば共変量シフトのような強い仮定をおく必要があります。</p>
+        </div>
+        
+        <div class="formula-box">
+            <p>同時リスク（右辺第3項）：</p>
+            $$\lambda = \inf_{h \in \mathcal{H}} R_S(h) + R_T(h)$$
+        </div>
+    </div>
+
+    <!-- スライド3: 共変量シフト仮定の問題 -->
+    <div class="slide">
+        <h2>共変量シフト仮定の問題点</h2>
+        
+        <h3>共変量シフト仮定</h3>
+        <div class="definition-box">
+            <p>両ドメインでラベル関数を表す条件付き確率の一致：</p>
+            $$P_{y|x}^S = P_{y|x}^T$$
+        </div>
+        
+        <h3>この仮定の問題</h3>
+        <div class="warning">
+            <p>この仮定があれば、ある一つの仮説で両ドメインの期待リスクを小さくすることができるため、上記の $\lambda$ は小さいことが期待できます。</p>
+            <p><strong>しかし</strong>、このような仮定をおくことができない場合、$\lambda$ が小さいことを保証することができず、図4.14のように転移がうまくいかない可能性があります [252]。</p>
+        </div>
+        
+        <div class="image-placeholder">
+            図4.14：教師なし転移学習が失敗する例 [252]<br>
+            教師なし転移学習は、目標ドメインのラベル識別器を考慮せずに両ドメインの分布を合わせるため、<br>
+            生成される特徴表現にドメイン固有の識別情報をうまく取り込めない可能性があります
+        </div>
+    </div>
+
+    <!-- スライド4: Liu らの実験的検証 -->
+    <div class="slide">
+        <h2>Liu ら [184] による実験的検証</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">VisDA-17データセットを用いた同時リスクの実証的分析</p>
+        </div>
+        
+        <h3>実験設定</h3>
+        <div class="experiment-box">
+            <ul>
+                <li><strong>データセット</strong>：VisDA-17（人工データを元ドメイン、実データを目標ドメイン）</li>
+                <li><strong>分析対象</strong>：元ドメインの期待リスク $R_S(h)$、目標ドメインの期待リスク $R_T(h)$、同時リスク $\lambda$</li>
+                <li><strong>手法</strong>：DANN のようなドメイン不変な特徴表現を学習する方法</li>
+            </ul>
+        </div>
+        
+        <div class="image-placeholder">
+            図4.15：Liu ら [184] による実験的な同時リスクの検証<br>
+            VisDA-17データセット（左：Synthetic元ドメイン、右：Real目標ドメイン）<br>
+            DANN のようなドメイン不変な表現学習のみを行う手法では、<br>
+            同時リスク $R_S(h) + R_T(h)$ が大きくなるような仮説が学習されてしまっています
+        </div>
+        
+        <div class="note">
+            <p>得られた仮説 $h$ の同時リスクが非常に大きくなってしまっていることがわかります。</p>
+        </div>
+    </div>
+
+    <!-- スライド5: Zhao らの単純な例 -->
+    <div class="slide">
+        <h2>Zhao ら [349] による理論的説明</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">ドメイン不変な表現学習が同時リスクを大きくしてしまう簡単な例</p>
+        </div>
+        
+        <div class="image-placeholder">
+            図4.16：Zhao ら [349] によるドメイン不変な表現学習が同時リスクを大きくしてしまう例<br>
+            変換前の状態では、$x \in [-0.5, 0.5]$ のとき $h(x) = 1$、それ以外のとき $h(x) = 0$ となるような仮説 $h$ をとると同時リスクを 0 にできます。<br>
+            一方、$g$ による変換後には両ドメインは完全に一致していますが、どんな仮説も同時リスクを小さくすることはできません。
+        </div>
+        
+        <h3>例の詳細</h3>
+        <div class="formula-box">
+            <p>変換写像：</p>
+            $$g(x) = (x + 1)\mathbb{I}_{x \leq 0}(x) + (x - 1)\mathbb{I}_{x > 0}$$
+        </div>
+        
+        <div class="note">
+            <p>この例は、ドメイン不変な特徴表現を獲得することで、むしろ両ドメインの分類性能が悪化する可能性があることを示しています。</p>
+        </div>
+    </div>
+
+    <!-- スライド6: 不変性と同時リスクの関係 -->
+    <div class="slide">
+        <h2>4.5.2 不変性と同時リスクの関係</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">特徴表現のドメイン不変性（(4.50)の右辺第2項の最小化）と同時リスクの間にはどのような関係があるでしょうか？</p>
+        </div>
+        
+        <h3>Zhao ら [349] の Theorem 4.1 への導入</h3>
+        <p>これに関して、以下に示す目標ドメインの期待リスク上界からいくつかの示唆を得ることができます。</p>
+        
+        <div class="note">
+            <p>次節では、この理論的関係について詳しく説明します。</p>
+        </div>
+        
+        <div class="big-text">
+            次節では、理論的な解析を通じて不変性と同時リスクの複雑な関係を明らかにします
+        </div>
+    </div>
+        <!-- セクション開始 -->
+        <div class="slide divider-slide">
+            <h1>4.5.2 不変性と同時リスクの関係</h1>
+        </div>
+    
+        <!-- スライド1: 問題の背景と動機 -->
+        <div class="slide">
+            <h2>問題の背景と動機</h2>
+            
+            <div class="key-point-box">
+                <p class="key-point">特徴表現のドメイン不変性（(4.50)の右辺第2項の最小化）と同時リスクの間にはどのような関係があるでしょうか？</p>
+            </div>
+            
+            <div class="image-placeholder">
+                図4.16の振り返り：Zhao ら [349] によるドメイン不変な表現学習が同時リスクを大きくしてしまう例<br>
+                変換前の状態では、$x \in [-0.5, 0.5]$ のとき $h(x) = 1$、それ以外のとき $h(x) = 0$ となるような仮説 $h$ をとると同時リスクを 0 にできます。<br>
+                一方、$g$ による変換後には両ドメインは完全に一致していますが、どんな仮説も同時リスクを小さくすることはできません。
+            </div>
+            
+            <div class="note">
+                <p>これに関して、以下に示す目標ドメインの期待リスク上界からいくつかの示唆を得ることができます（Zhao ら [349] の Theorem 4.1）。</p>
+            </div>
+        </div>
+    
+        <!-- スライド2: 定理4.5の導入 -->
+        <div class="slide">
+            <h2>Zhao ら [349] による定理4.5</h2>
+            
+            <div class="theorem-box">
+                <h4>定理 4.5</h4>
+                <p>$f^S, f^T : \mathcal{X} \to [0, 1]$ をそれぞれ元ドメインと目標ドメインの真のラベル関数とします。$\mathcal{H} = \{h : \mathcal{X} \to [0, 1]\}$ を仮説集合とします。</p>
+                <p>このとき、任意の $h \in \mathcal{H}$ に対して</p>
+                
+                <div class="formula-box">
+                    $$R_T(h) \leq R_S(h) + D_{H\Delta H}(P^S(X), P^T(X))$$
+                    $$+ \min \left\{ \mathbb{E}_{x \sim P^S(x)}[|f^S(x) - f^T(x)|], \mathbb{E}_{x \sim P^T(x)}[|f^S(x) - f^T(x)|] \right\} \quad (4.64)$$
+                </div>
+                
+                <p>が成り立ちます。</p>
+            </div>
+        </div>
+    
+        <!-- スライド3: 定理4.5と既存上界の比較 -->
+        <div class="slide">
+            <h2>定理4.5と既存上界(4.50)の比較</h2>
+            
+            <div class="comparison-box">
+                <h3>(4.64) の右辺第1、2項は目標ドメインの期待リスク上界 (4.50) の右辺第1、2項と同じもの</h3>
+                
+                <h4>二つの期待リスク上界の違い：第3項にあり</h4>
+                <ul>
+                    <li><strong>(4.50) の右辺第3項</strong>：同時リスクは仮説集合 $\mathcal{H}$ のとり方に依存して決まる</li>
+                    <li><strong>(4.64) の右辺第3項</strong>：$\mathcal{H}$ への依存はありません</li>
+                </ul>
+            </div>
+            
+            <div class="note">
+                <p>(4.50) では、元ドメインと目標ドメインのラベル関数が共通であることを暗黙に想定していました。</p>
+                <p>一方、(4.64) ではその仮定は外されています。</p>
+            </div>
+        </div>
+    
+        <!-- スライド4: 具体例による検証 -->
+        <div class="slide">
+            <h2>図4.16の例による具体的な検証</h2>
+            
+            <div class="formula-box">
+                <p>仮説集合 $\mathcal{H}$ を以下のように定義：</p>
+                $$\mathcal{H} = \left\{h(x) = \begin{cases} 
+                0 & a \leq x \leq b \\
+                1 & \text{otherwise}
+                \end{cases} \Bigg| a < b \right\}$$
+            </div>
+            
+            <div class="key-point-box">
+                <p class="key-point">図4.16の例で具体的に両者を計算してみると：</p>
+                <ul>
+                    <li>$\lambda = 1$ であるのに対して</li>
+                    <li>(4.64) の右辺第3項は $1/2$ となり</li>
+                    <li>より精緻（tight）な上界が得られることがわかります</li>
+                </ul>
+            </div>
+            
+            <div class="note">
+                <p>さて、同時リスクが小さくなる場合の例として共変量シフトの仮定 $(f^S = f^T)$ がありました。</p>
+            </div>
+        </div>
+    
+        <!-- スライド5: 共変量シフトの場合の解析 -->
+        <div class="slide">
+            <h2>共変量シフトが成り立つときの解析</h2>
+            
+            <div class="definition-box">
+                <h3>共変量シフト仮定：$f^S = f^T$</h3>
+                <p>共変量シフトが成り立つとき、(4.64) の右辺第3項は完全に 0 となります。</p>
+            </div>
+            
+            <div class="insight-box">
+                <h4>重要な洞察</h4>
+                <p>この場合、(4.50) または (4.64) の右辺第1、2項、すなわち元ドメインの期待リスクと両ドメインの入力分布の不一致度を小さくすれば目標ドメインの期待リスクも小さいことが保証されます。</p>
+                
+                <p><strong>したがって</strong>、共変量シフトの下では特徴量のドメイン不変性が本質的に重要であるといえます。</p>
+            </div>
+            
+            <div class="warning">
+                <p><strong>一方</strong>、一般の $f^S \neq f^T$ の場合、(4.64) の上界は、右辺第1、2項の最小化、すなわち不変な表現学習だけでは不十分であり、真のラベル関数 $f^S$ と $f^T$ が十分近い必要があることを明示しています。</p>
+            </div>
+        </div>
+    
+        <!-- スライド6: ドメイン横断的なリスクの意味 -->
+        <div class="slide">
+            <h2>ドメイン横断的なリスクの解釈</h2>
+            
+            <div class="formula-box">
+                <p>期待値の意味を考えると：</p>
+                $$\mathbb{E}_{x \sim P^S(x)}[|f^S(x) - f^T(x)|] = R_S(f^T)$$
+                $$\mathbb{E}_{x \sim P^T(x)}[|f^S(x) - f^T(x)|] = R_T(f^S)$$
+            </div>
+            
+            <div class="note">
+                <p>これらはドメイン横断的なリスクを表しており：</p>
+                <ul>
+                    <li>$R_T(f^S)$ が小さいとき：$f^S$ は目標ドメインで高い汎化性能を持つ</li>
+                    <li>$R_S(f^T)$ について同様</li>
+                </ul>
+            </div>
+            
+            <h3>Jensen-Shannon ダイバージェンスによる解析</h3>
+            <div class="formula-box">
+                <p>Zhao ら [349] による同時リスクに対する情報論的下界について説明します。二つの確率分布 $P_Y^S, P_Y^T$ に対するJensen-Shannon ダイバージェンス（JS ダイバージェンス）は</p>
+                
+                $$D_{\text{JS}}(P^T || P^S) = \frac{1}{2}D_{\text{KL}}(P^T || P^M) + \frac{1}{2}D_{\text{KL}}(P^S || P^M) \quad (4.65)$$
+                
+                <p>で定義されました（(2.15) を参照）。ここで、$P^M = (P^S + P^T)/2$ です。</p>
+            </div>
+        </div>
+    
+        <!-- スライド7: マルコフ連鎖の考察 -->
+        <div class="slide">
+            <h2>マルコフ連鎖による理論的解析</h2>
+            
+            <div class="formula-box">
+                <p>入力 $X$ からある特徴抽出器 $g$ によって特徴量 $Z$ を抽出し、$Z$ から仮説 $h$ によって出力 $Y$ を予測する以下のようなマルコフ連鎖を考えましょう：</p>
+                
+                $$X \xrightarrow{g} Z \xrightarrow{h} Y$$
+            </div>
+            
+            <div class="note">
+                <p>この系列によって、各ドメインの入力分布 $P^S(X), P^T(X)$ から、特徴空間の分布 $P^S(Z), P^T(Z)$ および出力空間の分布 $P^S(Y), P^T(Y)$ が誘導されます。</p>
+                <p>このとき、以下の主張が成り立ちます（Zhao ら [349] の Theorem 4.3）。</p>
+            </div>
+        </div>
+    
+        <!-- スライド8: 定理4.6 -->
+        <div class="slide">
+            <h2>定理4.6：同時リスクの下界</h2>
+            
+            <div class="theorem-box">
+                <h4>定理 4.6</h4>
+                <p>$d_{\text{JS}}(P^T(Y), P^S(Y)) = \sqrt{D_{\text{JS}}(P^T(Y) || P^S(Y))}$ とし、</p>
+                
+                $$d_{\text{JS}}(P^T(Y), P^S(Y)) \geq d_{\text{JS}}(P^T(Z), P^S(Z))$$
+                
+                <p>を仮定します。このとき、以下のような同時リスクの下界が成り立ちます。</p>
+                
+                <div class="formula-box">
+                    $$R_S(h \circ g) + R_T(h \circ g) \geq \frac{1}{2} \left(d_{\text{JS}}(P^T(Y), P^S(Y)) - d_{\text{JS}}(P^T(Z), P^S(Z))\right)^2 \quad (4.66)$$
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <h4>定理4.6の重要な含意</h4>
+                <p>もしラベル分布が両ドメインで大きく異なっている場合、$d_{\text{JS}}(P^T(Z), P^S(Z))$ の最小化による特徴空間での分布マッチングは目標ドメインの期待リスク $R_T(h \circ g)$ を悪化させることがわかります。</p>
+            </div>
+        </div>
+    
+        <!-- スライド9: 転移学習成功の必要条件 -->
+        <div class="slide">
+            <h2>転移学習成功の必要条件</h2>
+            
+            <div class="key-point-box">
+                <p class="key-point">また、そのようにして得られた特徴抽出器 $g$ を用いて元ドメインでの期待リスク最小化を行うことも、目標ドメインの期待リスクを悪化させる可能性があります。</p>
+            </div>
+            
+            <div class="note">
+                <p>すなわちこの定理は、ドメイン不変な表現学習に基づく転移学習が成功するための必要条件を示していると解釈できます。</p>
+            </div>
+            
+            <div class="warning">
+                <p>なお、定理4.6の主張は特徴抽出器がドメインごとに異なる場合でも同様に成り立ちます（Zhao ら [349] の Corollary 4.1）。</p>
+            </div>
+            
+            <h3>不可能性定理の一種としての解釈</h3>
+            <div class="comparison-box">
+                <p>以上の考察は、3.2.2節で議論した不可能性定理の一種であるとみなすことができます。</p>
+                <p><strong>したがって</strong>、不変性のみに基づく転移学習の失敗は、要請された仮定を満たさない問題において一般的に起こりうる現象であるといえます。</p>
+            </div>
+        </div>
     <!-- 4.6 まとめ -->
     <div class="slide divider-slide">
         <h1>4.6 まとめ</h1>
     </div>
 
-    <!-- 第4章の総括 -->
-    <div class="slide">
-        <h2>第4章の総括</h2>
-        
-        <h3>本章で学んだこと</h3>
-        <ul>
-            <li><strong>事例ベースのドメイン適応</strong>
-                <ul>
-                    <li>重要度重み付き学習（IWL）</li>
-                    <li>転移アダブースト（TrAdaBoost）</li>
-                </ul>
-            </li>
-            <li><strong>特徴ベースのドメイン適応</strong>
-                <ul>
-                    <li>ドメイン不変表現学習</li>
-                    <li>非対称型・対称型の手法</li>
-                </ul>
-            </li>
-            <li><strong>深層学習ベースの手法</strong>
-                <ul>
-                    <li>深層ニューラルネットワークによる表現学習</li>
-                    <li>敵対的ドメイン適応</li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-    <!-- ドメイン適応手法の比較 -->
     <div class="slide">
         <h2>ドメイン適応手法の比較</h2>
+        <p style="margin-bottom: 20px;">表 4.1 データに基づくドメイン適応の方法のまとめ。手法ごとにドメインシフトの種別、何を転移するか、元ドメインおよび目標ドメインでラベルありデータが必要か否かを示しています。</p>
         
-        <table>
-            <tr>
-                <th>手法の分類</th>
-                <th>主な手法</th>
-                <th>特徴</th>
-                <th>適用場面</th>
-            </tr>
-            <tr>
-                <td>事例ベース</td>
-                <td>IWL, TrAdaBoost</td>
-                <td>データ点に重みを付ける</td>
-                <td>共変量シフトがある場合</td>
-            </tr>
-            <tr>
-                <td>特徴ベース（非対称）</td>
-                <td>TLRisk, ARC-t, MMDT</td>
-                <td>元→目標への変換</td>
-                <td>目標ドメインにラベルがある場合</td>
-            </tr>
-            <tr>
-                <td>特徴ベース（対称）</td>
-                <td>aPLSA, HeMAP, HMA</td>
-                <td>共通空間への写像</td>
-                <td>両ドメインの構造を保持したい場合</td>
-            </tr>
-            <tr>
-                <td>深層学習ベース</td>
-                <td>DAN, CORAL, DANN</td>
-                <td>DNNによる自動特徴抽出</td>
-                <td>大規模データ、複雑なタスク</td>
-            </tr>
+        <div style="display: flex; gap: 20px; margin-bottom: 20px; justify-content: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="domain-homogeneous" style="padding: 4px 12px; border-radius: 4px;">同質的</span>
+                <span style="font-size: 14px;">元ドメインと目標ドメインの特徴空間が同じ</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="domain-heterogeneous" style="padding: 4px 12px; border-radius: 4px;">異質的</span>
+                <span style="font-size: 14px;">元ドメインと目標ドメインの特徴空間が異なる</span>
+            </div>
+        </div>
+        
+        <table style="font-size: 14px;">
+            <thead>
+                <tr>
+                    <th>手法</th>
+                    <th>ドメインシフト</th>
+                    <th>何を転移するか</th>
+                    <th>元ドメイン</th>
+                    <th>目標ドメイン</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>IWL（4.2.1節）</td>
+                    <td class="domain-homogeneous">同質的</td>
+                    <td>事例転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-no">ラベルなし</td>
+                </tr>
+                <tr>
+                    <td>TrAdaBoost（4.2.2節）</td>
+                    <td class="domain-homogeneous">同質的</td>
+                    <td>事例転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-yes">ラベルあり</td>
+                </tr>
+                <tr class="section-divider">
+                    <td colspan="5" style="background-color: #f0f0f0; padding: 8px;"><em>［元ドメインの特徴を目標ドメインの特徴に変換するアプローチ］</em></td>
+                </tr>
+                <tr>
+                    <td>TLRisk（4.3.2.1節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-yes">ラベルあり</td>
+                </tr>
+                <tr>
+                    <td>ARC-t（4.3.2.2節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-yes">ラベルあり</td>
+                </tr>
+                <tr>
+                    <td>MMDT（4.3.2.3節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-yes">ラベルあり</td>
+                </tr>
+                <tr>
+                    <td>CDKPL（4.3.2.4節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-yes">ラベルあり</td>
+                </tr>
+                <tr class="section-divider">
+                    <td colspan="5" style="background-color: #f0f0f0; padding: 8px;"><em>［両ドメインに共通の潜在因子を学習するアプローチ］</em></td>
+                </tr>
+                <tr>
+                    <td>aPLSA（4.3.3.1節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-no">ラベルなし</td>
+                    <td class="label-no">ラベルなし</td>
+                </tr>
+                <tr>
+                    <td>HeMAP（4.3.3.1節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-no">ラベルなし</td>
+                    <td class="label-no">ラベルなし</td>
+                </tr>
+                <tr class="section-divider">
+                    <td colspan="5" style="background-color: #f0f0f0; padding: 8px;"><em>［両ドメインに共通の特徴量を学習するアプローチ］</em></td>
+                </tr>
+                <tr>
+                    <td>HMA（4.3.3.2節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-yes">ラベルあり</td>
+                </tr>
+                <tr>
+                    <td>HFA（4.3.3.3節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-yes">ラベルあり</td>
+                </tr>
+                <tr>
+                    <td><span class="key-point">DIWL</span>（4.4.2.2節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-yes">ラベルあり</td>
+                </tr>
+                <tr class="section-divider">
+                    <td colspan="5" style="background-color: #f0f0f0; padding: 8px;"><em>［オートエンコーダで両ドメインに共通の特徴量を表現学習するアプローチ］</em></td>
+                </tr>
+                <tr>
+                    <td><span class="key-point">TLDA</span>（4.4.3節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-no">ラベルなし</td>
+                </tr>
+                <tr>
+                    <td><span class="key-point">MTAE</span>（4.4.3節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-no">ラベルなし</td>
+                    <td class="label-no">ラベルなし</td>
+                </tr>
+                <tr class="section-divider">
+                    <td colspan="5" style="background-color: #f0f0f0; padding: 8px;"><em>［敵対的訓練で両ドメインに共通の特徴量を表現学習するアプローチ］</em></td>
+                </tr>
+                <tr>
+                    <td><span class="key-point">CoGAN</span>（4.4.4節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-no">ラベルなし</td>
+                    <td class="label-no">ラベルなし</td>
+                </tr>
+                <tr>
+                    <td><span class="key-point">DANN</span>（4.4.4節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-no">ラベルなし</td>
+                </tr>
+                <tr>
+                    <td><span class="key-point">WDIRL</span>（4.4.4節）</td>
+                    <td class="domain-heterogeneous">異質的</td>
+                    <td>特徴転移</td>
+                    <td class="label-yes">ラベルあり</td>
+                    <td class="label-no">ラベルなし</td>
+                </tr>
+            </tbody>
         </table>
+        
+        <div class="note">
+            <p><strong>凡例：</strong></p>
+            <ul style="list-style: none; padding-left: 0;">
+                <li>• <span class="key-point">赤字</span>：深層学習に基づく手法</li>
+                <li>• <span class="label-yes" style="padding: 2px 8px; border-radius: 3px;">ラベルあり</span>：ラベル付きデータが必要</li>
+                <li>• <span class="label-no" style="padding: 2px 8px; border-radius: 3px;">ラベルなし</span>：ラベルなしデータで学習可能</li>
+            </ul>
+        </div>
     </div>
 
-    <!-- 今後の展望 -->
     <div class="slide">
-        <h2>今後の展望</h2>
+        <h2>不変表現学習の特性と限界</h2>
         
-        <h3>ドメイン適応研究の方向性</h3>
-        <ul>
-            <li><strong>理論的な保証の強化</strong>
-                <ul>
-                    <li>転移可能性の事前評価</li>
-                    <li>汎化誤差の理論的解析</li>
-                </ul>
-            </li>
-            <li><strong>実用的な拡張</strong>
-                <ul>
-                    <li>複数ドメインへの同時適応</li>
-                    <li>継続的なドメイン適応</li>
-                    <li>限定的なラベル情報での学習</li>
-                </ul>
-            </li>
-            <li><strong>新しいアプリケーション</strong>
-                <ul>
-                    <li>医療画像解析</li>
-                    <li>自動運転</li>
-                    <li>自然言語処理</li>
-                </ul>
-            </li>
-        </ul>
-
-        <div class="note">
-            ドメイン適応は転移学習の中核的な技術として、今後も発展が期待される分野です。
+        <div class="definition-box">
+            <h4>本章で明らかになった重要な知見</h4>
+            <p>不変表現学習をキーワードとして、その特性と利点および限界についても説明しました。</p>
         </div>
+        
+        <h3>不変性のみに注目することの問題</h3>
+        <div style="background-color: #ffebee; border-left: 5px solid #f44336; padding: 15px; margin: 20px 0;">
+            <p><strong>重要な指摘：</strong>元ドメインと目標ドメインのラベルの非類似性を無視して表現学習を行ってしまうという点を掘り下げました。</p>
+        </div>
+        
+        <div class="note">
+            <h4>4.5節での理論的解析</h4>
+            <ul>
+                <li><strong>定理4.5</strong>：新しい期待リスク上界の導出（仮説集合への依存を除去）</li>
+                <li><strong>定理4.6</strong>：Jensen-Shannon ダイバージェンスを用いた同時リスクの下界</li>
+                <li><strong>不可能性定理</strong>：不変性のみに基づく転移学習の失敗は一般的現象</li>
+            </ul>
+        </div>
+    </div>
+    <!-- スライド5: 次章への展望 -->
+    <div class="slide">
+        <h2>今後の展望と次章への橋渡し</h2>
+        
+        <div style="background-color: #f3e5f5; border: 2px solid #9c27b0; border-radius: 5px; padding: 20px; margin: 20px 0;">
+            <h4>ラベル非類似性問題への対処法</h4>
+            <p>この問題に対する一つのアプローチとして、<span class="highlight">目標ドメインで少量の教師ラベルを取得して利用する</span>ことが考えられます。</p>
+        </div>
+        
+        <div style="background-color: #fff3e0; border: 2px solid #ff9800; border-radius: 5px; padding: 15px; margin: 20px 0;">
+            <p class="key-point">このアプローチに関しては、5章の後半でいくつかの実現方法を紹介します。</p>
+        </div>
+        
+        <h3>第5章で扱う発展的トピック</h3>
+        <ul>
+            <li>半教師ありドメイン適応</li>
+            <li>少数ショット学習との組み合わせ</li>
+            <li>より効果的な転移戦略</li>
+            <li>実用的な応用手法</li>
+        </ul>
     </div>
 </div>
 
