@@ -67,14 +67,16 @@
         h3 {
             font-size: 22px;
             color: #333;
-            margin-top: 20px;
+            margin-top: 25px;
+            margin-bottom: 15px;
         }
         ul, ol {
             font-size: 18px;
             margin-left: 25px;
         }
         li {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            line-height: 1.7;
         }
         .highlight {
             background-color: #ffeb3b;
@@ -106,8 +108,11 @@
         }
         .equation {
             text-align: center;
-            margin: 25px 0;
+            margin: 30px 0;
             font-size: 20px;
+            padding: 15px 0;
+            background-color: #f8f9fa;
+            border-radius: 8px;
         }
         .two-col {
             display: flex;
@@ -120,18 +125,31 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 25px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
         th, td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
             border: 1px solid #ddd;
+            line-height: 1.6;
         }
         th {
             background-color: #f2f2f2;
+            font-weight: bold;
+            font-size: 16px;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
+        }
+        td ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        td li {
+            margin-bottom: 8px;
         }
         .label-yes {
             background-color: #c8e6c9;
@@ -204,6 +222,7 @@
         p {
             font-size: 18px;
             line-height: 1.8;
+            margin-bottom: 20px;
         }
         .big-text {
             font-size: 24px;
@@ -228,6 +247,48 @@
         .definition-box {
             background-color: #f3f8ff;
             border: 1px solid #0078d7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-left: 5px solid #ff9800;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        .warning p {
+            margin: 10px 0;
+            color: #856404;
+        }
+        .warning strong {
+            color: #ff6f00;
+        }
+        .insight-box {
+            background-color: #e8f4fd;
+            border: 1px solid #1976d2;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .insight-box h4 {
+            color: #1565c0;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .comparison-box {
+            background-color: #f5f5f5;
+            border: 1px solid #9e9e9e;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .experiment-box {
+            background-color: #f3e5f5;
+            border: 1px solid #9c27b0;
             border-radius: 5px;
             padding: 15px;
             margin: 20px 0;
@@ -283,6 +344,24 @@
             font-size: 12px;
             color: #666;
             font-family: Arial, sans-serif;
+        }
+        .transition-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .transition-box h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .transition-box p {
+            color: white;
+            font-size: 18px;
+            margin: 10px 0;
         }
     </style>
     <script>
@@ -358,6 +437,22 @@
     <!-- 4.1 セクション開始 -->
     <div class="slide divider-slide">
         <h1>4.1 データに基づくドメイン適応の概要</h1>
+    </div>
+
+    <!-- 導入スライド -->
+    <div class="slide">
+        <h2>第4章で学ぶこと</h2>
+        
+        <div class="big-text">
+            <p>異なるドメイン間でのデータ転移を可能にする</p>
+            <p><strong>2つの基本的なアプローチ</strong>を理解する</p>
+        </div>
+        
+        <div class="insight-box">
+            <h4>なぜドメイン適応が必要か？</h4>
+            <p>訓練データ（元ドメイン）とテストデータ（目標ドメイン）の分布が異なる場合、通常の機械学習手法では性能が大幅に低下します。</p>
+            <p>ドメイン適応は、この分布の違いを考慮した学習を可能にします。</p>
+        </div>
     </div>
 
     <!-- ドメイン適応とは -->
@@ -796,7 +891,7 @@
 
     <!-- 期待リスクの変形 -->
     <div class="slide">
-        <h2>共変量シフト下での期待リスクの変形</h2>
+        <h2>共変量シフト下での期待リスクの変形 (1/2)</h2>
         
         <h3>期待リスクの書き換え</h3>
         <div class="equation">
@@ -809,6 +904,17 @@
             $R_T(h) = \int\int_{(\mathbf{x},y)} \ell(h(\mathbf{x}), y) p^T(\mathbf{x}, y) d(\mathbf{x}, y)$
         </div>
 
+        <div class="note">
+            <p>期待値の定義に基づいて、確率密度関数を使った積分形式に書き換えています。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>共変量シフト下での期待リスクの変形 (2/2)</h2>
+        
+        <h3>確率密度の分解と変形</h3>
+        <p>同時分布を条件付き分布と周辺分布に分解し、巧妙な1の掛け算を挿入：</p>
+        
         <div class="equation">
             $= \int\int_{(\mathbf{x},y)} \ell(h(\mathbf{x}), y) p^T(y|\mathbf{x}) p^T(\mathbf{x}) \frac{p^S(\mathbf{x})}{p^S(\mathbf{x})} d(\mathbf{x}, y)$
         </div>
@@ -817,6 +923,11 @@
 
         <div class="equation">
             $= \int\int_{(\mathbf{x},y)} \ell(h(\mathbf{x}), y) p^S(y|\mathbf{x}) p^S(\mathbf{x}) \frac{p^T(\mathbf{x})}{p^S(\mathbf{x})} d(\mathbf{x}, y)$
+        </div>
+
+        <div class="insight-box">
+            <h4>ポイント</h4>
+            <p>確率密度比 $\frac{p^T(\mathbf{x})}{p^S(\mathbf{x})}$ が自然に現れることに注目！</p>
         </div>
     </div>
 
@@ -1034,6 +1145,26 @@
         <p>この枠組みにより、複数の元ドメインを効果的に活用して目標ドメインでの予測性能を向上させることができる</p>
     </div>
 
+    <!-- 4.2.2への橋渡し -->
+    <div class="slide">
+        <h2>4.2.1から4.2.2への橋渡し</h2>
+        
+        <div class="comparison-box">
+            <h4>これまでに学んだこと</h4>
+            <ul>
+                <li><strong>重要度重み付き学習（IWL）</strong>：確率密度比を直接推定</li>
+                <li><strong>共変量シフト</strong>の下での期待リスクの変形</li>
+                <li>確率密度比 $p^T(\mathbf{x})/p^S(\mathbf{x})$ による重み付け</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <h4>次に学ぶこと</h4>
+            <p><strong>転移アダブースト</strong>：重みを反復的に調整するアプローチ</p>
+            <p>仮説学習に悪影響を与える事例の重みを減らしていく方法</p>
+        </div>
+    </div>
+
     <!-- 4.2.2 セクション開始 -->
     <div class="slide divider-slide">
         <h1>4.2.2 深層学習に基づく重要度重み付け</h1>
@@ -1092,12 +1223,22 @@
         </div>
 
         <div class="algorithm-box">
-            <p><strong>Step1:</strong> (4.8)を最小化して弱学習器 $h_j$ を学習します。</p>
-            <p style="text-align: center;">$h_j = \text{argmin}_h \hat{R}_\beta(h)$</p>
-            <br>
-            <p><strong>Step2:</strong> $h_j$ の信頼度 $\alpha_j$ を定めます。</p>
-            <p><strong>Step3:</strong> $h$ を $h \leftarrow h + \alpha_j h_j$ で更新します。</p>
-            <p><strong>Step4:</strong> 事例の重み $\beta$ を更新します。</p>
+            <h4 style="margin-top: 0; color: #856404;">アダブーストのアルゴリズム</h4>
+            <div style="margin-bottom: 20px;">
+                <p><strong>Step1:</strong> (4.8)を最小化して弱学習器 $h_j$ を学習します。</p>
+                <div class="equation" style="margin: 15px 0; background-color: transparent;">
+                    $h_j = \text{argmin}_h \hat{R}_\beta(h)$
+                </div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <p><strong>Step2:</strong> $h_j$ の信頼度 $\alpha_j$ を定めます。</p>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <p><strong>Step3:</strong> $h$ を $h \leftarrow h + \alpha_j h_j$ で更新します。</p>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <p><strong>Step4:</strong> 事例の重み $\beta$ を更新します。</p>
+            </div>
         </div>
 
         <div class="note">
@@ -1220,6 +1361,30 @@
 
         <div class="note">
             誤差 $\varepsilon_j$ が最も小さくなる弱学習器を $h_j$ として転移アダブーストの Step3 と Step4 を実行します。
+        </div>
+    </div>
+
+    <!-- 4.3への橋渡し -->
+    <div class="slide">
+        <h2>事例ベースから特徴ベースへ</h2>
+        
+        <div class="transition-box">
+            <h3>これまで学んだ事例ベースの手法</h3>
+            <p>✓ 重要度重み付き学習（IWL）</p>
+            <p>✓ 転移アダブースト（TrAdaBoost）</p>
+        </div>
+        
+        <div class="comparison-box">
+            <h4>事例ベースの限界</h4>
+            <ul>
+                <li>同質的ドメインシフトのみに対応</li>
+                <li>特徴空間が同じである必要がある</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <h4>特徴ベースの利点</h4>
+            <p><strong>特徴量の変換</strong>により、異質的ドメインシフトにも対応可能！</p>
         </div>
     </div>
 
@@ -1424,25 +1589,45 @@
 
     <!-- パラメータ推定の詳細 -->
     <div class="slide">
-        <h2>パラメータ推定の詳細</h2>
+        <h2>パラメータ推定の詳細 (1/2)</h2>
         
         <h3>リスク関数の最小化</h3>
-        <p>リスク関数として $\Delta(\hat{\theta}_y, \hat{\theta}_{\mathbf{x}^T}) = D_{KL}(p(f^T | \hat{\theta}_y) || p(f^T | \hat{\theta}_{\mathbf{x}^T}))$ を最小化することで分類器 $h_t$ を学習する流れを見ます。</p>
+        <p>リスク関数として以下のKLダイバージェンスを最小化することで分類器 $h_t$ を学習します：</p>
+        
+        <div class="equation">
+            $\Delta(\hat{\theta}_y, \hat{\theta}_{\mathbf{x}^T}) = D_{KL}(p(f^T | \hat{\theta}_y) || p(f^T | \hat{\theta}_{\mathbf{x}^T}))$
+        </div>
 
         <h3>推定のための仮定</h3>
-        <p>推定のための仮定として、パラメータ、観測データおよびその特徴に対して、以下のようなマルコフ性が成り立つとします：</p>
+        <p>パラメータ、観測データおよびその特徴に対して、以下のようなマルコフ性が成り立つと仮定：</p>
         
         <div class="equation">
             $\theta_\mathcal{Y} \rightarrow y \rightarrow f^S \rightarrow f^T \rightarrow \mathbf{x}_j^T \rightarrow \theta_{\mathcal{X}_T}$
         </div>
 
-        <p>このとき、$p(f^T | \hat{\theta}_y)$ は</p>
+        <div class="note">
+            <p>この連鎖は、ラベルから特徴へ、そして元ドメインから目標ドメインへの情報の流れを表しています。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>パラメータ推定の詳細 (2/2)</h2>
+        
+        <h3>条件付き確率の推定式</h3>
+        <p>マルコフ性の仮定の下で、$p(f^T | \hat{\theta}_y)$ は次のように推定されます：</p>
         
         <div class="equation">
             $p(f^T | \hat{\theta}_y) = \mathbb{E}_{f^S} \left[ \sum_{y'} p(f^T | f^S)p(f^S | y')p(y' | \hat{\theta}_y) \right] + \lambda \sum_{y'} p(f^T | y')p(y' | \hat{\theta}_y)$
         </div>
         
-        <p>で推定されます。</p>
+        <div class="comparison-box">
+            <h4>推定式の2つの項</h4>
+            <ul>
+                <li><strong>第1項</strong>：元ドメインの特徴を経由した間接的な推定</li>
+                <li><strong>第2項</strong>：目標ドメインのラベルありデータからの直接的な推定</li>
+                <li><strong>$\lambda$</strong>：これらのバランスを制御するトレードオフパラメータ</li>
+            </ul>
+        </div>
     </div>
 
     <!-- 推定式の説明 -->
@@ -1598,13 +1783,11 @@
         <p>具体的には、ドメイン翻訳行列 $W$ と分類器のパラメータ $\theta$ をサポートベクトルマシン (support vector machine, SVM) 型の学習問題</p>
         
         <div class="equation">
-            $\min_{W, \theta} \frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2$
-        </div>
-        <div class="equation">
-            $\text{subject to } y_i^S(\mathbf{x}_i^S)^{\top} \theta \geq 1, i = 1, ..., n_S,$
-        </div>
-        <div class="equation">
-            $y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta \geq 1, j = 1, ..., n_T$
+            $$\begin{aligned}
+            \min_{W, \theta} &\quad \frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2 \\
+            \text{subject to} &\quad y_i^S(\mathbf{x}_i^S)^{\top} \theta \geq 1, \quad i = 1, ..., n_S \\
+            &\quad y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta \geq 1, \quad j = 1, ..., n_T
+            \end{aligned}$$
         </div>
         
         <p>で同時に最適化します。ただし、(4.26) はそのままでは実行可能解の存在が保証されません。</p>
@@ -1618,10 +1801,11 @@
         <p>そこで、実際にはソフトマージン制約に緩和した以下の問題を解いてパラメータを推定します：</p>
         
         <div class="equation">
-            $\min_{W, \theta} \frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2 + \lambda_1 \sum_{i=1}^{n_S} \max\{0, 1 - y_i^S(\mathbf{x}_i^S)^{\top} \theta\}$
-        </div>
-        <div class="equation">
-            $+ \lambda_2 \sum_{j=1}^{n_T} \max\{0, 1 - y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta\}$
+            $$\begin{aligned}
+            \min_{W, \theta} \quad &\frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2 \\
+            &+ \lambda_1 \sum_{i=1}^{n_S} \max\{0, 1 - y_i^S(\mathbf{x}_i^S)^{\top} \theta\} \\
+            &+ \lambda_2 \sum_{j=1}^{n_T} \max\{0, 1 - y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta\}
+            \end{aligned}$$
         </div>
 
         <div class="note">
@@ -1765,7 +1949,7 @@
         <p>数学的には、このモデルの目標は各画像データ $x_j^T$ に対してある潜在因子 $z \in \mathcal{Z}$ を割り当てる確率的な対応</p>
         
         <div class="equation">
-            $g(x_j^T) = \argmax_{z \in \mathcal{Z}} P(z | x_j^T)$ (4.33)
+            $g(x_j^T) = \arg\max_{z \in \mathcal{Z}} P(z | x_j^T)$ (4.33)
         </div>
         
         <p>を学習することです。このとき、潜在因子 $z$ は $x_j^T$ が属するクラスタの代表点と解釈することができます。</p>
@@ -2127,6 +2311,10 @@
         
         <div class="big-text">カーネル法 = 全結合型2層ニューラルネットワーク</div>
         
+        <div style="text-align: center; margin: 30px 0;">
+            <img src="img/image4-5.png" alt="図4.5 カーネル法の全結合型2層ニューラルネットワークとしての解釈" style="max-width: 80%; height: auto;">
+        </div>
+        
         <div class="definition-box">
             <p><strong>図4.5の解釈：</strong></p>
             <ul>
@@ -2209,7 +2397,10 @@
         <h2>階層的特徴抽出の実例：AlexNet</h2>
         
         <div class="key-point-box">
-            <p class="key-point">図4.6：畳み込みニューラルネットワークによる階層的特徴抽出</p>
+            <p class="key-point">図4.6：畳み込みニューラルネットワークによる階層的特徴抽出</p>        
+            <div style="text-align: center; margin: 30px 0;">
+                <img src="img/image4-6.png" alt="図4.6 画像データに対するAlexNetと呼ばれる畳み込みニューラルネットワークによる階層的な特徴抽出" style="max-width: 90%; height: auto;">
+            </div>
         </div>
         
         <h3>各層で学習される特徴</h3>
@@ -2261,8 +2452,10 @@
         
         <div class="key-point-box">
             <p class="key-point">図4.7：複数のドメインで共通の特徴空間を共有</p>
-        </div>
-        
+            <div style="text-align: center; margin: 30px 0;">
+                <img src="img/image4-7.png" alt="図4.7 転移学習の問題における深層表現学習では、複数のドメインでニューラルネットワークの中間層で獲得される特徴空間を共有することで、ドメイン間で共通の特徴表現を学習します。" style="max-width: 70%; height: auto;">
+            </div>
+        </div> 
         <h3>深層表現学習のアプローチ</h3>
         <div class="definition-box">
             <p><strong>基本的なアイデア：</strong></p>
@@ -2290,8 +2483,8 @@
         <p class="key-point">ニューラルネットワークの中間層で獲得される特徴空間で分布マッチングを行う</p>
     </div>
     
-    <div class="image-placeholder">
-        図4.7（再掲）：複数のドメインでニューラルネットワークの中間層で獲得される特徴空間を共有することで、ドメイン間で共通の特徴表現を学習
+    <div style="text-align: center; margin: 30px 0;">
+        <img src="img/image4-7.png" alt="図4.7（再掲）：複数のドメインでニューラルネットワークの中間層で獲得される特徴空間を共有することで、ドメイン間で共通の特徴表現を学習" style="max-width: 70%; height: auto;">
     </div>
     
     <div class="note">
@@ -2304,17 +2497,19 @@
     <h2>4.4.2.1 MMD最小化による分布マッチング</h2>
     
     <h3>Tzengらによる先駆的研究 [295]</h3>
-    
-    <div class="definition-box">
+    <div style="text-align: center; margin: 30px 0;">
+        <img src="img/image4-8.png" alt="図4.8 中間層におけるドメイン適応前と後の特徴量の分布のt-SNEによる可視化" style="max-width: 80%; height: auto;">
+    </div>
+    <div class="definition-box" style="font-size: 14px;">
         <p><strong>図4.8の説明：</strong></p>
-        <ul>
-            <li>ドメイン適応の場面でドメイン間の特徴量分布差を測る</li>
-            <li>ソース（青）：Amazon、Webcam</li>
-            <li>ターゲット（黄）：DSLR</li>
-            <li>異なるドメイン間での特徴分布の不一致を視覚化</li>
+        <ul style="font-size: 13px; line-height: 1.3; margin: 0; padding-left: 20px;">
+            <li style="margin-bottom: 3px;">ドメイン適応の場面でドメイン間の特徴量分布差を測る</li>
+            <li style="margin-bottom: 3px;">ソース（青）：Amazon、Webcam</li>
+            <li style="margin-bottom: 3px;">ターゲット（黄）：DSLR</li>
+            <li style="margin-bottom: 0;">異なるドメイン間での特徴分布の不一致を視覚化</li>
         </ul>
     </div>
-    
+        
     <div class="note">
         <p>中間層における分布マッチングを行いつつ分類器を学習することで、中間層に<span class="highlight">ドメイン不変な特徴表現を獲得</span>できます。</p>
     </div>
@@ -2417,7 +2612,7 @@
 
 <!-- スライド7: 重み付き学習の詳細 -->
 <div class="slide">
-    <h2>DWLの重み更新式</h2>
+    <h2>DIWLの重み更新式</h2>
     
     <div class="key-point-box">
         <p class="key-point">ミニバッチ $\mathcal{M}_{m+1}^S$ と推定した重要度重み $r_{i,m+1}$ を用いてモデルを更新</p>
@@ -2434,9 +2629,10 @@
         <li>深層モデルの中間層出力を使う場合と同様に分布マッチングを行う</li>
     </ul>
     
-    <div class="image-placeholder">
-        図4.9：動的重要度重み付き学習のフレームワーク<br>
-        元ドメインと目標ドメインの少量のラベルデータを利用し、特徴抽出器と分類器を同時に学習
+    <div style="text-align: center; margin: 30px 0;">
+        <img src="img/image4-9.png" alt="図4.9 動的重要度重み付き学習のフレームワーク" style="max-width: 80%; height: auto;">
+        <p style="font-size: 14px; color: #666; margin-top: 10px;">図4.9：動的重要度重み付き学習のフレームワーク<br>
+        元ドメインと目標ドメインの少量のラベルデータを利用し、特徴抽出器と分類器を同時に学習</p>
     </div>
 </div>
 
@@ -2534,9 +2730,10 @@
 <div class="slide">
     <h2>TLDAのネットワーク構造</h2>
     
-    <div class="image-placeholder">
-        図4.10：深層オートエンコーダによる教師あり転移学習<br>
-        元ドメインと目標ドメインで符号化と復号化の重みをそれぞれ共有することで、両ドメインで共有可能な潜在表現を獲得
+    <div style="text-align: center; margin: 30px 0;">
+        <img src="img/image4-10.png" alt="図4.10 深層オートエンコーダによる教師あり転移学習" style="max-width: 85%; height: auto;">
+        <p style="font-size: 14px; color: #666; margin-top: 10px;">図4.10：深層オートエンコーダによる教師あり転移学習<br>
+        元ドメインと目標ドメインで符号化と復号化の重みをそれぞれ共有することで、両ドメインで共有可能な潜在表現を獲得</p>
     </div>
     
     <h3>符号化・復号化の定式化</h3>
@@ -2630,9 +2827,10 @@
         <li>ドメイン間で共通な特徴を抽出するためのドメイン間再構成層（$r \neq k$）を同時に学習</li>
     </ul>
     
-    <div class="image-placeholder">
-        図4.11：マルチタスクオートエンコーダによる複数ドメインデータの表現学習<br>
-        入力に対して、各ドメインのデータであることを想定したデコーダを学習
+    <div style="text-align: center; margin: 30px 0;">
+        <img src="img/image4-11.png" alt="図4.11 マルチタスクオートエンコーダによる複数ドメインデータの表現学習" style="max-width: 70%; height: auto;">
+        <p style="font-size: 14px; color: #666; margin-top: 10px;">図4.11：マルチタスクオートエンコーダによる複数ドメインデータの表現学習<br>
+        入力に対して、各ドメインのデータであることを想定したデコーダを学習</p>
     </div>
 </div>
 
@@ -2697,11 +2895,12 @@
             <p class="key-point">複数ドメインの同時分布を学習する革新的アプローチ</p>
         </div>
         
-        <div class="image-placeholder">
-            図4.12：CoGANによる二つの生成モデルの同時分布の学習<br>
+        <div style="text-align: center; margin: 30px 0;">
+            <img src="img/image4-12.png" alt="図4.12 CoGANによる二つの生成モデルの同時分布の学習" style="max-width: 80%; height: auto;">
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">図4.12：CoGANによる二つの生成モデルの同時分布の学習<br>
             GAN1が元ドメインの生成モデル、GAN2が目標ドメインの生成モデル<br>
             生成器の入力に近い層の重み（赤矢印）を二つのGANで共有<br>
-            対になっている画像（一方のドメインにのみある画像）から同時分布を学習
+            対になっている画像（一方のドメインにのみある画像）から同時分布を学習</p>
         </div>
         
         <h3>CoGANの重要な特徴</h3>
@@ -2742,11 +2941,12 @@
     <div class="slide">
         <h2>DANNのネットワーク構造</h2>
         
-        <div class="image-placeholder">
-            図4.13：DANNのネットワークモデル<br>
+        <div style="text-align: center; margin: 30px 0;">
+            <img src="img/image4-13.png" alt="図4.13 DANNのネットワークモデル" style="max-width: 85%; height: auto;">
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">図4.13：DANNのネットワークモデル<br>
             特徴抽出器 $G_f$ がGANにおける生成器に相当<br>
             ラベル識別器 $G_y$ と ドメイン識別器 $G_d$ が存在<br>
-            勾配反転層（GRL）によって $\mathcal{L}_d$ の勾配を反転
+            勾配反転層（GRL）によって $\mathcal{L}_d$ の勾配を反転</p>
         </div>
         
         <h3>DANNの3つの構成要素</h3>
@@ -2983,11 +3183,9 @@
             <p>不変性のみを指標とする学習では不十分である可能性がいくつかの研究で指摘されています</p>
             <p>今後の研究で、より洗練された手法の開発が期待されています</p>
         </div>
-        
-        <div class="big-text">次節：4.5 不変性に基づく教師なしドメイン適応の限界</div>
     </div>
        <!-- セクション開始 -->
-       <div class="slide divider-slide">
+    <div class="slide divider-slide">
         <h1>4.5.1 実験的な限界の示唆</h1>
     </div>
 
@@ -3041,6 +3239,10 @@
     <!-- スライド3: 共変量シフト仮定の問題 -->
     <div class="slide">
         <h2>共変量シフト仮定の問題点</h2>
+        <div class="formula-box">
+            <p>同時リスク（右辺第3項/再掲）：</p>
+            $$\lambda = \inf_{h \in \mathcal{H}} R_S(h) + R_T(h)$$
+        </div>
         
         <h3>共変量シフト仮定</h3>
         <div class="definition-box">
@@ -3054,10 +3256,11 @@
             <p><strong>しかし</strong>、このような仮定をおくことができない場合、$\lambda$ が小さいことを保証することができず、図4.14のように転移がうまくいかない可能性があります [252]。</p>
         </div>
         
-        <div class="image-placeholder">
-            図4.14：教師なし転移学習が失敗する例 [252]<br>
+        <div style="text-align: center; margin: 30px 0;">
+            <img src="img/image4-14.png" alt="図4.14 教師なし転移学習が失敗する例" style="max-width: 75%; height: auto;">
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">図4.14：教師なし転移学習が失敗する例 [252]<br>
             教師なし転移学習は、目標ドメインのラベル識別器を考慮せずに両ドメインの分布を合わせるため、<br>
-            生成される特徴表現にドメイン固有の識別情報をうまく取り込めない可能性があります
+            生成される特徴表現にドメイン固有の識別情報をうまく取り込めない可能性があります</p>
         </div>
     </div>
 
@@ -3078,11 +3281,12 @@
             </ul>
         </div>
         
-        <div class="image-placeholder">
-            図4.15：Liu ら [184] による実験的な同時リスクの検証<br>
+        <div style="text-align: center; margin: 30px 0;">
+            <img src="img/image4-15.png" alt="図4.15 Liu ら [184] による実験的な同時リスクの検証" style="max-width: 85%; height: auto;">
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">図4.15：Liu ら [184] による実験的な同時リスクの検証<br>
             VisDA-17データセット（左：Synthetic元ドメイン、右：Real目標ドメイン）<br>
             DANN のようなドメイン不変な表現学習のみを行う手法では、<br>
-            同時リスク $R_S(h) + R_T(h)$ が大きくなるような仮説が学習されてしまっています
+            同時リスク $R_S(h) + R_T(h)$ が大きくなるような仮説が学習されてしまっています</p>
         </div>
         
         <div class="note">
@@ -3098,10 +3302,11 @@
             <p class="key-point">ドメイン不変な表現学習が同時リスクを大きくしてしまう簡単な例</p>
         </div>
         
-        <div class="image-placeholder">
-            図4.16：Zhao ら [349] によるドメイン不変な表現学習が同時リスクを大きくしてしまう例<br>
+        <div style="text-align: center; margin: 30px 0;">
+            <img src="img/image4-16.png" alt="図4.16 Zhao ら [349] によるドメイン不変な表現学習が同時リスクを大きくしてしまう例" style="max-width: 85%; height: auto;">
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">図4.16：Zhao ら [349] によるドメイン不変な表現学習が同時リスクを大きくしてしまう例<br>
             変換前の状態では、$x \in [-0.5, 0.5]$ のとき $h(x) = 1$、それ以外のとき $h(x) = 0$ となるような仮説 $h$ をとると同時リスクを 0 にできます。<br>
-            一方、$g$ による変換後には両ドメインは完全に一致していますが、どんな仮説も同時リスクを小さくすることはできません。
+            一方、$g$ による変換後には両ドメインは完全に一致していますが、どんな仮説も同時リスクを小さくすることはできません。</p>
         </div>
         
         <h3>例の詳細</h3>
@@ -3115,25 +3320,6 @@
         </div>
     </div>
 
-    <!-- スライド6: 不変性と同時リスクの関係 -->
-    <div class="slide">
-        <h2>4.5.2 不変性と同時リスクの関係</h2>
-        
-        <div class="key-point-box">
-            <p class="key-point">特徴表現のドメイン不変性（(4.50)の右辺第2項の最小化）と同時リスクの間にはどのような関係があるでしょうか？</p>
-        </div>
-        
-        <h3>Zhao ら [349] の Theorem 4.1 への導入</h3>
-        <p>これに関して、以下に示す目標ドメインの期待リスク上界からいくつかの示唆を得ることができます。</p>
-        
-        <div class="note">
-            <p>次節では、この理論的関係について詳しく説明します。</p>
-        </div>
-        
-        <div class="big-text">
-            次節では、理論的な解析を通じて不変性と同時リスクの複雑な関係を明らかにします
-        </div>
-    </div>
         <!-- セクション開始 -->
         <div class="slide divider-slide">
             <h1>4.5.2 不変性と同時リスクの関係</h1>
@@ -3147,10 +3333,11 @@
                 <p class="key-point">特徴表現のドメイン不変性（(4.50)の右辺第2項の最小化）と同時リスクの間にはどのような関係があるでしょうか？</p>
             </div>
             
-            <div class="image-placeholder">
-                図4.16の振り返り：Zhao ら [349] によるドメイン不変な表現学習が同時リスクを大きくしてしまう例<br>
+            <div style="text-align: center; margin: 30px 0;">
+                <img src="img/image4-16.png" alt="図4.16（再掲）Zhao ら [349] によるドメイン不変な表現学習が同時リスクを大きくしてしまう例" style="max-width: 85%; height: auto;">
+                <p style="font-size: 14px; color: #666; margin-top: 10px;">図4.16の振り返り：Zhao ら [349] によるドメイン不変な表現学習が同時リスクを大きくしてしまう例<br>
                 変換前の状態では、$x \in [-0.5, 0.5]$ のとき $h(x) = 1$、それ以外のとき $h(x) = 0$ となるような仮説 $h$ をとると同時リスクを 0 にできます。<br>
-                一方、$g$ による変換後には両ドメインは完全に一致していますが、どんな仮説も同時リスクを小さくすることはできません。
+                一方、$g$ による変換後には両ドメインは完全に一致していますが、どんな仮説も同時リスクを小さくすることはできません。</p>
             </div>
             
             <div class="note">
@@ -3179,6 +3366,19 @@
         <!-- スライド3: 定理4.5と既存上界の比較 -->
         <div class="slide">
             <h2>定理4.5と既存上界(4.50)の比較</h2>
+
+            <div class="theorem-box">
+                <div class="formula-box">
+                    $$R_T(h) \leq R_S(h) + D_{H\Delta H}(P^S(X), P^T(X))$$
+                    $$+ \min \left\{ \mathbb{E}_{x \sim P^S(x)}[|f^S(x) - f^T(x)|], \mathbb{E}_{x \sim P^T(x)}[|f^S(x) - f^T(x)|] \right\} \quad (4.64)$$
+                </div>
+            </div>
+            <div class="theorem-box">
+                <div class="formula-box">
+                    <p>目標ドメインの期待リスク上界（4.50）：</p>
+                    $$R_T(h) \leq R_S(h) + D_{\mathcal{H}\Delta\mathcal{H}}(P_X^S, P_X^T) + \inf_{h \in \mathcal{H}} \{R_S(h) + R_T(h)\}$$
+                </div>
+            </div>
             
             <div class="comparison-box">
                 <h3>(4.64) の右辺第1、2項は目標ドメインの期待リスク上界 (4.50) の右辺第1、2項と同じもの</h3>
@@ -3207,28 +3407,47 @@
                 1 & \text{otherwise}
                 \end{cases} \Bigg| a < b \right\}$$
             </div>
+
+            <div class="theorem-box">
+                <div class="formula-box">
+                    $$R_T(h) \leq R_S(h) + D_{H\Delta H}(P^S(X), P^T(X))$$
+                    $$+ \min \left\{ \mathbb{E}_{x \sim P^S(x)}[|f^S(x) - f^T(x)|], \mathbb{E}_{x \sim P^T(x)}[|f^S(x) - f^T(x)|] \right\} \quad (4.64)$$
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <img src="img/image4-16.png" alt="図4.16 Zhao ら [349] によるドメイン不変な表現学習が同時リスクを大きくしてしまう例" style="max-width: 85%; height: auto;">
+            </div>
             
             <div class="key-point-box">
                 <p class="key-point">図4.16の例で具体的に両者を計算してみると：</p>
-                <ul>
-                    <li>$\lambda = 1$ であるのに対して</li>
-                    <li>(4.64) の右辺第3項は $1/2$ となり</li>
-                    <li>より精緻（tight）な上界が得られることがわかります</li>
-                </ul>
+                <p style="margin: 15px 0; text-align: center;">
+                    $\lambda = 1$ であるのに対して、(4.64) の右辺第3項は $1/2$ となり、<br>
+                    より精緻（tight）な上界が得られることがわかります。
+                </p>
             </div>
             
-            <div class="note">
-                <p>さて、同時リスクが小さくなる場合の例として共変量シフトの仮定 $(f^S = f^T)$ がありました。</p>
-            </div>
+
         </div>
     
         <!-- スライド5: 共変量シフトの場合の解析 -->
         <div class="slide">
             <h2>共変量シフトが成り立つときの解析</h2>
+
+            <div class="note">
+                <p>同時リスクが小さくなる場合の例として共変量シフトの仮定 $(f^S = f^T)$ がありました。</p>
+            </div>
             
             <div class="definition-box">
                 <h3>共変量シフト仮定：$f^S = f^T$</h3>
                 <p>共変量シフトが成り立つとき、(4.64) の右辺第3項は完全に 0 となります。</p>
+            </div>
+
+            <div class="theorem-box">
+                <div class="formula-box">
+                    $$R_T(h) \leq R_S(h) + D_{H\Delta H}(P^S(X), P^T(X))$$
+                    $$+ \min \left\{ \mathbb{E}_{x \sim P^S(x)}[|f^S(x) - f^T(x)|], \mathbb{E}_{x \sim P^T(x)}[|f^S(x) - f^T(x)|] \right\} \quad (4.64)$$
+                </div>
             </div>
             
             <div class="insight-box">
@@ -3287,49 +3506,35 @@
             </div>
         </div>
     
-        <!-- スライド8: 定理4.6 -->
+        <!-- スライド8: 定理4.6と転移学習成功の必要条件 -->
         <div class="slide">
-            <h2>定理4.6：同時リスクの下界</h2>
+            <h2>定理4.6：同時リスクの下界と転移学習成功の必要条件</h2>
             
             <div class="theorem-box">
-                <h4>定理 4.6</h4>
-                <p>$d_{\text{JS}}(P^T(Y), P^S(Y)) = \sqrt{D_{\text{JS}}(P^T(Y) || P^S(Y))}$ とし、</p>
-                
-                $$d_{\text{JS}}(P^T(Y), P^S(Y)) \geq d_{\text{JS}}(P^T(Z), P^S(Z))$$
-                
-                <p>を仮定します。このとき、以下のような同時リスクの下界が成り立ちます。</p>
+                <h4>定理 4.6（Zhao ら [349]）</h4>
+                <p>$d_{\text{JS}}(P^T(Y), P^S(Y)) = \sqrt{D_{\text{JS}}(P^T(Y) || P^S(Y))}$ とし、
+                $d_{\text{JS}}(P^T(Y), P^S(Y)) \geq d_{\text{JS}}(P^T(Z), P^S(Z))$ を仮定します。</p>
+                <p>このとき、以下の同時リスクの下界が成り立ちます：</p>
                 
                 <div class="formula-box">
                     $$R_S(h \circ g) + R_T(h \circ g) \geq \frac{1}{2} \left(d_{\text{JS}}(P^T(Y), P^S(Y)) - d_{\text{JS}}(P^T(Z), P^S(Z))\right)^2 \quad (4.66)$$
                 </div>
             </div>
             
-            <div class="insight-box">
-                <h4>定理4.6の重要な含意</h4>
-                <p>もしラベル分布が両ドメインで大きく異なっている場合、$d_{\text{JS}}(P^T(Z), P^S(Z))$ の最小化による特徴空間での分布マッチングは目標ドメインの期待リスク $R_T(h \circ g)$ を悪化させることがわかります。</p>
-            </div>
-        </div>
-    
-        <!-- スライド9: 転移学習成功の必要条件 -->
-        <div class="slide">
-            <h2>転移学習成功の必要条件</h2>
+            <h3>定理の含意と転移学習成功の必要条件</h3>
             
             <div class="key-point-box">
-                <p class="key-point">また、そのようにして得られた特徴抽出器 $g$ を用いて元ドメインでの期待リスク最小化を行うことも、目標ドメインの期待リスクを悪化させる可能性があります。</p>
-            </div>
-            
-            <div class="note">
-                <p>すなわちこの定理は、ドメイン不変な表現学習に基づく転移学習が成功するための必要条件を示していると解釈できます。</p>
+                <p class="key-point">重要な洞察</p>
+                <ol style="margin: 10px 0; padding-left: 25px;">
+                    <li style="margin-bottom: 10px;">ラベル分布が両ドメインで大きく異なる場合、特徴空間での分布マッチング（$d_{\text{JS}}(P^T(Z), P^S(Z))$ の最小化）は目標ドメインの期待リスクを悪化させる</li>
+                    <li style="margin-bottom: 10px;">特徴抽出器 $g$ を用いた元ドメインでの期待リスク最小化も、目標ドメインの期待リスクを悪化させる可能性がある</li>
+                    <li>この定理は特徴抽出器がドメインごとに異なる場合でも成立（Corollary 4.1）</li>
+                </ol>
             </div>
             
             <div class="warning">
-                <p>なお、定理4.6の主張は特徴抽出器がドメインごとに異なる場合でも同様に成り立ちます（Zhao ら [349] の Corollary 4.1）。</p>
-            </div>
-            
-            <h3>不可能性定理の一種としての解釈</h3>
-            <div class="comparison-box">
-                <p>以上の考察は、3.2.2節で議論した不可能性定理の一種であるとみなすことができます。</p>
-                <p><strong>したがって</strong>、不変性のみに基づく転移学習の失敗は、要請された仮定を満たさない問題において一般的に起こりうる現象であるといえます。</p>
+                <p><strong>不可能性定理としての解釈：</strong></p>
+                <p>この結果は3.2.2節で議論した不可能性定理の一種とみなせます。不変性のみに基づく転移学習の失敗は、要請された仮定を満たさない問題において一般的に起こりうる現象です。</p>
             </div>
         </div>
     <!-- 4.6 まとめ -->
@@ -3505,11 +3710,6 @@
 
     <div class="slide">
         <h2>不変表現学習の特性と限界</h2>
-        
-        <div class="definition-box">
-            <h4>本章で明らかになった重要な知見</h4>
-            <p>不変表現学習をキーワードとして、その特性と利点および限界についても説明しました。</p>
-        </div>
         
         <h3>不変性のみに注目することの問題</h3>
         <div style="background-color: #ffebee; border-left: 5px solid #f44336; padding: 15px; margin: 20px 0;">
