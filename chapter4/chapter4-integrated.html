@@ -67,14 +67,16 @@
         h3 {
             font-size: 22px;
             color: #333;
-            margin-top: 20px;
+            margin-top: 25px;
+            margin-bottom: 15px;
         }
         ul, ol {
             font-size: 18px;
             margin-left: 25px;
         }
         li {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            line-height: 1.7;
         }
         .highlight {
             background-color: #ffeb3b;
@@ -106,8 +108,11 @@
         }
         .equation {
             text-align: center;
-            margin: 25px 0;
+            margin: 30px 0;
             font-size: 20px;
+            padding: 15px 0;
+            background-color: #f8f9fa;
+            border-radius: 8px;
         }
         .two-col {
             display: flex;
@@ -120,18 +125,31 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 25px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
         th, td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
             border: 1px solid #ddd;
+            line-height: 1.6;
         }
         th {
             background-color: #f2f2f2;
+            font-weight: bold;
+            font-size: 16px;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
+        }
+        td ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        td li {
+            margin-bottom: 8px;
         }
         .label-yes {
             background-color: #c8e6c9;
@@ -204,6 +222,7 @@
         p {
             font-size: 18px;
             line-height: 1.8;
+            margin-bottom: 20px;
         }
         .big-text {
             font-size: 24px;
@@ -326,6 +345,24 @@
             color: #666;
             font-family: Arial, sans-serif;
         }
+        .transition-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .transition-box h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .transition-box p {
+            color: white;
+            font-size: 18px;
+            margin: 10px 0;
+        }
     </style>
     <script>
         window.addEventListener('DOMContentLoaded', function() {
@@ -400,6 +437,22 @@
     <!-- 4.1 セクション開始 -->
     <div class="slide divider-slide">
         <h1>4.1 データに基づくドメイン適応の概要</h1>
+    </div>
+
+    <!-- 導入スライド -->
+    <div class="slide">
+        <h2>第4章で学ぶこと</h2>
+        
+        <div class="big-text">
+            <p>異なるドメイン間でのデータ転移を可能にする</p>
+            <p><strong>2つの基本的なアプローチ</strong>を理解する</p>
+        </div>
+        
+        <div class="insight-box">
+            <h4>なぜドメイン適応が必要か？</h4>
+            <p>訓練データ（元ドメイン）とテストデータ（目標ドメイン）の分布が異なる場合、通常の機械学習手法では性能が大幅に低下します。</p>
+            <p>ドメイン適応は、この分布の違いを考慮した学習を可能にします。</p>
+        </div>
     </div>
 
     <!-- ドメイン適応とは -->
@@ -838,7 +891,7 @@
 
     <!-- 期待リスクの変形 -->
     <div class="slide">
-        <h2>共変量シフト下での期待リスクの変形</h2>
+        <h2>共変量シフト下での期待リスクの変形 (1/2)</h2>
         
         <h3>期待リスクの書き換え</h3>
         <div class="equation">
@@ -851,6 +904,17 @@
             $R_T(h) = \int\int_{(\mathbf{x},y)} \ell(h(\mathbf{x}), y) p^T(\mathbf{x}, y) d(\mathbf{x}, y)$
         </div>
 
+        <div class="note">
+            <p>期待値の定義に基づいて、確率密度関数を使った積分形式に書き換えています。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>共変量シフト下での期待リスクの変形 (2/2)</h2>
+        
+        <h3>確率密度の分解と変形</h3>
+        <p>同時分布を条件付き分布と周辺分布に分解し、巧妙な1の掛け算を挿入：</p>
+        
         <div class="equation">
             $= \int\int_{(\mathbf{x},y)} \ell(h(\mathbf{x}), y) p^T(y|\mathbf{x}) p^T(\mathbf{x}) \frac{p^S(\mathbf{x})}{p^S(\mathbf{x})} d(\mathbf{x}, y)$
         </div>
@@ -859,6 +923,11 @@
 
         <div class="equation">
             $= \int\int_{(\mathbf{x},y)} \ell(h(\mathbf{x}), y) p^S(y|\mathbf{x}) p^S(\mathbf{x}) \frac{p^T(\mathbf{x})}{p^S(\mathbf{x})} d(\mathbf{x}, y)$
+        </div>
+
+        <div class="insight-box">
+            <h4>ポイント</h4>
+            <p>確率密度比 $\frac{p^T(\mathbf{x})}{p^S(\mathbf{x})}$ が自然に現れることに注目！</p>
         </div>
     </div>
 
@@ -1076,6 +1145,26 @@
         <p>この枠組みにより、複数の元ドメインを効果的に活用して目標ドメインでの予測性能を向上させることができる</p>
     </div>
 
+    <!-- 4.2.2への橋渡し -->
+    <div class="slide">
+        <h2>4.2.1から4.2.2への橋渡し</h2>
+        
+        <div class="comparison-box">
+            <h4>これまでに学んだこと</h4>
+            <ul>
+                <li><strong>重要度重み付き学習（IWL）</strong>：確率密度比を直接推定</li>
+                <li><strong>共変量シフト</strong>の下での期待リスクの変形</li>
+                <li>確率密度比 $p^T(\mathbf{x})/p^S(\mathbf{x})$ による重み付け</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <h4>次に学ぶこと</h4>
+            <p><strong>転移アダブースト</strong>：重みを反復的に調整するアプローチ</p>
+            <p>仮説学習に悪影響を与える事例の重みを減らしていく方法</p>
+        </div>
+    </div>
+
     <!-- 4.2.2 セクション開始 -->
     <div class="slide divider-slide">
         <h1>4.2.2 深層学習に基づく重要度重み付け</h1>
@@ -1134,12 +1223,22 @@
         </div>
 
         <div class="algorithm-box">
-            <p><strong>Step1:</strong> (4.8)を最小化して弱学習器 $h_j$ を学習します。</p>
-            <p style="text-align: center;">$h_j = \text{argmin}_h \hat{R}_\beta(h)$</p>
-            <br>
-            <p><strong>Step2:</strong> $h_j$ の信頼度 $\alpha_j$ を定めます。</p>
-            <p><strong>Step3:</strong> $h$ を $h \leftarrow h + \alpha_j h_j$ で更新します。</p>
-            <p><strong>Step4:</strong> 事例の重み $\beta$ を更新します。</p>
+            <h4 style="margin-top: 0; color: #856404;">アダブーストのアルゴリズム</h4>
+            <div style="margin-bottom: 20px;">
+                <p><strong>Step1:</strong> (4.8)を最小化して弱学習器 $h_j$ を学習します。</p>
+                <div class="equation" style="margin: 15px 0; background-color: transparent;">
+                    $h_j = \text{argmin}_h \hat{R}_\beta(h)$
+                </div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <p><strong>Step2:</strong> $h_j$ の信頼度 $\alpha_j$ を定めます。</p>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <p><strong>Step3:</strong> $h$ を $h \leftarrow h + \alpha_j h_j$ で更新します。</p>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <p><strong>Step4:</strong> 事例の重み $\beta$ を更新します。</p>
+            </div>
         </div>
 
         <div class="note">
@@ -1262,6 +1361,30 @@
 
         <div class="note">
             誤差 $\varepsilon_j$ が最も小さくなる弱学習器を $h_j$ として転移アダブーストの Step3 と Step4 を実行します。
+        </div>
+    </div>
+
+    <!-- 4.3への橋渡し -->
+    <div class="slide">
+        <h2>事例ベースから特徴ベースへ</h2>
+        
+        <div class="transition-box">
+            <h3>これまで学んだ事例ベースの手法</h3>
+            <p>✓ 重要度重み付き学習（IWL）</p>
+            <p>✓ 転移アダブースト（TrAdaBoost）</p>
+        </div>
+        
+        <div class="comparison-box">
+            <h4>事例ベースの限界</h4>
+            <ul>
+                <li>同質的ドメインシフトのみに対応</li>
+                <li>特徴空間が同じである必要がある</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <h4>特徴ベースの利点</h4>
+            <p><strong>特徴量の変換</strong>により、異質的ドメインシフトにも対応可能！</p>
         </div>
     </div>
 
@@ -1466,25 +1589,45 @@
 
     <!-- パラメータ推定の詳細 -->
     <div class="slide">
-        <h2>パラメータ推定の詳細</h2>
+        <h2>パラメータ推定の詳細 (1/2)</h2>
         
         <h3>リスク関数の最小化</h3>
-        <p>リスク関数として $\Delta(\hat{\theta}_y, \hat{\theta}_{\mathbf{x}^T}) = D_{KL}(p(f^T | \hat{\theta}_y) || p(f^T | \hat{\theta}_{\mathbf{x}^T}))$ を最小化することで分類器 $h_t$ を学習する流れを見ます。</p>
+        <p>リスク関数として以下のKLダイバージェンスを最小化することで分類器 $h_t$ を学習します：</p>
+        
+        <div class="equation">
+            $\Delta(\hat{\theta}_y, \hat{\theta}_{\mathbf{x}^T}) = D_{KL}(p(f^T | \hat{\theta}_y) || p(f^T | \hat{\theta}_{\mathbf{x}^T}))$
+        </div>
 
         <h3>推定のための仮定</h3>
-        <p>推定のための仮定として、パラメータ、観測データおよびその特徴に対して、以下のようなマルコフ性が成り立つとします：</p>
+        <p>パラメータ、観測データおよびその特徴に対して、以下のようなマルコフ性が成り立つと仮定：</p>
         
         <div class="equation">
             $\theta_\mathcal{Y} \rightarrow y \rightarrow f^S \rightarrow f^T \rightarrow \mathbf{x}_j^T \rightarrow \theta_{\mathcal{X}_T}$
         </div>
 
-        <p>このとき、$p(f^T | \hat{\theta}_y)$ は</p>
+        <div class="note">
+            <p>この連鎖は、ラベルから特徴へ、そして元ドメインから目標ドメインへの情報の流れを表しています。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>パラメータ推定の詳細 (2/2)</h2>
+        
+        <h3>条件付き確率の推定式</h3>
+        <p>マルコフ性の仮定の下で、$p(f^T | \hat{\theta}_y)$ は次のように推定されます：</p>
         
         <div class="equation">
             $p(f^T | \hat{\theta}_y) = \mathbb{E}_{f^S} \left[ \sum_{y'} p(f^T | f^S)p(f^S | y')p(y' | \hat{\theta}_y) \right] + \lambda \sum_{y'} p(f^T | y')p(y' | \hat{\theta}_y)$
         </div>
         
-        <p>で推定されます。</p>
+        <div class="comparison-box">
+            <h4>推定式の2つの項</h4>
+            <ul>
+                <li><strong>第1項</strong>：元ドメインの特徴を経由した間接的な推定</li>
+                <li><strong>第2項</strong>：目標ドメインのラベルありデータからの直接的な推定</li>
+                <li><strong>$\lambda$</strong>：これらのバランスを制御するトレードオフパラメータ</li>
+            </ul>
+        </div>
     </div>
 
     <!-- 推定式の説明 -->
@@ -1640,13 +1783,11 @@
         <p>具体的には、ドメイン翻訳行列 $W$ と分類器のパラメータ $\theta$ をサポートベクトルマシン (support vector machine, SVM) 型の学習問題</p>
         
         <div class="equation">
-            $\min_{W, \theta} \frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2$
-        </div>
-        <div class="equation">
-            $\text{subject to } y_i^S(\mathbf{x}_i^S)^{\top} \theta \geq 1, i = 1, ..., n_S,$
-        </div>
-        <div class="equation">
-            $y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta \geq 1, j = 1, ..., n_T$
+            $$\begin{aligned}
+            \min_{W, \theta} &\quad \frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2 \\
+            \text{subject to} &\quad y_i^S(\mathbf{x}_i^S)^{\top} \theta \geq 1, \quad i = 1, ..., n_S \\
+            &\quad y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta \geq 1, \quad j = 1, ..., n_T
+            \end{aligned}$$
         </div>
         
         <p>で同時に最適化します。ただし、(4.26) はそのままでは実行可能解の存在が保証されません。</p>
@@ -1660,10 +1801,11 @@
         <p>そこで、実際にはソフトマージン制約に緩和した以下の問題を解いてパラメータを推定します：</p>
         
         <div class="equation">
-            $\min_{W, \theta} \frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2 + \lambda_1 \sum_{i=1}^{n_S} \max\{0, 1 - y_i^S(\mathbf{x}_i^S)^{\top} \theta\}$
-        </div>
-        <div class="equation">
-            $+ \lambda_2 \sum_{j=1}^{n_T} \max\{0, 1 - y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta\}$
+            $$\begin{aligned}
+            \min_{W, \theta} \quad &\frac{1}{2} \|W\|_F^2 + \frac{1}{2} \|\theta\|_2^2 \\
+            &+ \lambda_1 \sum_{i=1}^{n_S} \max\{0, 1 - y_i^S(\mathbf{x}_i^S)^{\top} \theta\} \\
+            &+ \lambda_2 \sum_{j=1}^{n_T} \max\{0, 1 - y_j^T(\mathbf{x}_j^T)^{\top} W^{\top} \theta\}
+            \end{aligned}$$
         </div>
 
         <div class="note">
