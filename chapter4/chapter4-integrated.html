@@ -409,25 +409,25 @@
                     <li>4.2.2 深層学習に基づく重要度重み付け</li>
                 </ul>
             </li>
-            <li><strong>4.3 特徴ベースのドメイン適応の基礎</strong>
+            <li><strong>4.3 特徴ベースのドメイン適応</strong>
                 <ul>
-                    <li>4.3.1 部分空間学習</li>
-                    <li>4.3.2 最大平均差異</li>
-                    <li>4.3.3 その他の手法</li>
+                    <li>4.3.1 ドメイン不変特徴量の表現学習</li>
+                    <li>4.3.2 非対称型の特徴ベースのドメイン適応</li>
+                    <li>4.3.3 対称型の特徴ベースのドメイン適応</li>
                 </ul>
             </li>
             <li><strong>4.4 深層学習に基づく特徴ベースのドメイン適応</strong>
                 <ul>
-                    <li>4.4.1 深層ニューラルネットワークによる表現学習</li>
-                    <li>4.4.2 ドメイン不変特徴抽出</li>
-                    <li>4.4.3 深層適応ネットワーク</li>
-                    <li>4.4.4 相関整合</li>
+                    <li>4.4.1 深層ニューラルネットワークによる表現学習の進化</li>
+                    <li>4.4.2 中間層における分布マッチング</li>
+                    <li>4.4.3 深層オートエンコーダに基づく表現学習</li>
+                    <li>4.4.4 敵対的学習に基づく表現学習</li>
                 </ul>
             </li>
-            <li><strong>4.5 敵対的ドメイン適応</strong>
+            <li><strong>4.5 不変性に基づく教師なしドメイン適応の限界</strong>
                 <ul>
-                    <li>4.5.1 敵対的学習の基礎</li>
-                    <li>4.5.2 ドメイン敵対的ニューラルネットワーク</li>
+                    <li>4.5.1 実験的な限界の示唆</li>
+                    <li>4.5.2 不変性と同時リスクの関係</li>
                 </ul>
             </li>
             <li><strong>4.6 まとめ</strong></li>
@@ -1257,9 +1257,28 @@
 
         <h3>事例の重み $\beta_i$ の更新</h3>
         <div class="equation">
-            $\beta_i \leftarrow \frac{\beta_i\exp\{-\alpha_j h(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \beta_i \exp\{-\alpha_jh( \mathbf{x}_{i'})y_{i'}\}}$, $i = 1, ..., n$
+            $\beta_i \leftarrow \frac{\exp\{-h(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h( \mathbf{x}_{i'})y_{i'}\}}$, $i = 1, ..., n$
         </div>
+        <details>
+            <summary>$\beta_i \leftarrow \beta_i\exp\{-\alpha_jh_j(\mathbf{x}_i)y_i\}$ について</summary>
+            <div>
+                $\beta_i^{\rm{new}} = \frac{\exp\{-h(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h( \mathbf{x}_{i'})y_{i'}\}}$というように変換を定義し、元の$\beta$を$\beta^{\rm{old}}$とおく。
+                また同様に今回のイテレーションで得られた$h$を$h^{\rm{new}}$、前回のものを$h^{\rm{old}}$とすると$h^{\rm{new}} = h^{\rm{old}} + \alpha_j h_j$となる。
+                <div class="equation">
+                $$
+                \begin{align}
+                \beta_i^{\rm{new}} &= \frac{\exp\{-h^{\rm{new}}(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}}\\
+                &= \frac{\exp\{-h^{\rm{new}}(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}} \\
+                &= \frac{\exp\{-(h^{\rm{old}} + \alpha_jh_j)(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}} \\
+                &= \frac{\exp\{-h^{\rm{old}}(\mathbf{x}_i)y_i\}\exp\{-\alpha_jh_j(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}} \\
+                &= \frac{\exp\{-h^{\rm{old}}(\mathbf{x}_i)y_i\}(\sum_{i'=1}^n \exp\{-h^{\rm{old}}( \mathbf{x}_{i'})y_{i'}\})\exp\{-\alpha_jh_j(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{old}}( \mathbf{x}_{i'})y_{i'}\}\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}} \\
+                &= \beta_i^{\rm{old}}\exp\{-\alpha_jh_j(\mathbf{x}_i)y_i\}\frac{\sum_{i'=1}^n \exp\{-h^{\rm{old}}( \mathbf{x}_{i'})y_{i'}\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}}
+                \end{align}$$
+                </div>
+                比例までは言えるが、等価は厳しい。
+            </div>
 
+        </details>
         <div class="note">
             <ul>
                 <li>弱学習器 $h_j$ の重み $\alpha_j$ は誤分類率 $\hat{R}_\beta(h_j)$ が小さいほど大きくなるように更新</li>
@@ -1391,6 +1410,10 @@
     <!-- 4.3 セクション開始 -->
     <div class="slide divider-slide">
         <h1>4.3 特徴ベースのドメイン適応</h1>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>4.3.1 ドメイン不変特徴量の表現学習</h1>
     </div>
 
     <!-- 4.3.1 ドメイン不変特徴量の表現学習 -->
@@ -3183,6 +3206,9 @@
             <p>不変性のみを指標とする学習では不十分である可能性がいくつかの研究で指摘されています</p>
             <p>今後の研究で、より洗練された手法の開発が期待されています</p>
         </div>
+    </div>
+    <div class="slide divider-slide">
+        <h1>4.5 不変性に基づく教師なしドメイン適応の限界</h1>
     </div>
        <!-- セクション開始 -->
     <div class="slide divider-slide">
