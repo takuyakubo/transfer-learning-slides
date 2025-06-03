@@ -1257,9 +1257,28 @@
 
         <h3>事例の重み $\beta_i$ の更新</h3>
         <div class="equation">
-            $\beta_i \leftarrow \frac{\beta_i\exp\{-\alpha_j h(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \beta_i \exp\{-\alpha_jh( \mathbf{x}_{i'})y_{i'}\}}$, $i = 1, ..., n$
+            $\beta_i \leftarrow \frac{\exp\{-h(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h( \mathbf{x}_{i'})y_{i'}\}}$, $i = 1, ..., n$
         </div>
+        <details>
+            <summary>$\beta_i \leftarrow \beta_i\exp\{-\alpha_jh_j(\mathbf{x}_i)y_i\}$ について</summary>
+            <div>
+                $\beta_i^{\rm{new}} = \frac{\exp\{-h(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h( \mathbf{x}_{i'})y_{i'}\}}$というように変換を定義し、元の$\beta$を$\beta^{\rm{old}}$とおく。
+                また同様に今回のイテレーションで得られた$h$を$h^{\rm{new}}$、前回のものを$h^{\rm{old}}$とすると$h^{\rm{new}} = h^{\rm{old}} + \alpha_j h_j$となる。
+                <div class="equation">
+                $$
+                \begin{align}
+                \beta_i^{\rm{new}} &= \frac{\exp\{-h^{\rm{new}}(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}}\\
+                &= \frac{\exp\{-h^{\rm{new}}(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}} \\
+                &= \frac{\exp\{-(h^{\rm{old}} + \alpha_jh_j)(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}} \\
+                &= \frac{\exp\{-h^{\rm{old}}(\mathbf{x}_i)y_i\}\exp\{-\alpha_jh_j(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}} \\
+                &= \frac{\exp\{-h^{\rm{old}}(\mathbf{x}_i)y_i\}(\sum_{i'=1}^n \exp\{-h^{\rm{old}}( \mathbf{x}_{i'})y_{i'}\})\exp\{-\alpha_jh_j(\mathbf{x}_i)y_i\}}{\sum_{i'=1}^n \exp\{-h^{\rm{old}}( \mathbf{x}_{i'})y_{i'}\}\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}} \\
+                &= \beta_i^{\rm{old}}\exp\{-\alpha_jh_j(\mathbf{x}_i)y_i\}\frac{\sum_{i'=1}^n \exp\{-h^{\rm{old}}( \mathbf{x}_{i'})y_{i'}\}}{\sum_{i'=1}^n \exp\{-h^{\rm{new}}( \mathbf{x}_{i'})y_{i'}\}}
+                \end{align}$$
+                </div>
+                比例までは言えるが、等価は厳しい。
+            </div>
 
+        </details>
         <div class="note">
             <ul>
                 <li>弱学習器 $h_j$ の重み $\alpha_j$ は誤分類率 $\hat{R}_\beta(h_j)$ が小さいほど大きくなるように更新</li>
