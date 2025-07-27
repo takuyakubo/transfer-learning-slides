@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']]
+          }
+        };
+        </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+    <link href='../styles/base.css' rel='stylesheet' />
+    <link href='../styles/pswd.css' rel='stylesheet' />
+    <script src='../scripts/pswdol.js'></script> 
+    <title>第6章 事前学習済みモデル </title>
+    <style>
+        .key-point-box {
+            background-color: #fee;
+            border: 2px solid #d32f2f;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .algorithm-box {
+            background-color: #fffde7;
+            border: 1px solid #f9a825;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #f5f5f5;
+            border-left: 4px solid #0078d7;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .image-placeholder {
+            background-color: #f5f5f5;
+            border: 2px dashed #999;
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+        .big-text {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 50px 0;
+            color: #0078d7;
+        }
+        .toc-slide {
+            background-color: #f8f9fa;
+        }
+        .toc-slide ul {
+            list-style-type: none;
+            margin-left: 0;
+        }
+        .toc-slide > ul > li {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #0078d7;
+        }
+        .toc-slide ul ul {
+            margin-left: 30px;
+            font-weight: normal;
+        }
+        .toc-slide ul ul li {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .footnote {
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .method-list li {
+            margin-bottom: 15px;
+        }
+        .foundation-model-box {
+            background-color: #fff9c4;
+            border: 2px solid #f57c00;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .challenge-box {
+            background-color: #ffebee;
+            border: 2px solid #e53935;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .scale-factor {
+            background-color: #e8f5e8;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            // Get all slides
+            const slides = document.querySelectorAll('.slide');
+            
+            // Add page numbers to each slide
+            slides.forEach(function(slide, index) {
+                const pageNumber = document.createElement('div');
+                pageNumber.className = 'page-number';
+                pageNumber.textContent = (index + 1).toString();
+                slide.appendChild(pageNumber);
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- パスワード保護オーバーレイ -->
+    <div id="password-container"></div>
+    
+    <!-- メインコンテンツ（パスワード認証後に表示） -->
+    <div id="content-container">
+
+    <!-- 統合版表紙 -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p style="font-size: 24px; margin-top: 20px;">統合版</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <p style="font-size: 20px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p style="font-size: 18px; margin-top: 30px;">勉強会資料</p>
+            <p style="font-size: 16px; color: #666; margin-top: 50px;">作成日：2025年1月</p>
+        </div>
+    </div>
+
+    <!-- 目次スライド -->
+    <div class="slide toc-slide">
+        <h2>第6章 目次</h2>
+        <ul>
+            <li>6.1 辞書学習に基づくドメイン適応
+                <ul>
+                    <li>6.1.1 辞書学習の概要</li>
+                    <li>6.1.2 辞書学習に基づく自己教示学習</li>
+                    <li>半結合辞書学習（SDL）</li>
+                </ul>
+            </li>
+            <li>6.2 事前学習済みニューラルネットワークに基づくドメイン適応
+                <ul>
+                    <li>6.2.1 巨大化する深層モデル</li>
+                    <li>6.2.2 事前学習済みモデルの利用</li>
+                    <li>6.2.3 自己教師あり学習による深層モデルの事前学習
+                        <ul>
+                            <li>6.2.3.1 自己教師あり学習の概要</li>
+                            <li>6.2.3.2 文脈-事例対比型の対照的自己教師あり学習</li>
+                            <li>6.2.3.3 事例-事例対比型の対照的自己教師あり学習</li>
+                        </ul>
+                    </li>
+                    <li>6.2.4 事前学習済みモデルの転移可能性</li>
+                    <li>6.2.5 基盤モデル</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <!-- ========== 6.1 辞書学習に基づくドメイン適応 ========== -->
+    <!-- 表紙スライド -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p>辞書学習に基づくドメイン適応</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2 style="border: none;">6.1 辞書学習に基づくドメイン適応</h2>
+            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p>勉強会資料</p>
+        </div>
+    </div>
+
+    <!-- 概要スライド -->
+    <div class="slide">
+        <h2>第6章の概要</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">事前学習済みモデルを用いた転移学習の方法を説明</p>
+        </div>
+        
+        <h3>本章の内容</h3>
+        <ul>
+            <li>古典的には<span class="highlight">辞書学習</span>で得られる辞書</li>
+            <li>現在では<span class="highlight">ニューラルネットワークモデル</span>を扱う用語として定着</li>
+            <li>辞書学習について説明</li>
+            <li>ニューラルネットワークの事前学習済みモデル</li>
+            <li>転移可能性に関する最近の話題</li>
+            <li>大規模言語モデルに代表される基盤モデル</li>
+        </ul>
+    </div>
+
+    <!-- セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>6.1 辞書学習に基づくドメイン適応</h1>
+    </div>
+
+    <!-- 辞書学習の概要 -->
+    <div class="slide">
+        <h2>6.1.1 辞書学習の概要</h2>
+        
+        <div class="definition-box">
+            <p><span class="key-point">辞書学習（dictionary learning）</span></p>
+            <p>データから特徴抽出を行うための方法の一つで、観測データ $\mathbf{x}$ を、辞書（dictionary）と呼ばれる行列 $D = (\mathbf{d}_1, ..., \mathbf{d}_K)$ の各列の線形結合で近似する</p>
+        </div>
+        
+        <div class="formula-box">
+            <p style="text-align: center;">$\mathbf{x} \approx D\mathbf{u}$</p>
+            <p>ただし、$\mathbf{u}$ はスパース（ほとんどの要素が0）なベクトル</p>
+        </div>
+        
+        <div class="note">
+            この近似は正則化付き最適化問題を解くことで実現される
+        </div>
+    </div>
+
+    <!-- 最適化問題 -->
+    <div class="slide">
+        <h2>辞書学習の最適化問題</h2>
+        
+        <h3>基本的な定式化</h3>
+        <div class="formula-box">
+            $$\min_{D,\mathbf{u}_1,...,\mathbf{u}_n} \left[ \frac{1}{2}\sum_{i=1}^n \|\mathbf{x}_i - D\mathbf{u}_i\|^2 + \lambda\|\mathbf{u}_i\|_1 \right]$$
+            $$\text{subject to } \|\mathbf{d}_k\| = 1 \quad (k = 1, ..., K)$$
+        </div>
+        
+        <h3>要素の説明</h3>
+        <ul>
+            <li><span class="highlight">第1項</span>：再構成誤差（データとその近似の差）</li>
+            <li><span class="highlight">第2項</span>：スパース性を促す正則化項（L1ノルム）</li>
+            <li><span class="highlight">制約条件</span>：辞書の各列のノルムを1に正規化</li>
+        </ul>
+        
+        <div class="key-point-box">
+            <p>辞書 $D$ と各 $\mathbf{x}_i$ に対する特徴量 $D\mathbf{u}_i$ を学習する</p>
+        </div>
+    </div>
+
+    <!-- 自己教示学習 -->
+    <div class="slide">
+        <h2>6.1.2 辞書学習に基づく自己教示学習</h2>
+        
+        <div class="definition-box">
+            <p><span class="key-point">自己教示学習（Self-taught Learning）</span></p>
+            <p>元ドメインで教師なし特徴抽出を行い、得られた特徴を使って目標ドメインで教師あり学習を行うアプローチ</p>
+        </div>
+        
+        <h3>手順</h3>
+        <ol>
+            <li><span class="highlight">元ドメイン</span>の入力データ $\{\mathbf{x}_i^S\}_{i=1}^{n_S}$ から辞書学習</li>
+            <li><span class="highlight">目標ドメイン</span>の入力データ $\mathbf{x}_j^T$ に対して：
+                <ul>
+                    <li>最適化問題を解いて特徴量 $\mathbf{u}_j^T$ を学習</li>
+                    <li>$(u_j^T, y_j^T)$ を新たな目標ドメインのラベルありデータとして使用</li>
+                </ul>
+            </li>
+            <li>通常の教師あり学習の方法で仮説 $h$ を学習</li>
+        </ol>
+    </div>
+
+    <!-- 最適化問題（目標ドメイン） -->
+    <div class="slide">
+        <h2>目標ドメインでの特徴抽出</h2>
+        
+        <h3>目標ドメインの入力データに対する最適化問題</h3>
+        <div class="formula-box">
+            $$\min_{\mathbf{u}_1^T,...,\mathbf{u}_{n_T}^T} \left[ \frac{1}{2}\sum_{j=1}^{n_T} \|\mathbf{x}_j^T - D\mathbf{u}_j^T\|^2 + \lambda\|\mathbf{u}_j^T\|_1 \right]$$
+        </div>
+        
+        <div class="key-point-box">
+            <p>重要な点：辞書 $D$ の学習と仮説 $h$ の学習が<span class="highlight">完全に独立</span></p>
+        </div>
+        
+        <h3>利点</h3>
+        <ul>
+            <li>辞書の代わりにオートエンコーダなど非線形の特徴抽出器も使用可能</li>
+            <li>同様の手順で深層モデルによる自己教示学習が実現可能</li>
+        </ul>
+        
+        <div class="note">
+            元ドメインと目標ドメインでそれぞれ個別に辞書学習を行うアプローチも提案されている
+        </div>
+    </div>
+
+    <!-- SDL -->
+    <div class="slide">
+        <h2>半結合辞書学習（SDL）</h2>
+        
+        <h3>ドメイン間の対応関係を考慮</h3>
+        <p>辞書を結合させる手法として、元ドメインの辞書 $D^S$ によるスパース符号化係数 $U^S = (\mathbf{u}_1^S, ..., \mathbf{u}_{n_S}^S)$ と、目標ドメインの辞書 $D^T$ によるスパース符号化係数 $U^T = (\mathbf{u}_1^T, ..., \mathbf{u}_{n_T}^T)$ を変換行列 $W$ で結合</p>
+        
+        <h3>最適化問題</h3>
+        <div class="algorithm-box">
+            <p><strong>半結合辞書学習（Semi-coupled Dictionary Learning, SDL）</strong></p>
+            $$\min_{U^S,D^S,U^T,D^T,W} \|X^S - D^S U^S\|_F^2 + \|X^T - D^T U^T\|_F^2$$
+            $$+ \gamma\|U^S - WU^T\|_F^2 + \lambda_S\|U^S\|_1$$
+            $$+ \lambda_T\|U^T\|_1 + \lambda_W\|W\|_F^2$$
+            $$\text{subject to } \|\mathbf{d}_k^S\|_2 \leq 1, \|\mathbf{d}_k^T\|_2 \leq 1, \forall k$$
+        </div>
+    </div>
+
+    <!-- SDLの説明 -->
+    <div class="slide">
+        <h2>SDLの各項の意味</h2>
+        
+        <table>
+            <tr>
+                <th>項</th>
+                <th>意味</th>
+            </tr>
+            <tr>
+                <td>第1項・第2項</td>
+                <td>元ドメインと目標ドメインにおける辞書学習の再構成誤差</td>
+            </tr>
+            <tr>
+                <td>第3項 $\|U^S - WU^T\|_F^2$</td>
+                <td>スパース符号化係数の間の変換誤差（線形変換 $W$ で結合）</td>
+            </tr>
+            <tr>
+                <td>第4項・第5項</td>
+                <td>パラメータの正則化項</td>
+            </tr>
+        </table>
+        
+        <h3>SDLの効果</h3>
+        <div class="image-placeholder">
+            図6.1 SDLの流れ：元ドメイン（例：写真）から目標ドメイン（例：線画）へのスタイル変換を実現
+        </div>
+        
+        <div class="note">
+            変換 $W$ を単位行列にすれば、恒等写像となり一般的なスパース符号化係数の一致を要請する定式化 [183, 323] を含む
+        </div>
+    </div>
+
+    <!-- まとめ -->
+    <div class="slide">
+        <h2>6.1のまとめ</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">辞書学習に基づくドメイン適応の要点</p>
+        </div>
+        
+        <h3>主な手法</h3>
+        <ol>
+            <li><span class="highlight">辞書学習</span>：データをスパース表現で近似</li>
+            <li><span class="highlight">自己教示学習</span>：元ドメインで学習した辞書を目標ドメインで活用</li>
+            <li><span class="highlight">半結合辞書学習（SDL）</span>：ドメイン間の対応関係を変換行列で表現</li>
+        </ol>
+        
+        <h3>次のセクション</h3>
+        <p>6.2 事前学習済みニューラルネットワークに基づくドメイン適応</p>
+        <ul>
+            <li>深層ニューラルネットワークモデルの特筆すべき性質</li>
+            <li>モデルの大きさと汎化性能の関係</li>
+        </ul>
+    </div>
+
+    <!-- ========== 6.2.1 巨大化する深層モデル ========== -->
+    <!-- 表紙スライド -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p>6.2 事前学習済みニューラルネットワークに基づくドメイン適応</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2 style="border: none;">6.2.1 巨大化する深層モデル</h2>
+            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p>勉強会資料</p>
+        </div>
+    </div>
+
+    <!-- セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>6.2 事前学習済みニューラルネットワークに基づくドメイン適応</h1>
+    </div>
+
+    <!-- 巨大化する深層モデル -->
+    <div class="slide">
+        <h2>6.2.1 巨大化する深層モデル</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">深層ニューラルネットワークモデルの特筆すべき性質</p>
+            <p>モデルの大きさと汎化性能の関係</p>
+        </div>
+        
+        <h3>従来の機械学習モデルとの違い</h3>
+        <ul>
+            <li><span class="highlight">従来の統計学や機械学習モデル</span>：「大きなモデルは容易に過剰適合する」という認識が理論的にも実験的にも正しい常識</li>
+            <li><span class="highlight">深層モデル</span>：モデルの大きさ（パラメータ数）の増加とともにテスト精度も向上していき、過剰適合が起こらない</li>
+        </ul>
+        
+        <div class="note">
+            図6.2に示すように、深層モデルは従来の機械学習の常識に反して巨大化させることによってその性能を大きく向上させられることがわかってきた
+        </div>
+    </div>
+
+    <!-- スケーリング則 -->
+    <div class="slide">
+        <h2>深層モデルのスケーリング則</h2>
+        
+        <h3>べき乗則（Scaling Law）</h3>
+        <p>Kaplan ら [155] は、トランスフォーマーによる言語モデルの性能が以下の三つの量に関するべき乗則に従うことを実験的に示した：</p>
+        
+        <ol>
+            <li><span class="highlight">モデルパラメータ数</span></li>
+            <li><span class="highlight">データセットのサイズ</span></li>
+            <li><span class="highlight">学習時の計算量</span></li>
+        </ol>
+        
+        <div class="key-point-box">
+            <p>三つの量のうち二つがボトルネックにならないならば、トランスフォーマーの性能は残る一つの量のべき乗で上昇する</p>
+        </div>
+        
+        <div class="image-placeholder">
+            図6.2 深層ニューラルネットワークモデルにおけるパラメータ数と予測性能の関係<br>
+            左図：トランスフォーマーモデルのパラメータ数とBLEUスコアによる機械翻訳の性能の関係<br>
+            右図：T(L,H,A)の各点T(L,H,A)それぞれはエンコーダとデコーダの層数、全結合層の隠れユニット数、および注意機構のヘッド数を表します
+        </div>
+    </div>
+
+    <!-- モデルの巨大化の推移 -->
+    <div class="slide">
+        <h2>深層モデルの巨大化の推移</h2>
+        
+        <h3>パラメータ数の推移</h3>
+        <p>主要な深層ニューラルネットワークモデルにおけるパラメータ数の推移（図6.3）によると、<span class="highlight">年々凄まじい速さで巨大化している</span>ことがわかる</p>
+        
+        <div class="image-placeholder">
+            図6.3 主要な深層ニューラルネットワークモデルにおけるパラメータ数の推移<br>
+            2012年のAlexNetから2020年のGPT-3まで、指数関数的な増加を示す<br>
+            （対数スケールでのプロット）
+        </div>
+        
+        <div class="note">
+            この流れは今後も続くことが予想される
+        </div>
+    </div>
+
+    <!-- 巨大モデルの課題 -->
+    <div class="slide">
+        <h2>巨大モデルの訓練と利用の課題</h2>
+        
+        <h3>計算コストの問題</h3>
+        <ul>
+            <li><span class="highlight">GPT-3の例</span>：最大規模のモデルで1750億ものパラメータを持つ</li>
+            <li>当時の市場で最も低価格なGPUクラウドを利用した場合：
+                <ul>
+                    <li>1回訓練するために<span class="key-point">460万ドルもの費用</span></li>
+                    <li><span class="key-point">355GPU年</span>かかると試算 <sup>*1</sup></li>
+                </ul>
+            </li>
+        </ul>
+        
+        <div class="key-point-box">
+            <p>GPT-3は極端な例だが、巨大なモデルでなくとも、ある程度の規模の深層ニューラルネットワークをゼロから訓練しようとすれば、相当なコストが要求されることは間違いない</p>
+        </div>
+        
+        <div class="footnote">
+            *1 数値の引用元：https://lambdalabs.com/blog/demystifying-gpt-3<br>
+            GPU年は、1台のGPUで処理を実行した際にかかる時間（年）を表す単位
+        </div>
+    </div>
+
+    <!-- 事前学習とファインチューニング -->
+    <div class="slide">
+        <h2>事前学習済みモデルによる解決策</h2>
+        
+        <h3>効率的なモデル利用の方法</h3>
+        <p>巨大なタスクに少ない訓練コストで適応できるような汎用的なモデルを作り、それを使い回すことが重要</p>
+        
+        <h3>事前学習とファインチューニングによるパラメータ転移</h3>
+        <div class="image-placeholder">
+            図6.4 事前学習済みモデルによるパラメータ転移<br>
+            上段：学習済み深層ニューラルネットワーク（入力層→中間層（特徴抽出器）→出力層）<br>
+            下段：新たに学習する深層ニューラルネットワーク（中間層のパラメータを転移し、目標ドメインの学習を大幅に効率化する）
+        </div>
+        
+        <div class="note">
+            あらかじめ元ドメインの大きなデータセットで学習しておいた深層ニューラルネットワークモデルを目標ドメインに転移することで、目標ドメインでの学習を大幅に効率化できる
+        </div>
+    </div>
+
+    <!-- まとめと次節への導入 -->
+    <div class="slide">
+        <h2>6.2.1のまとめ</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">巨大化する深層モデルの特徴と課題</p>
+        </div>
+        
+        <h3>要点</h3>
+        <ol>
+            <li><span class="highlight">深層モデルの特異性</span>：パラメータ数の増加が性能向上につながる</li>
+            <li><span class="highlight">スケーリング則</span>：モデルサイズ、データ量、計算量のべき乗則</li>
+            <li><span class="highlight">計算コストの課題</span>：巨大モデルの訓練には莫大な費用と時間</li>
+            <li><span class="highlight">解決策</span>：事前学習済みモデルの利用による転移学習</li>
+        </ol>
+        
+        <h3>次節：6.2.2 事前学習済みモデルの利用</h3>
+        <p>深層学習を強力な手法たらしめている一つの要因が、<span class="highlight">事前学習済みモデル（pre-trained model）</span>を利用した転移学習</p>
+    </div>
+
+    <!-- ========== 6.2.2 事前学習済みモデルの利用 ========== -->
+    <!-- 表紙スライド -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p>6.2.2 事前学習済みモデルの利用</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2 style="border: none;">6.2.2 事前学習済みモデルの利用</h2>
+            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p>勉強会資料</p>
+        </div>
+    </div>
+
+    <!-- セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>6.2.2 事前学習済みモデルの利用</h1>
+    </div>
+
+    <!-- 事前学習済みモデルの利用 -->
+    <div class="slide">
+        <h2>事前学習済みモデルの利用</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">深層学習を強力な手法たらしめている一つの要因</p>
+            <p>事前学習済みモデル（pre-trained model）を利用した転移学習</p>
+        </div>
+        
+        <h3>深層モデルの特徴</h3>
+        <p>6.2.1節で述べた通り、深層ニューラルネットワークはモデルのサイズを大きくすることで<span class="highlight">汎化性能の向上が期待できる</span></p>
+        
+        <h3>パラメータ転移の重要性</h3>
+        <p>巨大なタスクに少ない訓練コストで適応できるような<span class="highlight">汎用的なモデル</span>を作り、それを使い回すという方法が重要になってきた</p>
+        
+        <h3>転移の方法</h3>
+        <p>モデルの事前学習とそのファインチューニングによるパラメータ転移（図6.4）</p>
+    </div>
+
+    <!-- 深層学習以前の事前学習済みモデル -->
+    <div class="slide">
+        <h2>深層学習以前の事前学習済みモデル</h2>
+        
+        <h3>初期の事例</h3>
+        <ul>
+            <li>深層学習以前にも機械学習の分野で、日大な訓練コストがかかるため再利用性向上を目的とした研究</li>
+            <li>単語のクラスタリングやn-gramモデルなど</li>
+            <li>ゼロ-ショット（zero-shot）転移：事前学習済みモデルを微調整せずそのまま新しい問題に適用</li>
+        </ul>
+        
+        <h3>深層学習における転換点</h3>
+        <div class="note">
+            <p>深層学習ではモデルが大きくて深いため、巨大なモデルをゼロから訓練するには大量のラベルデータと動かな計算資源が必要となり、目標ドメインでのネットワークの訓練コストを大幅に削減できる</p>
+        </div>
+        
+        <h3>目標ドメインへの転移手法</h3>
+        <ul>
+            <li>目標ドメインでの事前学習済みモデルの利用方法は多数提案されている</li>
+            <li>ここではゼロ-ショット転移とコストのかかるファインチューニングは除く</li>
+            <li>最近は深層学習済みモデルを再学習時の初期値として用いられる場合もある</li>
+        </ul>
+    </div>
+
+    <!-- ファインチューニングの手法 -->
+    <div class="slide">
+        <h2>ファインチューニングの具体的手法</h2>
+        
+        <h3>主要なアプローチ</h3>
+        <ol>
+            <li><span class="highlight">ゼロ-ショット転移</span>：事前学習済みモデルをそのまま適用</li>
+            <li><span class="highlight">ファインチューニング（fine-tuning）</span>：事前学習済みモデルを利用して目標ドメインに合わせてモデル全体を目標ドメインで再学習する</li>
+            <li><span class="highlight">線形評価（linear probe）</span>：特徴抽出器としての利用</li>
+        </ol>
+        
+        <div class="key-point-box">
+            <p>図6.5のように一部の層のパラメータを凍結（freeze）し、残りの層のパラメータのみを再学習する場合がある</p>
+        </div>
+        
+        <h3>凍結の利点</h3>
+        <ul>
+            <li>モデル全体を再学習の対象とする場合、一見モデル全体をゼロから学習する場合と同等のコストがかかる</li>
+            <li>しかし、事前学習済みモデルのパラメータを<span class="highlight">再学習時の初期値として用いる</span>ことで、新規タスクにおける学習の最適解への収束までの時間を大幅に削減できる</li>
+        </ul>
+    </div>
+
+    <!-- 凍結層とファインチューニング -->
+    <div class="slide">
+        <h2>層の凍結とファインチューニング</h2>
+        
+        <div class="image-placeholder">
+            図6.5 深層学習における事前学習済みモデルとそのファインチューニング<br>
+            事前学習済みモデルをそのまま利用する層では、そのパラメータを凍結（固定）し、残りの層のみ目標ドメインのデータで再学習します。どの層を凍結し、どの層をファインチューニングすればよいかは問題によって異なります。
+        </div>
+        
+        <h3>ファインチューニング時の考慮点</h3>
+        <ul>
+            <li>どの層を凍結しどの層を再学習すればよいかは<span class="highlight">問題ごとに異なる</span></li>
+            <li>経験的には、最終層に近いほうがよりタスクに特化した特徴を抽出</li>
+            <li>それ以外の層はパラメータを凍結して新たなデータでの追加学習を行う方針がよくとられる [170, 228]</li>
+        </ul>
+        
+        <div class="note">
+            例えば、画像データであれば、入力に近い層はエッジやテクスチャに反応し、層が深くなるにつれてテクスチャや、パーツ、各物体を反応していくことを考えると、ImageNetで訓練学習したものは他の自然画像に用いる層を凍結して用いることができそうなことと一致している
+        </div>
+    </div>
+
+    <!-- 自己教師あり学習モデル -->
+    <div class="slide">
+        <h2>6.2.3 自己教師あり学習による深層モデルの事前学習</h2>
+        
+        <h3>深層モデルの事前学習の課題</h3>
+        <p>深層モデルの事前学習は、基本的に大規模データを用いた教師あり学習によって行われてきたが、例えば、ImageNet <sup>*3</sup> などで提供されるような動物認識の初期のグレースケールモデルは、ImageNet <sup>*3</sup> という人規模な画像データベースに登録された数百万枚もの画像と1000以上の画像データベースで用いる動物認識の訓練された画像データベースに登録されるモデルが開発されてきた</p>
+        
+        <div class="note">
+            しかし、教師あり学習による事前学習済みモデルの開発には以下のような手間をかける場合があります。例えば、この事前学習済みモデルをクラウドソーシングなどでアノテーションコストをかける程度下げること、今後は特別されたラベルのない頼組化実下という</p>
+        </div>
+        
+        <div class="footnote">
+            *2 https://pytorch.org/vision/stable/models.html<br>
+            *3 詳細はhttps://image-net.org/を参照
+        </div>
+    </div>
+
+    <!-- まとめ -->
+    <div class="slide">
+        <h2>6.2.2のまとめ</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">事前学習済みモデルの利用方法</p>
+        </div>
+        
+        <h3>要点</h3>
+        <ol>
+            <li><span class="highlight">事前学習済みモデル</span>：深層学習を強力な手法にする重要な要因</li>
+            <li><span class="highlight">転移の方法</span>：
+                <ul>
+                    <li>ゼロ-ショット転移</li>
+                    <li>ファインチューニング</li>
+                    <li>線形評価（特徴抽出器として利用）</li>
+                </ul>
+            </li>
+            <li><span class="highlight">層の凍結</span>：一部の層を固定し、残りを再学習</li>
+            <li><span class="highlight">初期値としての利用</span>：収束までの時間を大幅に削減</li>
+        </ol>
+        
+        <h3>次節：6.2.3 自己教師あり学習による深層モデルの事前学習</h3>
+        <p>ラベルなしデータを活用した事前学習の手法について</p>
+    </div>
+
+    <!-- ========== 6.2.3 自己教師あり学習による深層モデルの事前学習 ========== -->
+    <!-- 表紙スライド -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p>6.2.3 自己教師あり学習による深層モデルの事前学習</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2 style="border: none;">6.2.3 自己教師あり学習による<br>深層モデルの事前学習</h2>
+            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p>勉強会資料</p>
+        </div>
+    </div>
+
+    <!-- セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>6.2.3 自己教師あり学習による深層モデルの事前学習</h1>
+    </div>
+
+    <!-- 自己教師あり学習の概要 -->
+    <div class="slide">
+        <h2>自己教師あり学習による事前学習</h2>
+        
+        <h3>深層モデルの事前学習の現状</h3>
+        <p>深層モデルの事前学習は、基本的に大規模データを用いた教師あり学習によって行われてきた</p>
+        
+        <h3>例：CNNモデル</h3>
+        <ul>
+            <li>例えば、ImageNet <sup>*3</sup> という人規模な画像データベースに登録された</li>
+            <li>多くの入規模な画像データベースに登録されるモデルは、ImageNet <sup>*3</sup> という大規模な画像データベースに登録された数百万枚もの画像データと1000以上の画像データベースで訓練されることで得られたもの</li>
+            <li>ファインチューニングすることで得られた転移があります</li>
+        </ul>
+        
+        <div class="note">
+            <p>これらのモデルの成功を受けて、多くの教師あり事前学習済みのニューラルネットワークモデルも開発されています。しかし、教師あり学習による事前学習済みモデルの開発には入る手間のアノテーションに大きく依存します。クラウドソーシングなどでアノテーションコストをかかる程度下げることは可能ですが、今後は特別されたラベルのない頼組化実下という</p>
+        </div>
+        
+        <div class="footnote">
+            *2 https://pytorch.org/vision/stable/models.html
+        </div>
+    </div>
+
+    <!-- 自己教師あり学習の必要性 -->
+    <div class="slide">
+        <h2>自己教師あり学習の必要性</h2>
+        
+        <h3>ラベル付きデータの問題点</h3>
+        <ul>
+            <li>あるデータセットで訓練したモデルが<span class="highlight">異なる種類のデータに対する適切な事前学習済みモデルとなっている保証はない</span></li>
+            <li>例：ImageNetで事前学習したモデルが医用画像の認識問題に対して有効な特徴抽出器となっているかは不明</li>
+            <li>場合によっては新たに大量のラベル付き医用画像を用意する必要がある</li>
+        </ul>
+        
+        <div class="key-point-box">
+            <p class="key-point">解決策：自己教師あり学習（self-supervised learning）</p>
+            <p>より少ないラベルありデータや試行回数で汎用性の高い事前学習を行う方法として注目</p>
+        </div>
+        
+        <h3>自己教師あり学習の特徴</h3>
+        <ul>
+            <li>入力データそのものを教師ラベルとして利用</li>
+            <li>多くの下流タスクに有効な事前学習を行うことが可能</li>
+            <li>新しいパラダイムをもたらした</li>
+        </ul>
+        
+        <p>本節では、自己教師あり学習によるニューラルネットの事前学習について説明します。</p>
+    </div>
+
+    <!-- 自己教師あり学習の概要 -->
+    <div class="slide">
+        <h2>6.2.3.1 自己教師あり学習の概要</h2>
+        
+        <h3>2018年のブレークスルー</h3>
+        <p>人工知能分野への貢献で2018年にチューリング賞を受賞したヤン・ルカン（Yann LeCun）は、AAAI2020 <sup>*4</sup> での招待講演で自己教師あり学習を</p>
+        
+        <div class="definition-box">
+            <p><span class="key-point">「計算機が入力の任意の部分を任意の観測部分に対して予測すること」</span></p>
+            <p style="font-style: italic;">"the machine predicts any parts of its input for any observed part"</p>
+        </div>
+        
+        <p>と説明しました <sup>*5</sup>。</p>
+        
+        <p>今日では、自己教師あり学習は</p>
+        
+        <div class="footnote">
+            *3 https://www.image-net.org<br>
+            *4 AAAI: Association for the Advancement of Artificial Intelligence（米国人工知能学会）<br>
+            *5 講演動画：https://www.youtube.com/watch?v=Aut32pR5PQA
+        </div>
+    </div>
+
+    <!-- まとめ -->
+    <div class="slide">
+        <h2>6.2.3のまとめ</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">自己教師あり学習による深層モデルの事前学習</p>
+        </div>
+        
+        <h3>要点</h3>
+        <ol>
+            <li><span class="highlight">教師あり学習の限界</span>
+                <ul>
+                    <li>大量のラベル付きデータが必要</li>
+                    <li>アノテーションコストが高い</li>
+                    <li>異なるドメインへの転移の保証がない</li>
+                </ul>
+            </li>
+            <li><span class="highlight">自己教師あり学習の特徴</span>
+                <ul>
+                    <li>入力データそのものを教師として利用</li>
+                    <li>ラベルなしデータで事前学習可能</li>
+                    <li>汎用的な特徴表現の学習</li>
+                </ul>
+            </li>
+            <li><span class="highlight">ヤン・ルカンの定義</span>
+                <ul>
+                    <li>入力の任意の部分から他の部分を予測</li>
+                    <li>2018年チューリング賞受賞</li>
+                </ul>
+            </li>
+        </ol>
+        
+        <h3>次の内容</h3>
+        <p>自己教師あり学習の具体的な手法と実装について</p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                const pageNum = document.createElement('div');
+                pageNum.className = 'page-number';
+                pageNum.textContent = index + 1;
+                slide.appendChild(pageNum);
+            });
+        };
+    </script>
+
+    <!-- ========== 6.2.3.1 自己教師あり学習の概要 ========== -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p>6.2.3.1 自己教師あり学習の概要</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2 style="border: none;">6.2.3.1 自己教師あり学習の概要</h2>
+            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p>勉強会資料</p>
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>6.2.3.1 自己教師あり学習の概要</h1>
+    </div>
+
+    <div class="slide">
+        <h2>自己教師あり学習とは</h2>
+        
+        <div class="definition-box">
+            <p>ヤン・ルカン（Yann LeCun）による定義：</p>
+            <p><span class="key-point">「計算機が入力の任意の部分を任意の観測部分に対して予測すること」</span></p>
+            <p style="font-style: italic;">"the machine predicts any parts of its input for any observed part"</p>
+        </div>
+        
+        <p>今日では、自己教師あり学習は</p>
+        
+        <h3>主要な方法 [186]</h3>
+        <ul class="method-list">
+            <li><span class="highlight">（半）自動的にデータから「ラベル」を取得する</span></li>
+            <li><span class="highlight">データの一部を他の部分から予測する</span></li>
+        </ul>
+        
+        <p>これらの方法として認識されています。</p>
+    </div>
+
+    <div class="slide">
+        <h2>自己教師あり学習の利点と課題</h2>
+        
+        <h3>利点</h3>
+        <ul>
+            <li>入力の「他の部分」は破損や歪みのある不完全なものであったり、データ拡張技術によって変換されたものである可能性もある</li>
+            <li>計算機は元の入力の全体、あるいは一部、または何らかの特徴量を復元するように学習を行う</li>
+        </ul>
+        
+        <h3>教師なし学習との違い</h3>
+        <div class="note">
+            <p>自己教師あり学習は教師ラベルを用いない学習問題やその方法を指すため、教師なし学習の一種とみなすことができます。</p>
+            <p>しかし、教師なし学習が入力のみに注目してデータのパターン抽出を行う問題であるのに対して、<span class="highlight">自己教師あり学習は疑似的ではあるものの入力-出力の関係に注目してパターン抽出を行う問題</span>であり、教師あり学習の設定に近いパラダイムにあります。</p>
+        </div>
+        
+        <h3>例：Cloze Test</h3>
+        <p>直感的には、自己教師あり学習はデータに内在する共起関係を教師ラベルとして活用する方法です。例えば <span class="highlight">"I like ___ apples"</span> という不完全な文章に対して、訓練された言語モデルは空欄部分を <span class="highlight">"eating"</span> と予測する可能性が高いでしょう（Cloze Test[283]）。</p>
+        
+        <p>なぜなら、この単語はさまざまなコーパス内で文脈と頻繁に共起しているためです。</p>
+    </div>
+
+    <div class="slide">
+        <h2>自己教師あり学習の3つのアプローチ</h2>
+        
+        <p>Liu らのサーベイ論文 [186] によれば、自己教師あり学習の方法は次の三つのアプローチに大別することができます。</p>
+        
+        <div class="algorithm-box">
+            <h3>3つの主要アプローチ</h3>
+            <ol>
+                <li><strong>生成的アプローチ</strong>：入力 $\mathbf{x}$ を明示的な潜在表現ベクトル $\mathbf{z}$ に変換するエンコーダと $\mathbf{z}$ から $\mathbf{x}$ を再構成するデコーダを学習する</li>
+                <li><strong>対照的アプローチ</strong>：入力 $\mathbf{x}$ を明示的な潜在表現ベクトル $\mathbf{z}$ に変換するエンコーダを学習し、類似度を測る</li>
+                <li><strong>敵対的アプローチ</strong>：疑似的な事例を生成するエンコーダ・デコーダと真の事例を識別する識別器を学習する</li>
+            </ol>
+        </div>
+        
+        <p>これらのアプローチにおけるニューラルネットワークの構造の比較を図6.6に示します。</p>
+        
+        <div class="image-placeholder">
+            図6.6 自己教師あり学習のアプローチの分類 [Liu ら [186] の Fig. 4 を改変して使用]<br>
+            生成器、識別器、損失関数の構成の違いを示す図<br>
+            生成的：エンコーダ → z → デコーダ → x̂ → 再構成損失<br>
+            対照的：エンコーダ → z → 対照損失<br>
+            敵対的：エンコーダ → z → デコーダ → x̂ → 分布間疑距離
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>自己教師あり学習におけるニューラルネットワークの構造</h2>
+        
+        <p>自己教師あり学習におけるニューラルネットワークの構造は一般に生成器と識別器の二つの部分から構成されると考えることができ、生成器はさらにエンコーダとデコーダに分解されます。それぞれのアプローチにおける主な違いは、以下の通りです。</p>
+        
+        <div class="key-point-box">
+            <h3>各アプローチの特徴</h3>
+            <ul>
+                <li><span class="key-point">潜在表現 $\mathbf{z}$ の扱い</span>：生成的アプローチと対照的アプローチでは明示的であり、しばしばダウンストリームタスクで利用されます。一方、敵対的アプローチでは暗黙的にモデル化されます。</li>
+                <li><span class="key-point">識別器の設定</span>：対照的アプローチと敵対的アプローチが識別器を持つのに対して、生成的アプローチは識別器を持ちません。対照的アプローチでは、識別器として2-3層のパーセプトロンなどの小規模なモデルが用いられるのに対して、敵対的アプローチでは標準的なResNetなど比較的規模の大きいモデルが用いられます。</li>
+                <li><span class="key-point">損失関数</span>：生成的アプローチでは再構成損失を、対照的アプローチでは対照損失と呼ばれる類似度の指標を、敵対的アプローチでは分布間の距離尺度をそれぞれ損失関数として学習が行われます。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>対照学習（Contrastive Learning）</h2>
+        
+        <p>本書では、特に対照的アプローチである<span class="highlight">対照学習（contrastive learning）</span>について詳しく説明します。生成的アプローチや敵対的アプローチについては、例えば Liu らのサーベイ [186] を参照してください。</p>
+        
+        <h3>対照学習の基本原理</h3>
+        <div class="definition-box">
+            <p>機械学習のモデルは、それが近似しようとしている確率分布の観点から生成モデルと識別モデルに大別されます。</p>
+            <p>生成モデルは従来、同時分布 $P_{X,Y}$ を近似する問題を考えるアプローチですが、近年の深層生成モデルの文脈では特に入力の分布 $P_X$ や $P_{X|Y}$ を近似する</p>
+        </div>
+        
+        <div class="footnote">
+            <p>*3 https://www.image-net.org<br>
+            *4 Association for the Advancement of Artificial Intelligence（情報テクノロジと知能学会）が主催する人工知能分野のトップ国際会議です。<br>
+            *5 https://aaai.org/Conferences/AAAI-20/invited-speakers/</p>
+        </div>
+    </div>
+
+    <!-- ========== 6.2.3.2 文脈-事例対比型の対照的自己教師あり学習 ========== -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p>6.2.3.2 文脈-事例対比型の対照的自己教師あり学習</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2 style="border: none;">6.2.3.2 文脈-事例対比型の<br>対照的自己教師あり学習</h2>
+            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p>勉強会資料</p>
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>6.2.3.2 文脈-事例対比型の対照的自己教師あり学習</h1>
+    </div>
+
+    <div class="slide">
+        <h2>文脈-事例対比型の対照的自己教師あり学習</h2>
+        
+        <h3>基本概念</h3>
+        <p>文脈-事例対比型の対照学習は、各事例が実際に対照的特徴表現とその大域的文脈表現の間の類似関係をモデル化することを主眼においています。</p>
+        
+        <h3>具体例</h3>
+        <ul>
+            <li>大規模を学習するなら、個別と同一性の絵は その絵の点</li>
+            <li>文書はその段落に</li>
+            <li>グラフのノードはその近傍に</li>
+        </ul>
+        
+        <p>というような大域的文脈の特徴表現と関連していることが考えられます。</p>
+        
+        <h3>主要な手法</h3>
+        <div class="key-point-box">
+            <p>文脈-事例対比型の対照学習には、主に以下の方法があります：</p>
+            <ol>
+                <li><span class="highlight">相対位置型の予測（predict relative position、PRP）</span></li>
+                <li><span class="highlight">相互情報量（mutual information, MI）の最大化</span></li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>相対位置の予測（PRP）</h2>
+        
+        <h3>PRPの特徴</h3>
+        <ul>
+            <li><span class="highlight">局所的特徴の間の相対的位置関係を学習</span>することに重点</li>
+            <li>大域的文脈はこの関係を予測するための暗黙的な要請として機能</li>
+        </ul>
+        
+        <h3>MIとの違い</h3>
+        <p>一方 MI による方法では、局所的特徴間の相対的位置関係は無視され、各局所的特徴の大域的文脈への帰属関係を学習することを目的とします。</p>
+        
+        <h3>データの関係性</h3>
+        <div class="definition-box">
+            <p><strong>多くのデータは、空間的な関係や時系列的な関係を含みます。</strong></p>
+            <p>例えば、正面を向いて立っている人間の全身画像があれば、頭は胴体より上部に位置しているでしょう。</p>
+            <p>また、"Nice to meet you." という文章は、"Nice to meet you, too." という文章よりも前にある可能性が高いでしょう。</p>
+        </div>
+        
+        <p>さまざまなモデルが、このようなデータに含まれる相対位置の認識を事前学習タスクとして捉えています [152]。</p>
+    </div>
+
+    <div class="slide">
+        <h2>PRPの具体的なタスク</h2>
+        
+        <h3>主要なタスク例</h3>
+        <ol>
+            <li><span class="highlight">各事例から切り出した二つのパッチの相対位置を予測する問題 [81]</span></li>
+            <li><span class="highlight">画像を並び替えたセグメントの位置を復元するジグソーパズルを解く問題 [217]</span></li>
+            <li><span class="highlight">回転した画像の回転角を推定する問題 [107]</span></li>
+        </ol>
+        
+        <div class="image-placeholder">
+            図6.7 相対位置の予測問題の例<br>
+            青枠のパッチに対してベストとして与えられた赤枠のパッチの相対位置を予測します。<br>
+            問題1、2の正解はそれぞれ Y = 6、Y = 3 となります。
+        </div>
+        
+        <div class="image-placeholder">
+            図6.8 ジグソーパズルと回転の例<br>
+            ジグソーパズル問題では、(a) のように画像から適当なパッチを切り出し (b) のように並び替えたものを (c) のように解くことで各パッチの相対位置を学習します。<br>
+            また、回転問題では元の画像を回転した画像から回転角を予測する問題を解きます。
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>自然言語処理における事例：BERT</h2>
+        
+        <h3>Next Sentence Prediction (NSP)</h3>
+        <p>自然言語処理における言語モデル BERT[77] の事前学習では、PRP に類似したアイデアとして <span class="highlight">next sentence prediction (NSP)</span> という学習方法が採用されています。</p>
+        
+        <h3>NSPの仕組み</h3>
+        <p>これは、ある文に対して、次の文とランダムにサンプリングされた文を区別するようにモデルを訓練する方法です。</p>
+        
+        <h3>NSPの問題点と発展</h3>
+        <div class="note">
+            <p>しかし、その後の研究で NSP はむしろ性能を低下させる可能性のある事前学習法であることが実験的に示唆されたため、後続のモデルである RoBERTa[187] では NSP の損失が取り除かれています。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>相互情報量（MI）の最大化</h2>
+        
+        <h3>相互情報量の定義</h3>
+        <p>相互情報量（mutual information）は二つの確率変数 $X$ と $Z$ の間の関連性のモデルであり、以下のように定義されます。</p>
+        
+        <div class="formula-box">
+            $$I(X; Z) = \int \int p(x, z) \log \frac{p(x, z)}{p(x)p(z)} dx dz \quad (6.3)$$
+        </div>
+        
+        <h3>相互情報量最大化の問題設定</h3>
+        <p>相互情報量最大化のアプローチでは、次のような特徴量の間の相互情報量最大化問題を考えます。</p>
+        
+        <div class="formula-box">
+            $$\max_{h_{\text{enc}}^{(1)}, h_{\text{enc}}^{(2)} \in \mathcal{H}} I(h_{\text{enc}}^{(1)}(X); h_{\text{enc}}^{(2)}(X)) \quad (6.4)$$
+        </div>
+        
+        <p>ここで、$h_{\text{enc}}^{(i)}$ は特徴抽出を行うエンコーダであり、$\mathcal{H}$ はエンコーダを表す適当なクラスの関数集合です。</p>
+    </div>
+
+    <div class="slide">
+        <h2>Deep InfoMax (DIM)</h2>
+        
+        <h3>DIMの概要</h3>
+        <p>Deep InfoMax (DIM) [129] は画像の局所的なパッチと大域的文脈（すなわち画像の内容）の間の相互情報量を最大化する対照学習タスクを通して自己教師あり学習を行う方法です。</p>
+        
+        <h3>DIMの仕組み</h3>
+        <p>いま、$h_{\text{enc}}(\mathbf{x}; \boldsymbol{\theta})$ を入力画像 $\mathbf{x}$ を特徴ベクトル $\mathbf{z}$ に変換するエンコーダとし、$\boldsymbol{\theta}$ をそのパラメータとします。</p>
+        
+        <ul>
+            <li>特に $h_{\text{enc}}$ は、入力 $\mathbf{x}$ に対して $M \times M$ 特徴マップを対応させる関数 $h_1$ と</li>
+            <li>得られた特徴マップを一つの特徴ベクトルに集約する関数 $h_2$ の合成関数 $h_{\text{enc}} = h_2 \circ h_1$ で表されるとします</li>
+        </ul>
+        
+        <div class="image-placeholder">
+            図6.9 Deep InfoMax におけるエンコーダと大域的 MI スコアおよび局所的 MI スコア<br>
+            入力画像から M×M 特徴写像を生成し、大域的特徴と局所的特徴の相互情報量を最大化
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>DIMの目的関数</h2>
+        
+        <h3>2種類の相互情報量</h3>
+        <p>このとき、DIM では入力画像とエンコードされた特徴量の間の相互情報量（大域的 MI スコア）$I(X; h_{\text{enc}}(X; \boldsymbol{\theta}))$ と、$h_1$ で得られた特徴マップの各成分 $(h_1(X; \boldsymbol{\theta}))_{i,j}$、$i, j = 1, \ldots, M$ とエンコードされた特徴量の間の相互情報量（局所的 MI スコア）$I(h_1(X; \boldsymbol{\theta})_{i,j}; h_{\text{enc}}(X; \boldsymbol{\theta}))$ という2種類の相互情報量を考えます。</p>
+        
+        <h3>重み付き和の目的関数</h3>
+        <div class="formula-box">
+            $$J(\boldsymbol{\theta}) = \alpha_1 I(X; h_{\text{enc}}(X; \boldsymbol{\theta})) + \frac{\alpha_2}{M^2} \sum_{i,j=1}^M I(h_1(X; \boldsymbol{\theta})_{i,j}; h_{\text{enc}}(X; \boldsymbol{\theta})) \quad (6.5)$$
+        </div>
+        
+        <p>を最大にするように特徴抽出器であるエンコーダのパラメータ $\boldsymbol{\theta}$ を学習します。</p>
+        
+        <p>ここで、(6.5) の右辺第2項はすべての $h_1(X; \boldsymbol{\theta})_{i,j}$ に対する局所的 MI スコアの平均をとったものです。</p>
+    </div>
+
+    <div class="slide">
+        <h2>相互情報量の推定</h2>
+        
+        <h3>推定の必要性</h3>
+        <p>(6.5) の $J(\boldsymbol{\theta})$ を最大化するためには、相互情報量を推定する必要があります。</p>
+        
+        <h3>KLダイバージェンスによる表現</h3>
+        <p>DIM では、一般に二つの確率変数 $X$ と $Z$ の相互情報量 $I(X; Z)$ が</p>
+        
+        <div class="formula-box">
+            $$I(X; Z) = D_{\text{KL}}(P_{X,Z} \| P_X P_Z) \quad (6.6)$$
+        </div>
+        
+        <p>と書けることを利用してこれを推定します。ここで、右辺は $X$ と $Z$ の同時分布 $P_{X,Z}$ と周辺分布の積 $P_X P_Z$ の間の KL ダイバージェンスです。</p>
+        
+        <h3>Donsker-Varadhan表現</h3>
+        <p>(6.6) の右辺の $D_{\text{KL}}(P_{X,Z} \| P_X P_Z)$ は、KL ダイバージェンスの Donsker-Varadhan 表現 [82] によってさらに</p>
+        
+        <div class="formula-box">
+            $$D_{\text{KL}}(P_{X,Z} \| P_X P_Z) = \sup_{g: X \times Z \to \mathbb{R}} \mathbb{E}_{(X,Z) \sim P_{X,Z}}[g(X, Z)] - \log \mathbb{E}_{(X,Z) \sim P_X P_Z}[e^{g(X,Z)}] \quad (6.7)$$
+        </div>
+        
+        <p>と書くことができます。</p>
+    </div>
+
+    <div class="slide">
+        <h2>MINE（相互情報量ニューラル推定）</h2>
+        
+        <h3>MINEの概要</h3>
+        <p>(6.7) の右辺で sup を外した量は $D_{\text{KL}}(P_{X,Z} \| P_X P_Z)$ の下界を与えます。$g$ は適当な実数値関数ですが、例えばパラメータ $\mathbf{w}$ を持つニューラルネットワーク $g(\mathbf{x}, \mathbf{z}; \mathbf{w})$ を用いる方法（mutual Information neural estimation, MINE）[30] などが提案されています。</p>
+        
+        <h3>相互情報量の推定量</h3>
+        <p>この場合、相互情報量の推定量 $\hat{I}_{\mathbf{w}}$ を</p>
+        
+        <div class="formula-box">
+            $$\hat{I}_{\mathbf{w}}(X; Z) = \mathbb{E}_{(X,Z) \sim P_{X,Z}}[g(X, Z; \mathbf{w})] - \log \mathbb{E}_{(X,Z) \sim P_X P_Z}[e^{g(X,Z;\mathbf{w})}] \quad (6.8)$$
+        </div>
+        
+        <p>で定義し、(6.5) の目的関数は</p>
+        
+        <div class="formula-box">
+            $$J(\boldsymbol{\theta}, \mathbf{w}) = \alpha_1 \hat{I}_{\mathbf{w}}(X; h_{\text{enc}}(X; \boldsymbol{\theta})) + \frac{\alpha_2}{M^2} \sum_{i,j=1}^M \hat{I}_{\mathbf{w}}(h_1(X; \boldsymbol{\theta})_{i,j}; h_{\text{enc}}(X; \boldsymbol{\theta})) \quad (6.9)$$
+        </div>
+        
+        <p>となります。</p>
+    </div>
+
+    <div class="slide">
+        <h2>DIMの発展とその他の手法</h2>
+        
+        <h3>DIMとは単独して提案されたcontrastive predictive coding (CPC)</h3>
+        <p>DIM とは単独して提案された contrastive predictive coding (CPC) [191] でも、DIM と同様に相互情報量の最大化によるアプローチを採用しています。</p>
+        
+        <h3>Augmented Multiscale DIM (AMDIM)</h3>
+        <p>DIM がすべての局所的特徴を集約して一つの大域的特徴を構築するのに対して、CPC では局所的特徴の一部を用いて「現在特徴」という表現を構築した局所的特徴間の相互情報量を最大化することによりスケールを統一的に表現されています。</p>
+        
+        <p>また、DIM を拡張した Augmented Multiscale DIM (AMDIM) [22] では、各入力画像に対して独立にデータ拡張を施したものから抽出した局所的特徴間の相互情報量を最大化することによりスケールとより堅実した学習特徴の獲得が可能となるように訓練されています。</p>
+        
+        <h3>6.2.3.3 事例-事例対比型の対照的自己教師あり学習</h3>
+        <p>事例-事例対比型の対照学習は、距離学習と関連に異なるサンプルの事例レベルの局所的特徴表現の間の距離を直接学習するものです。</p>
+    </div>
+
+    <!-- ========== 6.2.3.3 事例-事例対比型の対照的自己教師あり学習 ========== -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p>6.2.3.3 事例-事例対比型の対照的自己教師あり学習</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2 style="border: none;">6.2.3.3 事例-事例対比型の<br>対照的自己教師あり学習</h2>
+            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p>勉強会資料</p>
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>6.2.3.3 事例-事例対比型の対照的自己教師あり学習</h1>
+    </div>
+
+    <div class="slide">
+        <h2>事例-事例対比型の対照的自己教師あり学習</h2>
+        
+        <h3>基本概念</h3>
+        <p>事例-事例対比型の対照学習は、距離学習と関連に異なるサンプルの事例レベルの局所的特徴表現の間の距離を直接学習するものです。</p>
+        
+        <h3>距離学習（Metric Learning）との関係</h3>
+        <div class="definition-box">
+            <p><span class="highlight">距離学習（metric learning）</span>とは、アンカー点 $\mathbf{x}$ と正例 $\mathbf{x}^+$ および負例 $\mathbf{x}^-$ の三つの事例を用いて、それぞれに対するデータ処理の前後の特徴表現と関連した状態を教師ラベルとして利用する問題である、より体積的事例レベルの局所的特徴表現の間の距離を直接学習するものです。</p>
+        </div>
+        
+        <h3>ノイズ対照推定（NCE）</h3>
+        <p>事例-事例対比型の対照学習は、以下で説明される <span class="highlight">ノイズ対照推定（noise contrastive estimation, NCE）</span> [119] という手法の拡張範囲を通して「比較の仕方を学習する（learning to compare）」ことを目的とします。</p>
+    </div>
+
+    <div class="slide">
+        <h2>ノイズ対照推定（NCE）</h2>
+        
+        <h3>NCEの基本定式化</h3>
+        <div class="formula-box">
+            $$\mathcal{L}_{\text{NCE}}(h_{\text{enc}}) = \mathbb{E}_{\mathbf{x}, \mathbf{x}^+, \mathbf{x}^-} \left[ - \log \frac{e^{h_{\text{enc}}(\mathbf{x})^\top h_{\text{enc}}(\mathbf{x}^+)}}{e^{h_{\text{enc}}(\mathbf{x})^\top h_{\text{enc}}(\mathbf{x}^+)} + e^{h_{\text{enc}}(\mathbf{x})^\top h_{\text{enc}}(\mathbf{x}^-)}} \right] \quad (6.10)$$
+        </div>
+        
+        <h3>記号の説明</h3>
+        <ul>
+            <li>$\mathbf{x}^+$ はアンカー点 $\mathbf{x}$ と「似ている」入力</li>
+            <li>$\mathbf{x}^-$ は $\mathbf{x}$ と「似ていない」入力</li>
+            <li>タスクに応じて類似度の指標やエンコーダの構造は異なる</li>
+            <li>NCE というフレームワークは共通している</li>
+        </ul>
+        
+        <h3>InfoNCEへの拡張</h3>
+        <p>$\mathbf{x}$ に対して $K$ 個の非類似事例 $\mathbf{x}^{1-}, \ldots, \mathbf{x}^{K-}$ が利用できる場合、NCE の損失関数を拡張した</p>
+        
+        <div class="formula-box">
+            $$\mathcal{L}_{\text{InfoNCE}}(h_{\text{enc}}) = \mathbb{E}_{\mathbf{x}, \mathbf{x}^+, \mathbf{x}^K} \left[ - \log \frac{e^{h_{\text{enc}}(\mathbf{x})^\top h_{\text{enc}}(\mathbf{x}^+)}}{e^{h_{\text{enc}}(\mathbf{x})^\top h_{\text{enc}}(\mathbf{x}^+)} + \sum_{k=1}^K e^{h_{\text{enc}}(\mathbf{x})^\top h_{\text{enc}}(\mathbf{x}^{k-})}} \right] \quad (6.11)$$
+        </div>
+        
+        <p>を最小化する InfoNCE が提案されています [218]。</p>
+    </div>
+
+    <div class="slide">
+        <h2>教師あり学習と自己教師あり学習における正例・負例の定義</h2>
+        
+        <h3>教師あり学習の場合</h3>
+        <ul>
+            <li>通常、正例 $\mathbf{x}^+$ はアンカー点 $\mathbf{x}$ と同一のクラスからサンプリング</li>
+            <li>負例 $\mathbf{x}^-$ は $\mathbf{x}$ とは異なるクラスからサンプリング</li>
+        </ul>
+        
+        <h3>自己教師あり学習の場合</h3>
+        <div class="key-point-box">
+            <p>アンカー点 $\mathbf{x}$ に対して $\mathbf{x}^+$ と $\mathbf{x}^-$ のとり方は自明ではありません。</p>
+        </div>
+        
+        <h3>NCEでよく用いられる方法</h3>
+        <p>NCE でよく用いられるのは、アンカー点となる入力画像をデータ拡張した画像を正例、アンカー点と異なる画像をデータ拡張した画像を負例とする方法です。</p>
+        
+        <h3>最近の発展</h3>
+        <p>最近では、<span class="highlight">momentum contrast (MoCo) [123]</span> や <span class="highlight">SimCLR[59]</span> など、文脈-事例対比型のアプローチを凌駕し、通常の教師あり学習に匹敵する性能を達成するような事例-事例対比型の対照学習の方法が提案されています。</p>
+    </div>
+
+    <div class="slide">
+        <h2>MoCo（Momentum Contrast）</h2>
+        
+        <h3>MoCoの基本アイデア</h3>
+        <p>MoCo ではアンカー点をクエリ（query）、対比する正例や負例をキー（key）と呼び、それぞれ $\mathbf{x}^q$ および $\mathbf{x}^{k+}, \mathbf{x}^{k1}, \mathbf{x}^{k2}, \ldots$ と表します。</p>
+        
+        <p>ここで、$\mathbf{x}^{k+}$ はクエリ $\mathbf{x}^q$ に対する正例、$\mathbf{x}^{k1}, \mathbf{x}^{k2}, \ldots$ は $\mathbf{x}^q$ に対する負例を表します。</p>
+        
+        <h3>MoCoの損失関数</h3>
+        <div class="formula-box">
+            $$\mathcal{L}(\boldsymbol{\theta}_q, \boldsymbol{\theta}_k) = - \log \frac{e^{(\mathbf{z}^q)^\top \mathbf{z}^{k+}/\tau}}{e^{(\mathbf{z}^q)^\top \mathbf{z}^{k+}/\tau} + \sum_{k \neq k+} e^{(\mathbf{z}^q)^\top \mathbf{z}^k/\tau}} \quad (6.12)$$
+        </div>
+        
+        <p>ここで、$\boldsymbol{\theta}_q, \boldsymbol{\theta}_k$ はそれぞれクエリエンコーダとキーエンコーダのパラメータであり、$\tau$ は温度を表すハイパーパラメータです。</p>
+        
+        <h3>MoCoの解釈</h3>
+        <div class="note">
+            <p>この損失は、クラス数がキーの数であるような多クラス分類問題において、クエリ $\mathbf{x}^q$ が正例 $\mathbf{x}^{k+}$ と同じクラスに分類されるソフトマックス確率の対数をとったものになっていると解釈することができます。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>MoCoのキュー形式処理とモメンタム更新</h2>
+        
+        <h3>キュー形式での効率化</h3>
+        <p>直感的には、キーとなる事例の数が多いほど複雑な画像の空間をよりよく表現できるようになると考えられます。</p>
+        
+        <p>そのため、MoCo ではキーベクトルの集合である辞書を<span class="highlight">キュー（queue）形式で処理</span>することを提案しています。各反復において、現在のミニバッチはキューに登録され、最も古いミニバッチはキューから削除されます。</p>
+        
+        <h3>利点</h3>
+        <ul>
+            <li>直前のミニバッチからエンコードされたキーを再利用できる</li>
+            <li>最新のキーと古いキーの不整合を防ぐことができる</li>
+            <li>辞書のサイズとミニバッチのサイズが切り離され、ミニバッチサイズよりも大きいサイズの辞書を持つことができる</li>
+        </ul>
+        
+        <h3>モメンタム更新</h3>
+        <p>キュー形式にすることで辞書サイズを大きくすることができる一方で、誤差逆伝播によるパラメータ更新のコストが大きくなるという課題があります。</p>
+        
+        <p>そこで MoCo では、誤差逆伝播ではクエリエンコーダのパラメータ $\boldsymbol{\theta}_q$ のみを更新し、キーエンコーダのパラメータ $\boldsymbol{\theta}_k$ は以下のようにモメンタム更新します。</p>
+        
+        <div class="formula-box">
+            $$\boldsymbol{\theta}_k = m\boldsymbol{\theta}_k + (1 - m)\boldsymbol{\theta}_q \quad (6.13)$$
+        </div>
+        
+        <p>ここで、$m \in [0, 1)$ はモメンタム係数です。</p>
+    </div>
+
+    <div class="slide">
+        <h2>MoCoの効果とメリット</h2>
+        
+        <h3>モメンタム更新の効果</h3>
+        <p>モメンタム更新によって、キーエンコーダはクエリエンコーダに比べて緩やかに更新が行われます。その結果、キューに格納された異なるミニバッチ由来のキーはそれぞれ異なるエンコーダで埋め込まれてはいますが、<span class="highlight">エンコーダ間の差を小さくすることができます</span>。</p>
+        
+        <h3>推奨設定</h3>
+        <p>実験的には、大きいモメンタム係数（MoCo のデフォルトは $m = 0.999$）、すなわちよりキーエンコーダの更新が緩やかになるような設定がよいことが報告されています。</p>
+        
+        <div class="image-placeholder">
+            図6.10 MoCo による対照学習の流れ<br>
+            赤実線がパラメータ更新を表します<br>
+            クエリエンコーダ → InfoNCE損失 ← キーエンコーダ（モメンタム更新）<br>
+            キュー：新しいミニバッチ → 登録、古いミニバッチ → 削除
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>SimCLR（Simple Framework for Contrastive Learning）</h2>
+        
+        <h3>SimCLRの基本アイデア</h3>
+        <p>SimCLR（a simple framework for contrastive learning of visual representation）では、MoCo のように異なる画像を対比するのではなく、<span class="highlight">同一画像に対して異なるデータ拡張を施したものを対比</span>します。</p>
+        
+        <h3>SimCLRの手順</h3>
+        <ol>
+            <li>$\mathcal{T}$ を適当なデータ拡張のクラスとし、入力画像 $\mathbf{x}$ に対して $\mathcal{T}$ の異なるデータ拡張操作 $t, t' \in \mathcal{T}$ を施したものをそれぞれ $\tilde{\mathbf{x}} = t(\mathbf{x}), \tilde{\mathbf{x}}' = t'(\mathbf{x})$ とおきます</li>
+            <li>各反復では、ランダムにサンプリングされたサイズ $n$ のミニバッチの各事例に対して2種類のデータ拡張を施し、$2n$ 個のデータを得ます</li>
+            <li>SimCLR では負例に対応する事例を直接サンプリングすることはせず、アンカー点に対して正例となる1点を除いた残りの $2(n-1)$ 点を負例として扱います</li>
+        </ol>
+        
+        <h3>MoCoとの違い</h3>
+        <ul>
+            <li>MoCo ではクエリとキーそれぞれに個別のエンコーダを用意</li>
+            <li>SimCLR では単一のエンコーダ $h_{\text{enc}}$ によっておよび $\tilde{\mathbf{x}}, \tilde{\mathbf{x}}'$ を $\mathbf{h} = h_{\text{enc}}(\tilde{\mathbf{x}}; \boldsymbol{\theta}_{\text{enc}}), \mathbf{h}' = h_{\text{enc}}(\tilde{\mathbf{x}}'; \boldsymbol{\theta}_{\text{enc}})$ で特徴表現し、$\mathbf{h}', \mathbf{h}'$ に変換します</li>
+        </ul>
+        
+        <div class="image-placeholder">
+            図6.11 SimCLR で用いられるデータ拡張の例 [Chen ら [59] の Fig. 4 より引用]<br>
+            様々なデータ拡張操作（回転、切り抜き、色調変更等）を同一画像に適用
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>SimCLRとMoCoの詳細比較</h2>
+        
+        <h3>SimCLRとMoCoの大きな違い</h3>
+        <p>SimCLR と MoCo の大きな違いは、$\mathbf{h}$ と $\mathbf{h}'$ を直接比較するのではなく、さらに中間層が1層のパーセプトロン（MLP）$h_{\text{MLP}}(\mathbf{h}) = \mathbf{W}^{(2)}(\mathbf{W}^{(1)}\mathbf{h})$ で変換した $\mathbf{z} = h_{\text{MLP}}(\mathbf{h})$ と $\mathbf{z}' = h_{\text{MLP}}(\mathbf{h}')$ に対して対照損失を定義している点です。</p>
+        
+        <h3>MLPの役割</h3>
+        <div class="note">
+            <p>直感的な理由はパフォーマンスの改善によるものですが、Chen らは、MLP 層の予備の回転に対する表現が、作物のよい特徴量となっている、という観察、仮説に対して初等することで作物の異なる情報について考えている点を、具体的には、MLP 層 $h_{\text{MLP}}$ のパラメータは、$\mathbf{z} = h_{\text{MLP}}(\mathbf{h})$ がデータ拡張に対して不変な特徴となるように学習されます。</p>
+        </div>
+        
+        <p>この構造によって、$h_{\text{MLP}}$ からオブジェクトの色や方向などの下流タスクに有用な情報が除去されてしまう可能性があります。Chen らの論文では、実験的な検証によってこの仮説を支持するような結果が示されています（詳細は Chen ら [59] の 4.2 節を参照してください）。</p>
+    </div>
+
+    <div class="slide">
+        <h2>SimCLRの損失関数と学習手順</h2>
+        
+        <h3>SimCLRの対照損失</h3>
+        <p>SimCLR の対照損失は、二つの潜在表現 $\mathbf{z}$ と $\mathbf{z}'$ の類似度を正規化した内積 $\text{sim}(\mathbf{z}, \mathbf{z}') = \mathbf{z}^\top \mathbf{z}' / \| \mathbf{z} \| \| \mathbf{z}' \|$ で定義したもとで、InfoNCE 損失</p>
+        
+        <div class="formula-box">
+            $$\mathcal{L}_{i,j}(\boldsymbol{\theta}_{\text{enc}}, \mathbf{W}^{(1)}, \mathbf{W}^{(2)}) = - \log \frac{e^{\text{sim}(\mathbf{z}_i, \mathbf{z}_j)/\tau}}{\sum_{k=1}^{2N} \mathbb{1}[k \neq i] e^{\text{sim}(\mathbf{z}_i, \mathbf{z}_k)/\tau}} \quad (6.14)$$
+        </div>
+        
+        <p>として定義されます。</p>
+        
+        <h3>記号の説明</h3>
+        <ul>
+            <li>$\mathbb{1}[A]$ は $A$ が真のとき1を返す指示関数</li>
+            <li>$\tau$ は MoCo の損失に現れるものと同様の温度パラメータ</li>
+            <li>(6.14) のデータに関する平均をとったものを最小化するように、エンコーダのパラメータ $\boldsymbol{\theta}_{\text{enc}}$ と MLP のパラメータ $\mathbf{W}^{(1)}, \mathbf{W}^{(2)}$ を更新</li>
+        </ul>
+        
+        <h3>学習の違い</h3>
+        <div class="key-point-box">
+            <p>MoCo では誤差逆伝播による勾配法とモメンタム更新を組み合わせて用いていましたが、SimCLR ではネットワークは一つであるため、すべてのパラメータは誤差逆伝播による勾配法で更新されます。</p>
+        </div>
+        
+        <div class="image-placeholder">
+            図6.12 SimCLR による対照学習の流れ<br>
+            赤実線がパラメータ更新を表します<br>
+            入力画像 → データ拡張 → エンコーダ → MLP層 → 比較 → InfoNCE損失
+        </div>
+    </div>
+
+    <!-- ========== 6.2.4 事前学習済みモデルの転移可能性 ========== -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p>6.2.4 事前学習済みモデルの転移可能性</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2 style="border: none;">6.2.4 事前学習済みモデルの<br>転移可能性</h2>
+            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p>勉強会資料</p>
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>6.2.4 事前学習済みモデルの転移可能性</h1>
+    </div>
+
+    <div class="slide">
+        <h2>事前学習済みモデルの転移可能性</h2>
+        
+        <h3>自己教師あり学習の限界</h3>
+        <p>6.2.3節で説明した自己教師あり学習は、基本的に<span class="highlight">単一ドメインにおけるニューラルネットワークの学習を教師なしでどのように実現するか</span>という点に注目しています。</p>
+        
+        <div class="key-point-box">
+            <p class="key-point">重要な課題</p>
+            <p>得られた事前学習済みモデルを目標ドメインに転移したときによい性能を示すことは必ずしも保証されません。</p>
+        </div>
+        
+        <h3>実験的証拠</h3>
+        <p>例えば、Huang ら [141] は、さまざまなアーキテクチャの事前学習済みモデルを同じ目標ドメインへ転移したときの精度が大きく異なりうることを実験的に示しました。</p>
+        
+        <h3>層別転移の影響</h3>
+        <p>彼らはまた、ある事前学習済みモデルの異なる層を転移したときの目標ドメインの精度にも差が生じうることを示しています。</p>
+    </div>
+
+    <div class="slide">
+        <h2>ニューラルネットワークの層別転移特性</h2>
+        
+        <h3>上層と下層の特性の違い</h3>
+        <p>特に後者の現象は、<span class="highlight">ニューラルネットワークの上層がタスク固有のパターンをより多くエンコードするため元ドメインのタスクに特化したモデルになりやすい</span>一方で、<span class="highlight">下層は汎用的な特徴抽出を司るためより転移しやすい</span>という定性的な解釈を与えることができます。</p>
+        
+        <div class="key-point-box">
+            <p class="key-point">中心的な問題</p>
+            <p>「どの事前学習済みモデルのどの層を転移すれば目標ドメインのタスクの性能を最大化できるのか」という点です。</p>
+        </div>
+        
+        <div class="image-placeholder">
+            図6.13 層別転移性能の比較<br>
+            左図：ImageNet で訓練した異なるアーキテクチャの事前学習済みモデルを CIFAR-100 へ転移したときのテスト精度の比較<br>
+            右図：ImageNet で訓練した ResNet34 の異なる層を CIFAR-100 へ転移したときのテスト精度の比較<br>
+            青点は目標ドメインのデータをすべて使った場合、オレンジ点は目標ドメインのデータを 50 点のみ使った場合を表します
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>Taskonomy：タスク間転移可能性の体系的評価</h2>
+        
+        <h3>Taskonomyの概要</h3>
+        <p>事前学習済みモデルを目標ドメインへ転移したときの性能を評価する試みはこれまで多数行われてきています。例えば <span class="highlight">Taskonomy[335]</span> では、26 種類の画像関連タスクに対してすべての組合せで網羅的に事前学習済みモデルの転移学習を実行し、親和性の高いタスクのペアを見つけることを試みています。</p>
+        
+        <h3>Taskonomyの手順</h3>
+        <ol>
+            <li><span class="highlight">タスク固有モデリング</span>：あるタスクを目標ドメインとして固定し、残りのタスクを元ドメインとしてシンプルな教師あり学習を行い、各タスク固有のモデルを訓練</li>
+            <li><span class="highlight">転移モデリング</span>：学習済みの特徴抽出器を固定して目標ドメインのデータで教師あり学習を行い、転移モデル $h_{S \to T}$ を訓練</li>
+            <li><span class="highlight">タスクアフィニティ正規化</span>：これらのモデルを用いて、タスク間の転移可能性に関する親和性スコア行列を構成</li>
+            <li><span class="highlight">計算タクソノミー</span>：最後に、タスク間の転移可能性の関係性を、タスクをノード、転移の可否をエッジとする部分グラフとして表現</li>
+        </ol>
+        
+        <div class="image-placeholder">
+            図6.14 Taskonomy のタスク分類グラフ生成までの流れ [Zamir ら [335] の Fig. 2 より引用]<br>
+            (I) Task-specific Modeling → (II) Transfer Modeling → (III) Task Affinity Normalization → (IV) Compute Taxonomy
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>タスク間親和性スコアの計算</h2>
+        
+        <h3>親和性スコア行列の構成</h3>
+        <p>具体的には、目標ドメイン $T$ について、$T$ への転移が可能なすべての元ドメインの間の一対比較行列 $\mathbf{W}_T$ を構築します。$\mathbf{W}_T$ の $(i, j)$ 成分 $W_{T_{i,j}}$ は、$i$ 番目の元ドメイン $S_i$ が $j$ 番目の元ドメイン $S_j$ よりも転移モデルの性能が高かったテストデータの画像の割合を表します。</p>
+        
+        <div class="formula-box">
+            $$W_{T_{i,j}} = \frac{\mathbb{E}_{(\mathbf{x}, y) \in D_{\text{test}}}[\ell(h_{S_i \to T}(\mathbf{x}), y) < \ell(h_{S_j \to T}(\mathbf{x}), y)]}{\mathbb{E}_{(\mathbf{x}, y) \in D_{\text{test}}}[\ell(h_{S_i \to T}(\mathbf{x}), y) > \ell(h_{S_j \to T}(\mathbf{x}), y)]} \quad (6.15)$$
+        </div>
+        
+        <p>ここで、$\ell$ は目標ドメインにおけるタスクの損失関数を表します。</p>
+        
+        <h3>部分グラフの構築</h3>
+        <p>最後に、タスク間の転移可能性の関係性を、タスクをノード、転移の可否をエッジとする部分グラフとして表現します。この部分グラフの構成は、適当な制約条件の下で元ドメインであるタスクから目標ドメインであるタスクへの最適なエッジを選択する問題であり、0-1 整数計画問題として定式化し解くことができます。</p>
+    </div>
+
+    <div class="slide">
+        <h2>Task2Vec：タスク埋め込みによる転移可能性評価</h2>
+        
+        <h3>Task2Vecの基本アイデア</h3>
+        <p>よく似た方向性で転移可能性を評価している研究に <span class="highlight">Task2Vec[4]</span> があります。Task2Vec では、ImageNet で訓練したニューラルネットワークの特徴抽出器を <span class="highlight">probe network</span> と呼び、これを固定して用います。</p>
+        
+        <h3>Task2Vecの手順</h3>
+        <ol>
+            <li>probe network に分類層を結合し、目標ドメインで分類層のみを学習したネットワークが表現する出力の条件付き確率を $p_{\mathbf{w}}(y|\mathbf{x})$ と書きます</li>
+            <li>$\mathbf{w}$ は目標ドメインでのニューラルネットのモデルパラメータです</li>
+            <li>$\mathbf{w}$ を摂動させたパラメータ値 $\mathbf{w}' = \mathbf{w} + \delta \mathbf{w}$ における条件付き確率 $p_{\mathbf{w}'}(y|\mathbf{x})$ と $p_{\mathbf{w}}(y|\mathbf{x})$ の間の KL ダイバージェンス</li>
+        </ol>
+        
+        <div class="formula-box">
+            $$\mathbb{E}_{\mathbf{x} \sim \hat{p}(\mathbf{x})}[D_{\text{KL}}(p_{\mathbf{w}'}(y|\mathbf{x})||p_{\mathbf{w}}(y|\mathbf{x}))] \quad (6.16)$$
+        </div>
+        
+        <p>によって事前学習したタスクに対する学習済みの重み $\mathbf{w}$ の重要性を測ります。</p>
+        
+        <h3>解釈</h3>
+        <p>ここで、$\hat{p}(\mathbf{x})$ は入力 $\mathbf{x}$ の経験分布を表します。もし (6.16) の値が大きい、すなわち $p_{\mathbf{w}'}(y|\mathbf{x})$ と $p_{\mathbf{w}}(y|\mathbf{x})$ が大きく異なるならば、当該タスクはパラメータ $\mathbf{w}$ に大きく依存していると解釈することができます。</p>
+    </div>
+
+    <div class="slide">
+        <h2>フィッシャー情報行列による近似</h2>
+        
+        <h3>2次近似</h3>
+        <p>(6.16) は、以下のように2次近似できます：</p>
+        
+        <div class="formula-box">
+            $$\mathbb{E}_{\mathbf{x} \sim P_X}[D_{\text{KL}}(p_{\mathbf{w}'}(y|\mathbf{x})||p_{\mathbf{w}}(y|\mathbf{x}))] = \delta \mathbf{w} + \delta \mathbf{F} \mathbf{w} + o(\delta \mathbf{w}^2) \quad (6.17)$$
+        </div>
+        
+        <h3>フィッシャー情報行列</h3>
+        <div class="formula-box">
+            $$\mathbf{F} = \mathbb{E}_{(\mathbf{x}, y) \sim \hat{p}_{\mathbf{w}}(\mathbf{x}, y)}[\nabla_{\mathbf{w}} \log p_{\mathbf{w}}(y|\mathbf{x})(\nabla_{\mathbf{w}} \log p_{\mathbf{w}}(y|\mathbf{x}))^\top] \quad (6.18)$$
+        </div>
+        
+        <p>は同時分布 $\hat{p}_{\mathbf{w}}(\mathbf{x}, y) = \hat{p}(\mathbf{x})p_{\mathbf{w}}(y|\mathbf{x})$ のもとでのフィッシャー情報行列であり、$\mathbf{F}$ のある成分の値が小さいならば、事前学習タスクは対応するパラメータに強く依存していないとみなすことができます。</p>
+        
+        <h3>Task2Vecの利点</h3>
+        <div class="note">
+            <p>一般に、異なる構造のニューラルネットの間でフィッシャー情報行列を比較することはできませんが、Task2Vec では probe network という一つの特徴抽出器をすべての転移シナリオで使うことでタスク間の比較を可能にしています。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>Task2Vecの計算効率化と応用</h2>
+        
+        <h3>計算上の課題</h3>
+        <p>一方、フィッシャー情報行列を計算するにはすべてのパラメータに対する $p_{\mathbf{w}}(y|\mathbf{x})$ の微分を計算しなければならないため、膨大な計算量がかかるという問題があります。</p>
+        
+        <h3>Task2Vecの効率化手法</h3>
+        <p>Task2Vec では、以下の二つの仮定をおき、$\mathbf{F}$ の対角成分のみを取り出し同一フィルタのすべての重みについて平均をとることで、probe network のフィルタ数と同じ長さのタスク埋め込みベクトルを得ます：</p>
+        
+        <ol>
+            <li>probe network 内の異なるフィルタ間には相関がない</li>
+            <li>各フィルタの重みパラメータは独立でない</li>
+        </ol>
+        
+        <h3>タスク間類似度の評価</h3>
+        <p>最後に得られたタスク埋め込みベクトル間の類似度を測ることで、タスク間類似度の評価値を得ます。Task2Vec で得られた埋め込みベクトルを可視化した例を図6.15に示します。</p>
+        
+        <div class="image-placeholder">
+            図6.15 Task2Vec による特徴埋め込み<br>
+            Task Embeddings と Domain Embeddings の可視化<br>
+            左側：タスクの埋め込み表現、右側：ドメインの埋め込み表現<br>
+            類似したタスク・ドメインが近い位置に配置される
+        </div>
+    </div>
+
+    <!-- ========== 6.2.5 基盤モデル ========== -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第6章 事前学習済みモデル</h1>
+            <p>6.2.5 基盤モデル</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <h2 style="border: none;">6.2.5 基盤モデル</h2>
+            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p>勉強会資料</p>
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>6.2.5 基盤モデル</h1>
+    </div>
+
+    <div class="slide">
+        <h2>基盤モデル（Foundation Model）とは</h2>
+        
+        <div class="foundation-model-box">
+            <p class="key-point">基盤モデル（foundation model）</p>
+            <p><span class="highlight">広範なデータで学習され、下流の幅広いタスクに知識を転移させることができるモデル</span>を指します。</p>
+        </div>
+        
+        <h3>代表的な基盤モデル</h3>
+        <ul>
+            <li><span class="highlight">GPT-4</span> [46]</li>
+            <li><span class="highlight">PaLM2</span> [14]</li>
+            <li><span class="highlight">LLaMA</span> [288]</li>
+        </ul>
+        
+        <h3>技術的基盤</h3>
+        <p>基盤モデルの構築方法は<span class="highlight">深層ニューラルネットワークと自己教師あり学習</span>に基づいており、その技術は決して新しいものではありません。</p>
+        
+        <div class="note">
+            <p>基盤モデルという概念自体は新しいものではありませんが、その規模と性能が大幅に向上したことで注目を集めるようになりました。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>基盤モデル実現を可能にした3つの要因</h2>
+        
+        <p>近年になって基盤モデルが実現され始めたのは、<span class="highlight">学習に関するいくつかの要因のスケールが大幅に増大した</span>ことによります。</p>
+        
+        <div class="scale-factor">
+            <p class="key-point">● コンピュータハードウェア</p>
+            <p>例えば、GPUのスループットとメモリの性能はここ数年で大幅に上昇しました。</p>
+        </div>
+        
+        <div class="scale-factor">
+            <p class="key-point">● モデル性能</p>
+            <p>モデルのパラメータサイズの上昇とともに、以前よりもはるかに表現力の高いモデルを訓練できる<span class="highlight">Transformer</span> [297] と呼ばれるアーキテクチャなどが開発されました。</p>
+        </div>
+        
+        <div class="scale-factor">
+            <p class="key-point">● データサイズ</p>
+            <p>深層学習の発展により、多くのデータを用いることの重要性が再認識され、それによって意識的にデータセットの大規模化が起こり、より多くの訓練データを入手できるようになりました。</p>
+        </div>
+        
+        <div class="note">
+            <p>現在の最大規模の基盤モデルは1兆以上のパラメータを持っています。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>基盤モデルの新たな学習パラダイム</h2>
+        
+        <h3>Emergence（創発）</h3>
+        <p>また、基盤モデルは、<span class="highlight">スケールから生じる幅広い能力の創発</span>についてもよく知られています。例えば、<span class="highlight">GPT-2</span>の15億のパラメータから5倍大きなGPT-3の1750億のパラメータを持つなど、基盤モデルが成長するにつれて、よってさまざまな学習（<span class="highlight">in-context learning</span>）が可能になったことが実験によって確認されています。</p>
+        
+        <h3>In-Context Learning</h3>
+        <p>これらの手法では、言語モデルに自然言語のプロンプト（言わばみる文章）を与えるだけで下流のタスクに適応させることができるので、特に学習を行っていなかった新規の能力が発現されています。</p>
+        
+        <div class="image-placeholder">
+            図6.16 基盤モデルのスケーリング効果<br>
+            パラメータ数の増加に伴う創発的能力の出現<br>
+            - In-context learning能力の向上<br>
+            - 複数タスクの同時対応能力<br>
+            - より複雑な推論能力の獲得
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>基盤モデルの研究課題</h2>
+        
+        <h3>汎用性（Generality）</h3>
+        <p>基盤モデルの研究における大きな制限として、<span class="highlight">汎用性（generality）</span>、すなわちタスクごとに手動を構築する必要性がなくなることが言及されます。</p>
+        
+        <h3>アーキテクチャとアルゴリズムの開発</h3>
+        <p>汎用的なタスクに対する高機能な基盤モデル、もしくは将来性に関連するタスクに対して高い能力を発揮するために、開発でモデルやアルゴリズムを開発する必要がありました。</p>
+        
+        <div class="challenge-box">
+            <p class="key-point">主要な研究課題</p>
+            <ul>
+                <li><span class="highlight">モデルの効率性向上</span>：計算コストとメモリ使用量の削減</li>
+                <li><span class="highlight">転移性能の予測</span>：データとしてタスクの組合せの予測</li>
+                <li><span class="highlight">マルチモーダル対応</span>：テキスト、画像、音声などの統合処理</li>
+                <li><span class="highlight">評価指標の確立</span>：すべてのタスクに対する性能向上の効果的な評価</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>基盤モデルの理論的理解の不十分さ</h2>
+        
+        <div class="challenge-box">
+            <p class="key-point">第五に、基盤モデルの理論的な理解の不十分さです。</p>
+            <p>深層学習と自己教師あり学習の利用は爆発的に広がっており、理論も進展し続けていますがそれでも基本的かつ未解決の問題が多く残されています。</p>
+        </div>
+        
+        <h3>未解決の理論的問題</h3>
+        <ul>
+            <li><span class="highlight">基盤モデルは幅広いタスクに適応できる</span>といえ、訓練データの分布とは異なる分布外汎化がどの程度可能かは不明です</li>
+            <li><span class="highlight">基盤モデルの学習</span>に関しては基礎となるような理論が確立されておらず、実験が先行した形になっており、そこから現象を観察し理論の手がかりにするということが続いています</li>
+        </ul>
+        
+        <h3>今後の理論発展への期待</h3>
+        <p>物理学ではかつて実験が先行して理論がそれを説明するために後からついていくような状況が続いていましたが、昨今では理論が先行してそれを実験で確かめるという流れが多々見受けられます。基盤モデルに関しても将来的には理論が成熟し、基盤モデルの社会的なインパクトに見合うような透明性のある理解がなされることが望ましいと考えられます。</p>
+        
+        <div class="note">
+            <p>基盤モデルの理論的理解は、その信頼性と安全性を確保する上で重要な課題となっています。</p>
+        </div>
+    </div>
+
+    <!-- 最終まとめスライド -->
+    <div class="slide">
+        <h2>第6章全体のまとめ</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">事前学習済みモデルによる転移学習の全体像</p>
+        </div>
+        
+        <h3>本章で扱った内容</h3>
+        <ol>
+            <li><span class="highlight">辞書学習に基づくドメイン適応</span>：古典的手法からの発展</li>
+            <li><span class="highlight">巨大化する深層モデル</span>：スケーリング則と計算コストの課題</li>
+            <li><span class="highlight">事前学習済みモデルの利用</span>：ファインチューニングと転移学習</li>
+            <li><span class="highlight">自己教師あり学習</span>：ラベルなしデータでの事前学習</li>
+            <li><span class="highlight">転移可能性</span>：どのモデルがどのタスクに転移しやすいか</li>
+            <li><span class="highlight">基盤モデル</span>：汎用的な事前学習済みモデルの実現</li>
+        </ol>
+        
+        <h3>今後の展望</h3>
+        <ul>
+            <li>より効率的な事前学習手法の開発</li>
+            <li>転移可能性の理論的理解の深化</li>
+            <li>マルチモーダル基盤モデルの発展</li>
+            <li>計算効率とエネルギー効率の改善</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
