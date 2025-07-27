@@ -48,12 +48,18 @@
             margin: 20px 0;
             border-radius: 5px;
         }
+        .slide {
+            position: relative;
+        }
         .page-number {
             position: absolute;
-            bottom: 10px;
-            right: 15px;
-            font-size: 12px;
+            bottom: 15px;
+            right: 20px;
             color: #666;
+            font-size: 12px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            z-index: 10;
         }
         .big-text {
             font-size: 48px;
@@ -144,7 +150,7 @@
         <div style="text-align: center; margin-top: 50px;">
             <p style="font-size: 20px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
             <p style="font-size: 18px; margin-top: 30px;">勉強会資料</p>
-            <p style="font-size: 16px; color: #666; margin-top: 50px;">作成日：2025年1月</p>
+            <p style="font-size: 16px; color: #666; margin-top: 50px;">作成日：2025年7月</p>
         </div>
     </div>
 
@@ -178,18 +184,6 @@
     </div>
 
     <!-- ========== 6.1 辞書学習に基づくドメイン適応 ========== -->
-    <!-- 表紙スライド -->
-    <div class="slide">
-        <div class="slide-title">
-            <h1>第6章 事前学習済みモデル</h1>
-            <p>辞書学習に基づくドメイン適応</p>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="border: none;">6.1 辞書学習に基づくドメイン適応</h2>
-            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
-            <p>勉強会資料</p>
-        </div>
-    </div>
 
     <!-- 概要スライド -->
     <div class="slide">
@@ -376,19 +370,6 @@
     </div>
 
     <!-- ========== 6.2.1 巨大化する深層モデル ========== -->
-    <!-- 表紙スライド -->
-    <div class="slide">
-        <div class="slide-title">
-            <h1>第6章 事前学習済みモデル</h1>
-            <p>6.2 事前学習済みニューラルネットワークに基づくドメイン適応</p>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="border: none;">6.2.1 巨大化する深層モデル</h2>
-            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
-            <p>勉強会資料</p>
-        </div>
-    </div>
-
     <!-- セクション開始 -->
     <div class="slide divider-slide">
         <h1>6.2 事前学習済みニューラルネットワークに基づくドメイン適応</h1>
@@ -521,18 +502,6 @@
     </div>
 
     <!-- ========== 6.2.2 事前学習済みモデルの利用 ========== -->
-    <!-- 表紙スライド -->
-    <div class="slide">
-        <div class="slide-title">
-            <h1>第6章 事前学習済みモデル</h1>
-            <p>6.2.2 事前学習済みモデルの利用</p>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="border: none;">6.2.2 事前学習済みモデルの利用</h2>
-            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
-            <p>勉強会資料</p>
-        </div>
-    </div>
 
     <!-- セクション開始 -->
     <div class="slide divider-slide">
@@ -669,18 +638,6 @@
     </div>
 
     <!-- ========== 6.2.3 自己教師あり学習による深層モデルの事前学習 ========== -->
-    <!-- 表紙スライド -->
-    <div class="slide">
-        <div class="slide-title">
-            <h1>第6章 事前学習済みモデル</h1>
-            <p>6.2.3 自己教師あり学習による深層モデルの事前学習</p>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="border: none;">6.2.3 自己教師あり学習による<br>深層モデルの事前学習</h2>
-            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
-            <p>勉強会資料</p>
-        </div>
-    </div>
 
     <!-- セクション開始 -->
     <div class="slide divider-slide">
@@ -795,17 +752,6 @@
         <p>自己教師あり学習の具体的な手法と実装について</p>
     </div>
 
-    <script>
-        window.onload = function() {
-            const slides = document.querySelectorAll('.slide');
-            slides.forEach((slide, index) => {
-                const pageNum = document.createElement('div');
-                pageNum.className = 'page-number';
-                pageNum.textContent = index + 1;
-                slide.appendChild(pageNum);
-            });
-        };
-    </script>
 
     <!-- ========== 6.2.3.1 自己教師あり学習の概要 ========== -->
     <div class="slide">
@@ -1670,5 +1616,6 @@
         </ul>
     </div>
 </div>
+<script src="../scripts/pswd.js"></script>
 </body>
 </html>
