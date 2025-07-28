@@ -1152,27 +1152,45 @@
         <h3>MoCoとの違い</h3>
         <ul>
             <li>MoCo ではクエリとキーそれぞれに個別のエンコーダを用意</li>
-            <li>SimCLR では単一のエンコーダ $h_{\text{enc}}$ によっておよび $\tilde{\mathbf{x}}, \tilde{\mathbf{x}}'$ を $\mathbf{h} = h_{\text{enc}}(\tilde{\mathbf{x}}; \boldsymbol{\theta}_{\text{enc}}), \mathbf{h}' = h_{\text{enc}}(\tilde{\mathbf{x}}'; \boldsymbol{\theta}_{\text{enc}})$ で特徴表現し、$\mathbf{h}', \mathbf{h}'$ に変換します</li>
+            <li>SimCLR では単一のエンコーダ $h_{\text{enc}}$ によっておよび $\tilde{\mathbf{x}}, \tilde{\mathbf{x}}'$ を $\mathbf{h} = h_{\text{enc}}(\tilde{\mathbf{x}}; \boldsymbol{\theta}_{\text{enc}}), \mathbf{h}' = h_{\text{enc}}(\tilde{\mathbf{x}}'; \boldsymbol{\theta}_{\text{enc}})$ で特徴表現し、$\mathbf{h}, \mathbf{h}'$ に変換します</li>
         </ul>
         
-        <div class="image-placeholder">
-            図6.11 SimCLR で用いられるデータ拡張の例 [Chen ら [59] の Fig. 4 より引用]<br>
-            様々なデータ拡張操作（回転、切り抜き、色調変更等）を同一画像に適用
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-11.png" alt="図6.11 SimCLR で用いられるデータ拡張の例" style="max-width: 100%; height: auto;">
         </div>
     </div>
 
     <div class="slide">
         <h2>SimCLRとMoCoの詳細比較</h2>
         
-        <h3>SimCLRとMoCoの大きな違い</h3>
-        <p>SimCLR と MoCo の大きな違いは、$\mathbf{h}$ と $\mathbf{h}'$ を直接比較するのではなく、さらに中間層が1層のパーセプトロン（MLP）$h_{\text{MLP}}(\mathbf{h}) = \mathbf{W}^{(2)}(\mathbf{W}^{(1)}\mathbf{h})$ で変換した $\mathbf{z} = h_{\text{MLP}}(\mathbf{h})$ と $\mathbf{z}' = h_{\text{MLP}}(\mathbf{h}')$ に対して対照損失を定義している点です。</p>
-        
-        <h3>MLPの役割</h3>
-        <div class="note">
-            <p>直感的な理由はパフォーマンスの改善によるものですが、Chen らは、MLP 層の予備の回転に対する表現が、作物のよい特徴量となっている、という観察、仮説に対して初等することで作物の異なる情報について考えている点を、具体的には、MLP 層 $h_{\text{MLP}}$ のパラメータは、$\mathbf{z} = h_{\text{MLP}}(\mathbf{h})$ がデータ拡張に対して不変な特徴となるように学習されます。</p>
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-12.png" alt="図6.12 SimCLR による対照学習の流れ" style="max-width: 100%; height: auto;">
         </div>
         
-        <p>この構造によって、$h_{\text{MLP}}$ からオブジェクトの色や方向などの下流タスクに有用な情報が除去されてしまう可能性があります。Chen らの論文では、実験的な検証によってこの仮説を支持するような結果が示されています（詳細は Chen ら [59] の 4.2 節を参照してください）。</p>
+        <h3>SimCLRの特徴：追加のMLP層</h3>
+        <p>SimCLRの特徴は、エンコーダの出力 $\mathbf{h}, \mathbf{h}'$ を直接比較するのではなく、<span class="highlight">追加のMLP層</span>を通して変換した特徴表現を比較する点です：</p>
+        <p>(中間層が1層のMLP?Multi Layer?)</p>
+        
+        <div class="algorithm-box">
+            <p><strong>SimCLRの処理フロー：</strong></p>
+            <ol>
+                <li>入力画像 $\mathbf{x}$ にデータ拡張を適用： $\tilde{\mathbf{x}}, \tilde{\mathbf{x}}'$</li>
+                <li>エンコーダで特徴抽出： $\mathbf{h} = h_{\text{enc}}(\tilde{\mathbf{x}}), \mathbf{h}' = h_{\text{enc}}(\tilde{\mathbf{x}}')$</li>
+                <li><strong>MLP層で変換：</strong> $\mathbf{z} = h_{\text{MLP}}(\mathbf{h}), \mathbf{z}' = h_{\text{MLP}}(\mathbf{h}')$</li>
+                <li>変換後の特徴 $\mathbf{z}, \mathbf{z}'$ で対照損失を計算</li>
+            </ol>
+        </div>
+        
+        <h3>MLP層の効果</h3>
+        <div class="key-point-box">
+            <p><strong>なぜMLP層が有効なのか？</strong></p>
+            <ul>
+                <li>MLP層は<span class="highlight">データ拡張に対して不変な特徴</span>を学習する</li>
+                <li>対照学習では拡張された画像ペアを「類似」として扱うため、拡張に関連する情報（色調、回転角など）は除去される</li>
+                <li>しかし、これらの情報は下流タスクには有用な場合がある</li>
+                <li>MLP層により、対照学習用の表現と下流タスク用の表現を分離できる</li>
+            </ul>
+        </div>
     </div>
 
     <div class="slide">
@@ -1198,24 +1216,8 @@
         <div class="key-point-box">
             <p>MoCo では誤差逆伝播による勾配法とモメンタム更新を組み合わせて用いていましたが、SimCLR ではネットワークは一つであるため、すべてのパラメータは誤差逆伝播による勾配法で更新されます。</p>
         </div>
-        
-        <div class="image-placeholder">
-            図6.12 SimCLR による対照学習の流れ<br>
-            赤実線がパラメータ更新を表します<br>
-            入力画像 → データ拡張 → エンコーダ → MLP層 → 比較 → InfoNCE損失
-        </div>
-    </div>
-
-    <!-- ========== 6.2.4 事前学習済みモデルの転移可能性 ========== -->
-    <div class="slide">
-        <div class="slide-title">
-            <h1>第6章 事前学習済みモデル</h1>
-            <p>6.2.4 事前学習済みモデルの転移可能性</p>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="border: none;">6.2.4 事前学習済みモデルの<br>転移可能性</h2>
-            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
-            <p>勉強会資料</p>
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-12.png" alt="図6.12 SimCLR による対照学習の流れ" style="max-width: 100%; height: auto;">
         </div>
     </div>
 
@@ -1252,11 +1254,8 @@
             <p>「どの事前学習済みモデルのどの層を転移すれば目標ドメインのタスクの性能を最大化できるのか」という点です。</p>
         </div>
         
-        <div class="image-placeholder">
-            図6.13 層別転移性能の比較<br>
-            左図：ImageNet で訓練した異なるアーキテクチャの事前学習済みモデルを CIFAR-100 へ転移したときのテスト精度の比較<br>
-            右図：ImageNet で訓練した ResNet34 の異なる層を CIFAR-100 へ転移したときのテスト精度の比較<br>
-            青点は目標ドメインのデータをすべて使った場合、オレンジ点は目標ドメインのデータを 50 点のみ使った場合を表します
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-13.png" alt="図6.13 層別転移性能の比較" style="max-width: 100%; height: auto;">
         </div>
     </div>
 
@@ -1274,9 +1273,8 @@
             <li><span class="highlight">計算タクソノミー</span>：最後に、タスク間の転移可能性の関係性を、タスクをノード、転移の可否をエッジとする部分グラフとして表現</li>
         </ol>
         
-        <div class="image-placeholder">
-            図6.14 Taskonomy のタスク分類グラフ生成までの流れ [Zamir ら [335] の Fig. 2 より引用]<br>
-            (I) Task-specific Modeling → (II) Transfer Modeling → (III) Task Affinity Normalization → (IV) Compute Taxonomy
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-14.png" alt="図6.14 Taskonomy のタスク分類グラフ生成までの流れ" style="max-width: 100%; height: auto;">
         </div>
     </div>
 
@@ -1290,7 +1288,7 @@
             $$W_{T_{i,j}} = \frac{\mathbb{E}_{(\mathbf{x}, y) \in D_{\text{test}}}[\ell(h_{S_i \to T}(\mathbf{x}), y) < \ell(h_{S_j \to T}(\mathbf{x}), y)]}{\mathbb{E}_{(\mathbf{x}, y) \in D_{\text{test}}}[\ell(h_{S_i \to T}(\mathbf{x}), y) > \ell(h_{S_j \to T}(\mathbf{x}), y)]} \quad (6.15)$$
         </div>
         
-        <p>ここで、$\ell$ は目標ドメインにおけるタスクの損失関数を表します。</p>
+        <p>ここで、$\ell$ は目標ドメインにおけるタスクの損失関数を表します。(多分 指示関数 $\mathbb{1}$ が抜けてる。)</p>
         
         <h3>部分グラフの構築</h3>
         <p>最後に、タスク間の転移可能性の関係性を、タスクをノード、転移の可否をエッジとする部分グラフとして表現します。この部分グラフの構成は、適当な制約条件の下で元ドメインであるタスクから目標ドメインであるタスクへの最適なエッジを選択する問題であり、0-1 整数計画問題として定式化し解くことができます。</p>
@@ -1299,8 +1297,19 @@
     <div class="slide">
         <h2>Task2Vec：タスク埋め込みによる転移可能性評価</h2>
         
-        <h3>Task2Vecの基本アイデア</h3>
-        <p>よく似た方向性で転移可能性を評価している研究に <span class="highlight">Task2Vec[4]</span> があります。Task2Vec では、ImageNet で訓練したニューラルネットワークの特徴抽出器を <span class="highlight">probe network</span> と呼び、これを固定して用います。</p>
+        <h3>Task2Vecの目的と基本アイデア</h3>
+        <div class="key-point-box">
+            <p><strong>目的：</strong> 異なるタスク間の転移学習の効果を事前に予測するため、各タスクをベクトル表現に埋め込む手法</p>
+        </div>
+        
+        <p><span class="highlight">Task2Vec</span> では、ImageNetで事前学習されたニューラルネットワークを <span class="highlight">probe network</span> として固定し、各タスクの特性をフィッシャー情報行列で特徴づけます。</p>
+        
+        <h4>核心的アイデア</h4>
+        <ul>
+            <li>固定されたprobe networkを使って各タスクの重要なパラメータを特定</li>
+            <li>フィッシャー情報行列により、各パラメータがタスク性能にどれだけ重要かを測定</li>
+            <li>この情報からタスクベクトルを作成し、タスク間の類似度を計算</li>
+        </ul>
         
         <h3>Task2Vecの手順</h3>
         <ol>
@@ -1349,34 +1358,119 @@
         <p>一方、フィッシャー情報行列を計算するにはすべてのパラメータに対する $p_{\mathbf{w}}(y|\mathbf{x})$ の微分を計算しなければならないため、膨大な計算量がかかるという問題があります。</p>
         
         <h3>Task2Vecの効率化手法</h3>
-        <p>Task2Vec では、以下の二つの仮定をおき、$\mathbf{F}$ の対角成分のみを取り出し同一フィルタのすべての重みについて平均をとることで、probe network のフィルタ数と同じ長さのタスク埋め込みベクトルを得ます：</p>
+        <p>フィッシャー情報行列の計算を効率化するため、Task2Vecでは以下の手順を取ります：</p>
         
+        <div class="algorithm-box">
+            <h4>効率化のステップ</h4>
+            <ol>
+                <li><strong>対角成分のみを計算：</strong> フィッシャー情報行列 $\mathbf{F}$ の対角成分のみを取り出す</li>
+                <li><strong>フィルタ単位で集約：</strong> 畳み込み層の各フィルタ内のすべての重みパラメータについて平均を取る</li>
+                <li><strong>タスク埋め込み生成：</strong> probe networkのフィルタ数と同じ長さのタスクベクトルを得る</li>
+            </ol>
+        </div>
+        
+        <div class="note">
+            <p><strong>フィルタとは：</strong> 畳み込みニューラルネットワーク（CNN）において、各畳み込み層は複数のフィルタ（カーネル）から構成されます。各フィルタは特定の視覚的特徴（エッジ、テクスチャ、形状など）を検出する役割を持ちます。Task2Vecでは、各フィルタがどのタスクで重要かを測定し、それをタスクの特徴として使用します。</p>
+        </div>
+        
+        <h4>効率化の仮定</h4>
         <ol>
             <li>probe network 内の異なるフィルタ間には相関がない</li>
-            <li>各フィルタの重みパラメータは独立でない</li>
+            <li>各フィルタ内の重みパラメータは独立ではない（同一フィルタ内では相関がある）</li>
         </ol>
         
-        <h3>タスク間類似度の評価</h3>
-        <p>最後に得られたタスク埋め込みベクトル間の類似度を測ることで、タスク間類似度の評価値を得ます。Task2Vec で得られた埋め込みベクトルを可視化した例を図6.15に示します。</p>
+        <h3>Task2Vecの利点と結果</h3>
+        <div class="key-point-box">
+            <ul>
+                <li><strong>計算効率：</strong> 従来手法より大幅に高速</li>
+                <li><strong>予測精度：</strong> 実際の転移学習性能と高い相関</li>
+                <li><strong>汎用性：</strong> 異なるドメイン（視覚、言語など）のタスクも同一空間で比較可能</li>
+                <li><strong>事前予測：</strong> 実際に転移学習を試す前に効果的なタスクペアを特定可能</li>
+            </ul>
+        </div>
         
-        <div class="image-placeholder">
-            図6.15 Task2Vec による特徴埋め込み<br>
-            Task Embeddings と Domain Embeddings の可視化<br>
-            左側：タスクの埋め込み表現、右側：ドメインの埋め込み表現<br>
-            類似したタスク・ドメインが近い位置に配置される
+        <h3>タスク間類似度の評価</h3>
+        <p>最後に得られたタスク埋め込みベクトル間のコサイン類似度などを測ることで、タスク間類似度の評価値を得ます。Task2Vec で得られた埋め込みベクトルを可視化した例を図6.15に示します。</p>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-15.png" alt="図6.15 Task2Vec による特徴埋め込み" style="max-width: 100%; height: auto;">
         </div>
     </div>
 
-    <!-- ========== 6.2.5 基盤モデル ========== -->
     <div class="slide">
-        <div class="slide-title">
-            <h1>第6章 事前学習済みモデル</h1>
-            <p>6.2.5 基盤モデル</p>
+        <h2>転移可能性評価手法の総括</h2>
+        
+        <h3>その他の転移可能性評価手法</h3>
+        <div class="algorithm-box">
+            <h4>類似グラフに基づく手法</h4>
+            <ul>
+                <li><strong>RSA（Representational Similarity Analysis）:</strong> 各タスクの事例間類似グラフを構築し、グラフ間類似度で転移可能性を評価</li>
+                <li><strong>DEPARA:</strong> 事前学習済みモデルの表現に基づくタスク間グラフ類似度を指標として使用</li>
+            </ul>
+            <p class="note">これらの手法は目標ドメインでのファインチューニングが必要で、計算コストが高い</p>
         </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="border: none;">6.2.5 基盤モデル</h2>
-            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
-            <p>勉強会資料</p>
+        
+        <h3>計算効率を重視した手法</h3>
+        <div class="key-point-box">
+            <h4>データ分布に基づく手法</h4>
+            <ul>
+                <li><strong>Cui ら [66]:</strong> 元ドメインと目標ドメインの特徴間の<span class="highlight">ワッサースタイン距離</span>をドメイン類似度として使用</li>
+                <li><strong>NCE score [289]:</strong> 判別問題において、ラベル間の負の条件付きエントロピーで転移可能性を推定</li>
+            </ul>
+            <p class="note">元ドメインのデータが必要で、適用範囲が制限される</p>
+        </div>
+        
+        <h3>事前学習済み特徴抽出器のみを使用する手法</h3>
+        <div class="formula-box">
+            <h4>尤度ベースの評価</h4>
+            <ul>
+                <li><strong>H-Score [25]:</strong> 線形分類器を結合し、目標ドメインの各事例に対する尤度を推定</li>
+                <li><strong>LogME [329]:</strong> 周辺尤度を直接推定して転移可能性を評価</li>
+            </ul>
+            <p><strong>利点:</strong> 元ドメインのデータを用いずに評価が可能</p>
+        </div>
+    </div>
+    
+    <div class="slide">
+        <h2>転移可能性評価の現状と課題</h2>
+        
+        <h3>現在の状況</h3>
+        <div class="key-point-box">
+            <p>現在までにさまざまな観点で事前学習済みモデルの転移可能性を評価する方法が提案されていますが、<span class="highlight">まだ決定的なアプローチや指標は見つかっていません</span>。</p>
+        </div>
+        
+        <h3>各手法の特徴と課題</h3>
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background-color: #f5f5f5;">
+                <th style="border: 1px solid #ddd; padding: 8px;">手法カテゴリ</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">利点</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">課題</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px;">Taskonomy, Task2Vec</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">体系的評価、高い予測精度</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">計算コスト、汎用性</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px;">RSA, DEPARA</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">詳細な類似度分析</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">ファインチューニング必須</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px;">分布距離ベース</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">計算効率、理論的根拠</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">元ドメインデータ必要</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px;">尤度ベース</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">元データ不要、高速</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">精度の限界</td>
+            </tr>
+        </table>
+        
+        <h3>実践的な指針</h3>
+        <div class="note">
+            <p>実践的には、<span class="highlight">各ドメインに固有の知識をも使いながら丁寧にドメイン間の類似度を評価して転移の可否を判断する</span>といったことが求められるでしょう。この方向の研究の発展は今後も続くと思われます。</p>
         </div>
     </div>
 
@@ -1387,9 +1481,8 @@
     <div class="slide">
         <h2>基盤モデル（Foundation Model）とは</h2>
         
-        <div class="foundation-model-box">
-            <p class="key-point">基盤モデル（foundation model）</p>
-            <p><span class="highlight">広範なデータで学習され、下流の幅広いタスクに知識を転移させることができるモデル</span>を指します。</p>
+        <div class="key-point-box">
+            <p><strong>基盤モデル（foundation model）</strong>とは、<span class="highlight">広範なデータで学習され下流の幅広いタスクに知識を転移させることができるモデル</span>を指します。</p>
         </div>
         
         <h3>代表的な基盤モデル</h3>
@@ -1402,9 +1495,8 @@
         <h3>技術的基盤</h3>
         <p>基盤モデルの構築方法は<span class="highlight">深層ニューラルネットワークと自己教師あり学習</span>に基づいており、その技術は決して新しいものではありません。</p>
         
-        <div class="note">
-            <p>基盤モデルという概念自体は新しいものではありませんが、その規模と性能が大幅に向上したことで注目を集めるようになりました。</p>
-        </div>
+        <h3>なぜ今？</h3>
+        <p>基盤モデルがより汎用的な人工知能システムを構築するうえで重要な役割を果たすと考えられており、今後ますますその影響力を増していくと予想されています。</p>
     </div>
 
     <div class="slide">
@@ -1451,44 +1543,84 @@
     </div>
 
     <div class="slide">
-        <h2>基盤モデルの研究課題</h2>
+        <h2>基盤モデルの幅広い応用分野</h2>
         
-        <h3>汎用性（Generality）</h3>
-        <p>基盤モデルの研究における大きな制限として、<span class="highlight">汎用性（generality）</span>、すなわちタスクごとに手動を構築する必要性がなくなることが言及されます。</p>
+        <p>基盤モデルは<span class="highlight">複数の分野</span>において革新的な応用が実現されています：</p>
         
-        <h3>アーキテクチャとアルゴリズムの開発</h3>
-        <p>汎用的なタスクに対する高機能な基盤モデル、もしくは将来性に関連するタスクに対して高い能力を発揮するために、開発でモデルやアルゴリズムを開発する必要がありました。</p>
-        
-        <div class="challenge-box">
-            <p class="key-point">主要な研究課題</p>
+        <div class="application-area">
+            <h3>自然言語処理（NLP）</h3>
             <ul>
-                <li><span class="highlight">モデルの効率性向上</span>：計算コストとメモリ使用量の削減</li>
-                <li><span class="highlight">転移性能の予測</span>：データとしてタスクの組合せの予測</li>
-                <li><span class="highlight">マルチモーダル対応</span>：テキスト、画像、音声などの統合処理</li>
-                <li><span class="highlight">評価指標の確立</span>：すべてのタスクに対する性能向上の効果的な評価</li>
+                <li><span class="highlight">GPT-4</span>: テキスト生成、翻訳、要約、対話システム</li>
+                <li><span class="highlight">BERT</span>: 文書分類、質問応答、感情分析</li>
+                <li><span class="highlight">T5</span>: Text-to-Text統合タスク処理</li>
+            </ul>
+        </div>
+        
+        <div class="application-area">
+            <h3>コンピュータビジョン</h3>
+            <ul>
+                <li><span class="highlight">CLIP</span>: 画像とテキストの統合理解</li>
+                <li><span class="highlight">DALL-E</span>: テキストから画像生成</li>
+                <li><span class="highlight">Vision Transformer (ViT)</span>: 画像分類と物体検出</li>
+            </ul>
+        </div>
+        
+        <div class="application-area">
+            <h3>音声・マルチモーダル</h3>
+            <ul>
+                <li><span class="highlight">Whisper</span>: 多言語音声認識</li>
+                <li><span class="highlight">GPT-4V</span>: 画像とテキストの統合処理</li>
+                <li><span class="highlight">PaLM-2</span>: マルチモーダル推論能力</li>
             </ul>
         </div>
     </div>
 
     <div class="slide">
-        <h2>基盤モデルの理論的理解の不十分さ</h2>
+        <h2>基盤モデルの5つの主要な課題</h2>
+        
+        <p>基盤モデルの研究・開発・展開において、以下の<span class="highlight">5つの主要な課題</span>が存在します：</p>
         
         <div class="challenge-box">
-            <p class="key-point">第五に、基盤モデルの理論的な理解の不十分さです。</p>
-            <p>深層学習と自己教師あり学習の利用は爆発的に広がっており、理論も進展し続けていますがそれでも基本的かつ未解決の問題が多く残されています。</p>
+            <h3>第一：モデリング能力</h3>
+            <p>より表現力の高いアーキテクチャとアルゴリズムの開発</p>
+        </div>
+        
+        <div class="challenge-box">
+            <h3>第二：学習効率性</h3>
+            <p>計算コストとメモリ使用量を削減した効率的な学習手法の確立</p>
+        </div>
+        
+        <div class="challenge-box">
+            <h3>第三：転移可能性の理解</h3>
+            <p>どのタスクにどの程度転移可能かの予測と評価手法の開発</p>
+        </div>
+        
+        <div class="challenge-box">
+            <h3>第四：社会的影響</h3>
+            <p>バイアス、公平性、安全性などの社会的責任に関する課題</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>第五の課題：理論的理解の不十分さ</h2>
+        
+        <div class="challenge-box">
+            <p class="key-point">第五：基盤モデルの理論的な理解の不十分さ</p>
+            <p>深層学習と自己教師あり学習の利用は爆発的に広がっており、理論も進展し続けていますが、それでも基本的かつ未解決の問題が多く残されています。</p>
         </div>
         
         <h3>未解決の理論的問題</h3>
         <ul>
-            <li><span class="highlight">基盤モデルは幅広いタスクに適応できる</span>といえ、訓練データの分布とは異なる分布外汎化がどの程度可能かは不明です</li>
-            <li><span class="highlight">基盤モデルの学習</span>に関しては基礎となるような理論が確立されておらず、実験が先行した形になっており、そこから現象を観察し理論の手がかりにするということが続いています</li>
+            <li><span class="highlight">分布外汎化能力</span>：訓練データの分布とは異なる分布に対してどの程度汎化可能かが不明</li>
+            <li><span class="highlight">学習理論の欠如</span>：基盤モデルの学習に関する基礎理論が確立されておらず、実験が先行している状況</li>
+            <li><span class="highlight">創発現象の解明</span>：スケールアップに伴う能力の創発がなぜ起こるのかの理論的説明が不十分</li>
         </ul>
         
-        <h3>今後の理論発展への期待</h3>
-        <p>物理学ではかつて実験が先行して理論がそれを説明するために後からついていくような状況が続いていましたが、昨今では理論が先行してそれを実験で確かめるという流れが多々見受けられます。基盤モデルに関しても将来的には理論が成熟し、基盤モデルの社会的なインパクトに見合うような透明性のある理解がなされることが望ましいと考えられます。</p>
+        <h3>理論発展への期待</h3>
+        <p>物理学では実験が先行して理論が後追いする時代から、理論が先行して実験で確認する時代へと発展しました。基盤モデルに関しても将来的には理論が成熟し、<span class="highlight">社会的インパクトに見合う透明性のある理解</span>がなされることが望ましいとされています。</p>
         
         <div class="note">
-            <p>基盤モデルの理論的理解は、その信頼性と安全性を確保する上で重要な課題となっています。</p>
+            <p>理論的理解の深化は、基盤モデルの信頼性と安全性を確保する上で不可欠です。</p>
         </div>
     </div>
 
