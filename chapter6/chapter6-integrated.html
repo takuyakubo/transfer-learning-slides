@@ -1542,11 +1542,23 @@
     <div class="slide">
         <h2>基盤モデルの新たな学習パラダイム</h2>
         
-        <h3>Emergence（創発）</h3>
-        <p>また、基盤モデルは、<span class="highlight">スケールから生じる幅広い能力の創発</span>についてもよく知られています。例えば、<span class="highlight">GPT-2</span>の15億のパラメータから5倍大きなGPT-3の1750億のパラメータを持つなど、基盤モデルが成長するにつれて、よってさまざまな学習（<span class="highlight">in-context learning</span>）が可能になったことが実験によって確認されています。</p>
+        <h3>Emergence（創発）とは何か</h3>
+        <p><span class="highlight">創発（Emergence）</span>とは、<strong>モデルのサイズが大きくなることで、予期せず新しい能力が突然現れる現象</strong>です。</p>
         
-        <h3>In-Context Learning</h3>
-        <p>これらの手法では、言語モデルに自然言語のプロンプト（言わばみる文章）を与えるだけで下流のタスクに適応させることができるので、特に学習を行っていなかった新規の能力が発現されています。</p>
+        <div class="key-point-box">
+            <p><strong>具体例</strong>：<span class="highlight">GPT-2（15億パラメータ）</span>では見られなかった能力が、<span class="highlight">GPT-3（1750億パラメータ）</span>では突然現れました。</p>
+        </div>
+        
+        <h3>In-Context Learning（文脈内学習）</h3>
+        <p><span class="highlight">In-Context Learning</span>とは、<strong>モデルのパラメータを更新することなく、プロンプト内の例示だけでタスクを学習する能力</strong>です。</p>
+        
+        <div class="example-box">
+            <p><strong>例</strong>：「猫→動物、車→乗り物、リンゴ→？」というプロンプトを与えると、モデルは「果物」と答えることができます。</p>
+        </div>
+        
+        <div class="note">
+            <p>従来の機械学習では、新しいタスクにはデータセットを用意して訓練が必要でしたが、In-Context Learningでは例示のみで対応可能です。</p>
+        </div>
     </div>
 
     <div class="slide">
