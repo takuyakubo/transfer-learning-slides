@@ -236,6 +236,7 @@
         <div class="formula-box">
             $$\min_{D,\mathbf{u}_1,...,\mathbf{u}_n} \left[ \frac{1}{2}\sum_{i=1}^n \|\mathbf{x}_i - D\mathbf{u}_i\|^2 + \lambda\|\mathbf{u}_i\|_1 \right]$$
             $$\text{subject to } \|\mathbf{d}_k\| = 1 \quad (k = 1, ..., K)$$
+            $$\text{where, } D = (\mathbf{d}_1, ..., \mathbf{d}_K)$$
         </div>
         
         <h3>要素の説明</h3>
@@ -292,7 +293,7 @@
         </ul>
         
         <div class="note">
-            元ドメインと目標ドメインでそれぞれ個別に辞書学習を行うアプローチも提案されている
+            元ドメインと目標ドメインでそれぞれ個別に辞書学習を行い結合するアプローチも提案されている(次スライド)
         </div>
     </div>
 
@@ -337,8 +338,8 @@
         </table>
         
         <h3>SDLの効果</h3>
-        <div class="image-placeholder">
-            図6.1 SDLの流れ：元ドメイン（例：写真）から目標ドメイン（例：線画）へのスタイル変換を実現
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-1.png" alt="図6.1 SDLの流れ：元ドメイン（例：写真）から目標ドメイン（例：線画）へのスタイル変換を実現" style="max-width: 100%; height: auto;">
         </div>
         
         <div class="note">
