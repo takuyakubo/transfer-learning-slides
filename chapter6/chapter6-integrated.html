@@ -413,10 +413,8 @@
             <p>三つの量のうち二つがボトルネックにならないならば、トランスフォーマーの性能は残る一つの量のべき乗で上昇する</p>
         </div>
         
-        <div class="image-placeholder">
-            図6.2 深層ニューラルネットワークモデルにおけるパラメータ数と予測性能の関係<br>
-            左図：トランスフォーマーモデルのパラメータ数とBLEUスコアによる機械翻訳の性能の関係<br>
-            右図：T(L,H,A)の各点T(L,H,A)それぞれはエンコーダとデコーダの層数、全結合層の隠れユニット数、および注意機構のヘッド数を表します
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-2.png" alt="図6.2 深層ニューラルネットワークモデルにおけるパラメータ数と予測性能の関係" style="max-width: 100%; height: auto;">
         </div>
     </div>
 
@@ -427,10 +425,8 @@
         <h3>パラメータ数の推移</h3>
         <p>主要な深層ニューラルネットワークモデルにおけるパラメータ数の推移（図6.3）によると、<span class="highlight">年々凄まじい速さで巨大化している</span>ことがわかる</p>
         
-        <div class="image-placeholder">
-            図6.3 主要な深層ニューラルネットワークモデルにおけるパラメータ数の推移<br>
-            2012年のAlexNetから2020年のGPT-3まで、指数関数的な増加を示す<br>
-            （対数スケールでのプロット）
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-3.png" alt="図6.3 主要な深層ニューラルネットワークモデルにおけるパラメータ数の推移" style="max-width: 100%; height: auto;">
         </div>
         
         <div class="note">
@@ -471,10 +467,8 @@
         <p>巨大なタスクに少ない訓練コストで適応できるような汎用的なモデルを作り、それを使い回すことが重要</p>
         
         <h3>事前学習とファインチューニングによるパラメータ転移</h3>
-        <div class="image-placeholder">
-            図6.4 事前学習済みモデルによるパラメータ転移<br>
-            上段：学習済み深層ニューラルネットワーク（入力層→中間層（特徴抽出器）→出力層）<br>
-            下段：新たに学習する深層ニューラルネットワーク（中間層のパラメータを転移し、目標ドメインの学習を大幅に効率化する）
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-4.png" alt="図6.4 事前学習済みモデルによるパラメータ転移" style="max-width: 100%; height: auto;">
         </div>
         
         <div class="note">
@@ -497,9 +491,6 @@
             <li><span class="highlight">計算コストの課題</span>：巨大モデルの訓練には莫大な費用と時間</li>
             <li><span class="highlight">解決策</span>：事前学習済みモデルの利用による転移学習</li>
         </ol>
-        
-        <h3>次節：6.2.2 事前学習済みモデルの利用</h3>
-        <p>深層学習を強力な手法たらしめている一つの要因が、<span class="highlight">事前学習済みモデル（pre-trained model）</span>を利用した転移学習</p>
     </div>
 
     <!-- ========== 6.2.2 事前学習済みモデルの利用 ========== -->
@@ -547,7 +538,6 @@
         <h3>目標ドメインへの転移手法</h3>
         <ul>
             <li>目標ドメインでの事前学習済みモデルの利用方法は多数提案されている</li>
-            <li>ここではゼロ-ショット転移とコストのかかるファインチューニングは除く</li>
             <li>最近は深層学習済みモデルを再学習時の初期値として用いられる場合もある</li>
         </ul>
     </div>
@@ -578,9 +568,8 @@
     <div class="slide">
         <h2>層の凍結とファインチューニング</h2>
         
-        <div class="image-placeholder">
-            図6.5 深層学習における事前学習済みモデルとそのファインチューニング<br>
-            事前学習済みモデルをそのまま利用する層では、そのパラメータを凍結（固定）し、残りの層のみ目標ドメインのデータで再学習します。どの層を凍結し、どの層をファインチューニングすればよいかは問題によって異なります。
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-5.png" alt="図6.5 深層学習における事前学習済みモデルとそのファインチューニング" style="max-width: 100%; height: auto;">
         </div>
         
         <h3>ファインチューニング時の考慮点</h3>
@@ -592,23 +581,6 @@
         
         <div class="note">
             例えば、画像データであれば、入力に近い層はエッジやテクスチャに反応し、層が深くなるにつれてテクスチャや、パーツ、各物体を反応していくことを考えると、ImageNetで訓練学習したものは他の自然画像に用いる層を凍結して用いることができそうなことと一致している
-        </div>
-    </div>
-
-    <!-- 自己教師あり学習モデル -->
-    <div class="slide">
-        <h2>6.2.3 自己教師あり学習による深層モデルの事前学習</h2>
-        
-        <h3>深層モデルの事前学習の課題</h3>
-        <p>深層モデルの事前学習は、基本的に大規模データを用いた教師あり学習によって行われてきたが、例えば、ImageNet <sup>*3</sup> などで提供されるような動物認識の初期のグレースケールモデルは、ImageNet <sup>*3</sup> という人規模な画像データベースに登録された数百万枚もの画像と1000以上の画像データベースで用いる動物認識の訓練された画像データベースに登録されるモデルが開発されてきた</p>
-        
-        <div class="note">
-            しかし、教師あり学習による事前学習済みモデルの開発には以下のような手間をかける場合があります。例えば、この事前学習済みモデルをクラウドソーシングなどでアノテーションコストをかける程度下げること、今後は特別されたラベルのない頼組化実下という</p>
-        </div>
-        
-        <div class="footnote">
-            *2 https://pytorch.org/vision/stable/models.html<br>
-            *3 詳細はhttps://image-net.org/を参照
         </div>
     </div>
 
@@ -633,9 +605,6 @@
             <li><span class="highlight">層の凍結</span>：一部の層を固定し、残りを再学習</li>
             <li><span class="highlight">初期値としての利用</span>：収束までの時間を大幅に削減</li>
         </ol>
-        
-        <h3>次節：6.2.3 自己教師あり学習による深層モデルの事前学習</h3>
-        <p>ラベルなしデータを活用した事前学習の手法について</p>
     </div>
 
     <!-- ========== 6.2.3 自己教師あり学習による深層モデルの事前学習 ========== -->
@@ -688,83 +657,7 @@
         <ul>
             <li>入力データそのものを教師ラベルとして利用</li>
             <li>多くの下流タスクに有効な事前学習を行うことが可能</li>
-            <li>新しいパラダイムをもたらした</li>
         </ul>
-        
-        <p>本節では、自己教師あり学習によるニューラルネットの事前学習について説明します。</p>
-    </div>
-
-    <!-- 自己教師あり学習の概要 -->
-    <div class="slide">
-        <h2>6.2.3.1 自己教師あり学習の概要</h2>
-        
-        <h3>2018年のブレークスルー</h3>
-        <p>人工知能分野への貢献で2018年にチューリング賞を受賞したヤン・ルカン（Yann LeCun）は、AAAI2020 <sup>*4</sup> での招待講演で自己教師あり学習を</p>
-        
-        <div class="definition-box">
-            <p><span class="key-point">「計算機が入力の任意の部分を任意の観測部分に対して予測すること」</span></p>
-            <p style="font-style: italic;">"the machine predicts any parts of its input for any observed part"</p>
-        </div>
-        
-        <p>と説明しました <sup>*5</sup>。</p>
-        
-        <p>今日では、自己教師あり学習は</p>
-        
-        <div class="footnote">
-            *3 https://www.image-net.org<br>
-            *4 AAAI: Association for the Advancement of Artificial Intelligence（米国人工知能学会）<br>
-            *5 講演動画：https://www.youtube.com/watch?v=Aut32pR5PQA
-        </div>
-    </div>
-
-    <!-- まとめ -->
-    <div class="slide">
-        <h2>6.2.3のまとめ</h2>
-        
-        <div class="key-point-box">
-            <p class="key-point">自己教師あり学習による深層モデルの事前学習</p>
-        </div>
-        
-        <h3>要点</h3>
-        <ol>
-            <li><span class="highlight">教師あり学習の限界</span>
-                <ul>
-                    <li>大量のラベル付きデータが必要</li>
-                    <li>アノテーションコストが高い</li>
-                    <li>異なるドメインへの転移の保証がない</li>
-                </ul>
-            </li>
-            <li><span class="highlight">自己教師あり学習の特徴</span>
-                <ul>
-                    <li>入力データそのものを教師として利用</li>
-                    <li>ラベルなしデータで事前学習可能</li>
-                    <li>汎用的な特徴表現の学習</li>
-                </ul>
-            </li>
-            <li><span class="highlight">ヤン・ルカンの定義</span>
-                <ul>
-                    <li>入力の任意の部分から他の部分を予測</li>
-                    <li>2018年チューリング賞受賞</li>
-                </ul>
-            </li>
-        </ol>
-        
-        <h3>次の内容</h3>
-        <p>自己教師あり学習の具体的な手法と実装について</p>
-    </div>
-
-
-    <!-- ========== 6.2.3.1 自己教師あり学習の概要 ========== -->
-    <div class="slide">
-        <div class="slide-title">
-            <h1>第6章 事前学習済みモデル</h1>
-            <p>6.2.3.1 自己教師あり学習の概要</p>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="border: none;">6.2.3.1 自己教師あり学習の概要</h2>
-            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
-            <p>勉強会資料</p>
-        </div>
     </div>
 
     <div class="slide divider-slide">
@@ -775,7 +668,7 @@
         <h2>自己教師あり学習とは</h2>
         
         <div class="definition-box">
-            <p>ヤン・ルカン（Yann LeCun）による定義：</p>
+            <p>ヤン・ルカン（Yann LeCun）(*)による定義：</p>
             <p><span class="key-point">「計算機が入力の任意の部分を任意の観測部分に対して予測すること」</span></p>
             <p style="font-style: italic;">"the machine predicts any parts of its input for any observed part"</p>
         </div>
@@ -789,6 +682,10 @@
         </ul>
         
         <p>これらの方法として認識されています。</p>
+
+                <div class="footnote">
+            * 講演動画：https://www.youtube.com/watch?v=UX8OubxsY8w&t=2057s
+        </div>
     </div>
 
     <div class="slide">
@@ -806,7 +703,7 @@
             <p>しかし、教師なし学習が入力のみに注目してデータのパターン抽出を行う問題であるのに対して、<span class="highlight">自己教師あり学習は疑似的ではあるものの入力-出力の関係に注目してパターン抽出を行う問題</span>であり、教師あり学習の設定に近いパラダイムにあります。</p>
         </div>
         
-        <h3>例：Cloze Test</h3>
+        <h3>例：</h3>
         <p>直感的には、自己教師あり学習はデータに内在する共起関係を教師ラベルとして活用する方法です。例えば <span class="highlight">"I like ___ apples"</span> という不完全な文章に対して、訓練された言語モデルは空欄部分を <span class="highlight">"eating"</span> と予測する可能性が高いでしょう（Cloze Test[283]）。</p>
         
         <p>なぜなら、この単語はさまざまなコーパス内で文脈と頻繁に共起しているためです。</p>
@@ -828,12 +725,8 @@
         
         <p>これらのアプローチにおけるニューラルネットワークの構造の比較を図6.6に示します。</p>
         
-        <div class="image-placeholder">
-            図6.6 自己教師あり学習のアプローチの分類 [Liu ら [186] の Fig. 4 を改変して使用]<br>
-            生成器、識別器、損失関数の構成の違いを示す図<br>
-            生成的：エンコーダ → z → デコーダ → x̂ → 再構成損失<br>
-            対照的：エンコーダ → z → 対照損失<br>
-            敵対的：エンコーダ → z → デコーダ → x̂ → 分布間疑距離
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-6.png" alt="図6.6 自己教師あり学習のアプローチの分類" style="max-width: 100%; height: auto;">
         </div>
     </div>
 
@@ -857,29 +750,33 @@
         
         <p>本書では、特に対照的アプローチである<span class="highlight">対照学習（contrastive learning）</span>について詳しく説明します。生成的アプローチや敵対的アプローチについては、例えば Liu らのサーベイ [186] を参照してください。</p>
         
-        <h3>対照学習の基本原理</h3>
         <div class="definition-box">
-            <p>機械学習のモデルは、それが近似しようとしている確率分布の観点から生成モデルと識別モデルに大別されます。</p>
-            <p>生成モデルは従来、同時分布 $P_{X,Y}$ を近似する問題を考えるアプローチですが、近年の深層生成モデルの文脈では特に入力の分布 $P_X$ や $P_{X|Y}$ を近似する</p>
+            <p>機械学習のモデルは、それが近似しようとしている確率分布の観点から<span class="highlight">生成モデルと識別モデル</span>に大別されます。</p>
+            
+            <h4>生成モデル（Generative Model）</h4>
+            <ul>
+                <li>従来：同時分布 $P_{X,Y}$ を近似する問題を考えるアプローチ</li>
+                <li>近年の深層生成モデル：特に入力の分布 $P_X$ や $P_{X|Y}$ を近似する問題</li>
+                <li>データの生成過程をモデル化し、新しいデータを生成することが可能</li>
+            </ul>
+            
+            <h4>識別モデル（Discriminative Model）</h4>
+            <ul>
+                <li>入力を与えたときの出力の条件付き分布 $P_{Y|X}$ を近似する問題</li>
+                <li>データを分類や回帰などのタスクに応じて識別することに特化</li>
+            </ul>
         </div>
-        
-        <div class="footnote">
-            <p>*3 https://www.image-net.org<br>
-            *4 Association for the Advancement of Artificial Intelligence（情報テクノロジと知能学会）が主催する人工知能分野のトップ国際会議です。<br>
-            *5 https://aaai.org/Conferences/AAAI-20/invited-speakers/</p>
-        </div>
-    </div>
+        <p>対照学習では、<span class="highlight">識別モデル</span>的な観点から表現学習を行う</p>
 
-    <!-- ========== 6.2.3.2 文脈-事例対比型の対照的自己教師あり学習 ========== -->
-    <div class="slide">
-        <div class="slide-title">
-            <h1>第6章 事前学習済みモデル</h1>
-            <p>6.2.3.2 文脈-事例対比型の対照的自己教師あり学習</p>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="border: none;">6.2.3.2 文脈-事例対比型の<br>対照的自己教師あり学習</h2>
-            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
-            <p>勉強会資料</p>
+        <h3>対照学習の分類</h3>
+        <p>対照学習は、さらに<span class="highlight">文脈-事例対比型と事例-事例対比型</span>の2種類に分類することができます。以下ではそれぞれについて、いくつかの主要な方法を取り上げつつ説明します。</p>
+        
+        <div class="algorithm-box">
+            <h4>文脈-事例対比型（Context-Instance Contrastive）</h4>
+            <p>入力データの文脈情報と個別の事例を対比させる手法</p>
+            
+            <h4>事例-事例対比型（Instance-Instance Contrastive）</h4>
+            <p>異なる事例同士を直接対比させる手法</p>
         </div>
     </div>
 
@@ -891,24 +788,27 @@
         <h2>文脈-事例対比型の対照的自己教師あり学習</h2>
         
         <h3>基本概念</h3>
-        <p>文脈-事例対比型の対照学習は、各事例が実際に対照的特徴表現とその大域的文脈表現の間の類似関係をモデル化することを主眼においています。</p>
+        <p>文脈-事例対比型の対照学習は、各事例が表す<strong>局所的特徴</strong>とその<strong>大域的文脈表現</strong>の間の帰属関係をモデル化することに主眼がおかれています。</p>
         
         <h3>具体例</h3>
+        <p>ある局所的な特徴の表現を学習するとき：</p>
         <ul>
-            <li>大規模を学習するなら、個別と同一性の絵は その絵の点</li>
-            <li>文書はその段落に</li>
-            <li>グラフのノードはその近傍に</li>
+            <li>画像の縞模様 → 虎</li>
+            <li>文章 → その段落</li>
+            <li>グラフのノード → その近傍</li>
         </ul>
         
-        <p>というような大域的文脈の特徴表現と関連していることが考えられます。</p>
+        <p>というような大域的文脈の特徴表現と関連していることが望ましいと考えられます。</p>
         
-        <h3>主要な手法</h3>
-        <div class="key-point-box">
-            <p>文脈-事例対比型の対照学習には、主に以下の方法があります：</p>
-            <ol>
-                <li><span class="highlight">相対位置型の予測（predict relative position、PRP）</span></li>
-                <li><span class="highlight">相互情報量（mutual information, MI）の最大化</span></li>
-            </ol>
+        <h3>手法の詳細</h3>
+        <p>文脈-事例対比型の対照学習には、主に<span class="highlight">相対位置の予測（predict relative position, PRP）による方法と相互情報量（mutual information, MI）の最大化による方法</span>があります。</p>
+        
+        <div class="algorithm-box">
+            <h4>PRP による方法</h4>
+            <p>局所的特徴の間の相対位置関係を学習することに重点をおいており、大域的文脈はこの関係を予測するための暗黙的な要請として機能します。例えば、猫という動物の外見の特徴（大域的文脈）は、頭と尻尾（局所的特徴）の相対的な位置の予測に重要な概念となっています。</p>
+            
+            <h4>MI による方法</h4>
+            <p>局所的特徴間の相対的位置関係は無視され、各局所的特徴の大域的文脈への帰属関係を学習することを目的とします。</p>
         </div>
     </div>
 
@@ -944,16 +844,12 @@
             <li><span class="highlight">回転した画像の回転角を推定する問題 [107]</span></li>
         </ol>
         
-        <div class="image-placeholder">
-            図6.7 相対位置の予測問題の例<br>
-            青枠のパッチに対してベストとして与えられた赤枠のパッチの相対位置を予測します。<br>
-            問題1、2の正解はそれぞれ Y = 6、Y = 3 となります。
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-7.png" alt="図6.7 相対位置の予測問題の例" style="max-width: 100%; height: auto;">
         </div>
         
-        <div class="image-placeholder">
-            図6.8 ジグソーパズルと回転の例<br>
-            ジグソーパズル問題では、(a) のように画像から適当なパッチを切り出し (b) のように並び替えたものを (c) のように解くことで各パッチの相対位置を学習します。<br>
-            また、回転問題では元の画像を回転した画像から回転角を予測する問題を解きます。
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-8.png" alt="図6.8 ジグソーパズルと回転の例" style="max-width: 100%; height: auto;">
         </div>
     </div>
 
@@ -1006,9 +902,8 @@
             <li>得られた特徴マップを一つの特徴ベクトルに集約する関数 $h_2$ の合成関数 $h_{\text{enc}} = h_2 \circ h_1$ で表されるとします</li>
         </ul>
         
-        <div class="image-placeholder">
-            図6.9 Deep InfoMax におけるエンコーダと大域的 MI スコアおよび局所的 MI スコア<br>
-            入力画像から M×M 特徴写像を生成し、大域的特徴と局所的特徴の相互情報量を最大化
+        <div style="text-align: center; margin: 20px 0;">
+            <img src="img/image6-9.png" alt="図6.9 Deep InfoMax におけるエンコーダと大域的 MI スコアおよび局所的 MI スコア" style="max-width: 100%; height: auto;">
         </div>
     </div>
 
@@ -1079,28 +974,12 @@
         <h2>DIMの発展とその他の手法</h2>
         
         <h3>DIMとは単独して提案されたcontrastive predictive coding (CPC)</h3>
-        <p>DIM とは単独して提案された contrastive predictive coding (CPC) [191] でも、DIM と同様に相互情報量の最大化によるアプローチを採用しています。</p>
+        <p>DIM とは単独して提案された contrastive predictive coding (CPC) [218] でも、DIM と同様に相互情報量の最大化によるアプローチを採用しています。</p>
         
         <h3>Augmented Multiscale DIM (AMDIM)</h3>
         <p>DIM がすべての局所的特徴を集約して一つの大域的特徴を構築するのに対して、CPC では局所的特徴の一部を用いて「現在特徴」という表現を構築した局所的特徴間の相互情報量を最大化することによりスケールを統一的に表現されています。</p>
         
         <p>また、DIM を拡張した Augmented Multiscale DIM (AMDIM) [22] では、各入力画像に対して独立にデータ拡張を施したものから抽出した局所的特徴間の相互情報量を最大化することによりスケールとより堅実した学習特徴の獲得が可能となるように訓練されています。</p>
-        
-        <h3>6.2.3.3 事例-事例対比型の対照的自己教師あり学習</h3>
-        <p>事例-事例対比型の対照学習は、距離学習と関連に異なるサンプルの事例レベルの局所的特徴表現の間の距離を直接学習するものです。</p>
-    </div>
-
-    <!-- ========== 6.2.3.3 事例-事例対比型の対照的自己教師あり学習 ========== -->
-    <div class="slide">
-        <div class="slide-title">
-            <h1>第6章 事前学習済みモデル</h1>
-            <p>6.2.3.3 事例-事例対比型の対照的自己教師あり学習</p>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <h2 style="border: none;">6.2.3.3 事例-事例対比型の<br>対照的自己教師あり学習</h2>
-            <p style="margin-top: 80px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
-            <p>勉強会資料</p>
-        </div>
     </div>
 
     <div class="slide divider-slide">
