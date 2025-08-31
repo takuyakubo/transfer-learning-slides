@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']]
+          }
+        };
+        </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+    <link href='../styles/base.css' rel='stylesheet' />
+    <link href='../styles/pswd.css' rel='stylesheet' />
+    <script src='../scripts/pswdol.js'></script> 
+    <title>第9章 メタ学習 </title>
+    <style>
+        .key-point-box {
+            background-color: #fee;
+            border: 2px solid #d32f2f;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .algorithm-box {
+            background-color: #fffde7;
+            border: 1px solid #f9a825;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .formula-box {
+            background-color: #f5f5f5;
+            border-left: 4px solid #0078d7;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .image-placeholder {
+            background-color: #f5f5f5;
+            border: 2px dashed #999;
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .slide {
+            position: relative;
+        }
+        .page-number {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            color: #666;
+            font-size: 12px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            z-index: 10;
+        }
+        .big-text {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 50px 0;
+            color: #0078d7;
+        }
+        .toc-slide {
+            background-color: #f8f9fa;
+        }
+        .toc-slide ul {
+            list-style-type: none;
+            margin-left: 0;
+        }
+        .toc-slide > ul > li {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #0078d7;
+        }
+        .toc-slide ul ul {
+            margin-left: 30px;
+            font-weight: normal;
+        }
+        .toc-slide ul ul li {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .footnote {
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .method-list li {
+            margin-bottom: 15px;
+        }
+        .foundation-model-box {
+            background-color: #fff9c4;
+            border: 2px solid #f57c00;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .challenge-box {
+            background-color: #ffebee;
+            border: 2px solid #e53935;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .scale-factor {
+            background-color: #e8f5e8;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            // Get all slides
+            const slides = document.querySelectorAll('.slide');
+            
+            // Add page numbers to each slide
+            slides.forEach(function(slide, index) {
+                const pageNumber = document.createElement('div');
+                pageNumber.className = 'page-number';
+                pageNumber.textContent = (index + 1).toString();
+                slide.appendChild(pageNumber);
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- パスワード保護オーバーレイ -->
+    <div id="password-container"></div>
+    
+    <!-- メインコンテンツ（パスワード認証後に表示） -->
+    <div id="content-container">
+
+    <!-- 統合版表紙 -->
+    <div class="slide">
+        <div class="slide-title">
+            <h1>第9章 メタ学習</h1>
+            <p style="font-size: 24px; margin-top: 20px;">統合版</p>
+        </div>
+        <div style="text-align: center; margin-top: 50px;">
+            <p style="font-size: 20px;">転移学習（機械学習プロフェッショナルシリーズ）</p>
+            <p style="font-size: 18px; margin-top: 30px;">勉強会資料</p>
+            <p style="font-size: 16px; color: #666; margin-top: 50px;">作成日：2025年8月</p>
+        </div>
+    </div>
+
+    <!-- 目次スライド -->
+    <div class="slide toc-slide">
+        <h2>第9章 目次</h2>
+        <ul>
+            <li>9.1 機械学習における機能バイアスとその学習
+                <ul>
+                    <li>9.1.1 概念学習とバージョン空間</li>
+                    <li>9.1.2 機能バイアスとその学習</li>
+                </ul>
+            </li>
+            <li>9.2 統計的メタ学習の定式化
+                <ul>
+                    <li>9.2.1 統計的メタ学習への導入</li>
+                    <li>9.2.2 統計的メタ学習の定式化
+                         <ul>
+                            <li>9.2.2.1 メタ期待リスクとメタ経験リスク</li>
+                            <li>9.2.2.2 メタ経験リスクによる近似の精度評価</li>
+                            <li>9.2.2.3 メタ訓練とメタテスト</li>
+                        </ul>
+                    </li>
+                    <li>9.2.3 より一般的なメタ学習の定式化</li>
+                    <li>9.2.4 メタ知識の学習
+                        <ul>
+                            <li>9.2.4.1 2レベル最適化による学習の定式化</li>
+                            <li>9.2.4.2 線形回帰タスクの環境におけるメタ知識の学習の例</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>9.3 メタ学習の分類と方法
+                <ul>
+                    <li>9.3.1 メタ学習の分類の概要</li>
+                    <li>9.3.2 メタ知識の表現に基づく分類と方法
+                        <ul>
+                            <li>9.3.2.1 モデルパラメータの初期値としてのメタ知識の学習</li>
+                            <li>9.3.2.2 オプティマイザとしてのメタ知識の学習</li>
+                            <li>9.3.2.3 Sim2Real転移のためのメタ学習</li>
+                        </ul>
+                    </li>
+                </ul>
+
+            </li>
+            <li>9.4 まとめ</li>
+        </ul>
+    </div>
+
+    <!-- 概要スライド -->
+    <!-- まとめスライド -->
+    <div class="slide">
+        <h2>第9章の概要</h2>
+        
+        <h3>本章で扱う内容</h3>
+        <ul>
+            <li><span class="highlight">メタ学習の基本概念</span>：帰納バイアス学習としてのメタ学習</li>
+            <li><span class="highlight">統計的メタ学習の定式化</span>：複数タスクに共通する最適な仮説集合</li>
+            <li><span class="highlight">メタ学習の分類</span>：メタ目的、メタオプティマイザ、メタ表現の観点による分類</li>
+            <li><span class="highlight">メタ知識の表現</span>：モデルパラメタやオプティマイザの表現</li>
+            <li><span class="highlight">Sim2Real</span>：シミュレーションから実世界への転移</li>
+        </ul>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.1 機械学習における帰納バイアスとその学習</h1>
+    </div>
+
+        <!-- メタ学習の概要 -->
+    <div class="slide">
+        <h2>メタ学習とは</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">メタ学習</p>
+            <p>複数のタスクからそれらに共通する知識を学習する手法</p>
+        </div>
+        
+        <h3>メタ学習の特徴</h3>
+        <ul>
+            <li><span class="highlight">帰納バイアス学習</span>や<span class="highlight">学習のための学習</span>とも呼ばれる</li>
+            <li>転移学習に関連するトピックの中でも<span class="key-point">歴史のある分野</span></li>
+            <li>アルゴリズムに「どのようなモデルを出力させるか」を決定する指針を学習</li>
+        </ul>
+        
+        <div class="note">
+            本章では、複数のタスクから共通する知識を学習するメタ学習について説明します。メタ学習は転移学習の一種として位置づけられる重要な手法です。
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.1.1 概念学習とバージョン空間</h1>
+    </div>
+
+    <!-- 概念学習の例 -->
+    <div class="slide">
+        <h2>概念学習の基本例</h2>
+        
+        <h3>ウォータースポーツの楽しみ方を予測</h3>
+        <div class="definition-box">
+            <p><strong>問題設定：</strong>「友人が大好きなウォータースポーツを楽しむ日」を予測したい</p>
+        </div>
+        
+        <h3>特徴量（6つの属性）</h3>
+        <ul>
+            <li>$x_1$：天気</li>
+            <li>$x_2$：気温</li>
+            <li>$x_3$：湿度</li>
+            <li>$x_4$：風</li>
+            <li>$x_5$：水温</li>
+            <li>$x_6$：天気予報</li>
+        </ul>
+        
+        <p>これらの特徴量 $\mathbf{x} = (x_1, x_2, x_3, x_4, x_5, x_6)$ からウォータースポーツを楽しんだこと（$y = 1$）を推定する</p>
+    </div>
+
+    <!-- 仮説の表現 -->
+    <div class="slide">
+        <h2>仮説の数学的表現</h2>
+        
+        <div class="formula-box">
+            <p><strong>仮説 $h(\mathbf{x})$：</strong></p>
+            $$h(\mathbf{x}) = \langle x_1, x_2, \ldots, x_6 \rangle$$
+            $$= \begin{cases}
+            1 & \text{if } (x_1 = *) \land (x_2 = *) \land \cdots \land (x_6 = *) \\
+            0 & \text{otherwise}
+            \end{cases}$$
+        </div>
+        
+        <h3>記号の意味</h3>
+        <ul>
+            <li>$\land$：論理積を表す記号</li>
+            <li>$*$：各特徴の何らかの値が入ることを表す</li>
+            <li>例：$h_1(\mathbf{x}) = \langle$晴れ, *, *, 強い, *, *$\rangle$ → 「風の強い晴れの日」</li>
+            <li>例：$h_2(\mathbf{x}) = \langle$晴れ, *, *, *, *, *$\rangle$ → 「晴れの日」</li>
+        </ul>
+        
+        <div class="note">
+            このような形式の仮説を表9.1のような与えられたデータから決定するのがこの問題における学習です。これは<span class="highlight">概念学習（concept learning）</span>と呼ばれます。
+        </div>
+    </div>
+
+    <!-- 訓練データの例 -->
+    <div class="slide">
+        <h2>概念学習における訓練データの例</h2>
+        
+        <div class="image-placeholder">
+            <p><strong>表9.1の内容：概念学習における訓練データの例</strong></p>
+            <table style="margin: 20px 0;">
+                <thead>
+                    <tr>
+                        <th>データID</th>
+                        <th>天気</th>
+                        <th>気温</th>
+                        <th>湿度</th>
+                        <th>風</th>
+                        <th>水温</th>
+                        <th>天気予報</th>
+                        <th>楽しんだ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>晴れ</td><td>暖かい</td><td>普通</td><td>強い</td><td>温かい</td><td>当たり</td><td>はい</td></tr>
+                    <tr><td>2</td><td>晴れ</td><td>暖かい</td><td>高い</td><td>強い</td><td>温かい</td><td>当たり</td><td>はい</td></tr>
+                    <tr><td>3</td><td>雨</td><td>寒い</td><td>高い</td><td>強い</td><td>温かい</td><td>はずれ</td><td>いいえ</td></tr>
+                    <tr><td>4</td><td>晴れ</td><td>暖かい</td><td>高い</td><td>強い</td><td>冷たい</td><td>はずれ</td><td>はい</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h3>特徴の値域</h3>
+        <ul>
+            <li>天気：{晴れ, 曇り, 雨}</li>
+            <li>気温：{暖かい, 寒い}</li>
+            <li>湿度：{高い, 普通}</li>
+            <li>風：{強い, 弱い}</li>
+            <li>水温：{温かい, 冷たい}</li>
+            <li>天気予報：{当たり, はずれ}</li>
+        </ul>
+    </div>
+
+    <!-- バージョン空間 -->
+    <div class="slide">
+        <h2>バージョン空間（Version Space）</h2>
+        
+        <div class="definition-box">
+            <p><span class="key-point">バージョン空間：</span>有限の訓練データに基づいて仮説を学習するとき、訓練データを完全に説明する複数の仮説が存在し得る。そのような仮説の集合</p>
+        </div>
+        
+        <h3>表9.1のデータに対するバージョン空間の例</h3>
+        <div class="formula-box">
+            <p>$h_1(\mathbf{x}) = \langle$晴れ, 暖かい, *, 強い, *, *$\rangle$</p>
+            <p>$h_2(\mathbf{x}) = \langle$晴れ, *, *, 強い, *, *$\rangle$</p>
+            <p>$h_3(\mathbf{x}) = \langle$晴れ, 暖かい, *, *, *, *$\rangle$</p>
+        </div>
+        
+        <h3>仮説集合のサイズ</h3>
+        <ul>
+            <li>各特徴には「任意の値をとってもよい」選択肢がある</li>
+            <li>「どんな特徴xにおいてもウォータースポーツを楽しむ日にはならない」仮説$h_0$も必要</li>
+            <li>意味的に異なる仮説の個数：$4 \times 3^5 + 1 = 973$</li>
+        </ul>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.1.2 帰納バイアスとその学習</h1>
+    </div>
+
+    <!-- 帰納バイアスの問題 -->
+    <div class="slide">
+        <h2>バージョン空間における問題</h2>
+        
+        <h3>学習アルゴリズムの課題</h3>
+        <ul>
+            <li>バージョン空間の元である仮説は、<span class="highlight">学習に用いた訓練データに対してはすべて同じ性能を示す</span></li>
+            <li>しかし、<span class="key-point">未知の事例に対しては異なる予測を返す可能性</span>がある</li>
+        </ul>
+        
+        <h3>具体例</h3>
+        <div class="two-col">
+            <div class="col">
+                <p><strong>事例：</strong> $\mathbf{x} = ($晴れ, 寒い, 普通, 強い, 温かい, 当たり$)$</p>
+                <ul>
+                    <li>$h_2$ を仮説とすると：$y = 1$</li>
+                    <li>$h_3$ を仮説とすると：$y = 0$</li>
+                </ul>
+            </div>
+            <div class="col">
+                <div class="note">
+                    学習アルゴリズムは訓練データの観点からは同じ性能を持つ仮説の中から、より良い予測をする仮説を選ぶ必要があります。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- オッカムの剃刀 -->
+    <div class="slide">
+        <h2>オッカムの剃刀（Occam's Razor）</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">オッカムの剃刀</p>
+            <p>データをうまく説明する複数の仮説がある場合、その中で最もシンプルな仮説を用いるべきである</p>
+        </div>
+        
+        <h3>回帰問題への適用例</h3>
+        <div class="image-placeholder">
+            <p><strong>図9.1：</strong>シンプルな仮説と複雑な仮説の例</p>
+            <img src="img/image9-1.png" alt="シンプルな仮説と複雑な仮説の例" style="width: 100%; max-width: 800px;">
+            <p>4次多項式モデル vs 10次多項式モデル</p>
+            <p>両者とも訓練データに対して同程度の性能を示すが、オッカムの剃刀の原理に従えば4次多項式モデルが選択される</p>
+        </div>
+        
+        <div class="note">
+            オッカムの剃刀は絶対的な原理ではありません。同等の訓練誤差を達成したうえで、10次多項式の方が4次多項式より汎化するモデルとなるような問題も現実には考えられます。
+        </div>
+    </div>
+
+    <!-- 帰納バイアスの定義 -->
+    <div class="slide">
+        <h2>帰納バイアスとは</h2>
+        
+        <div class="definition-box">
+            <p><span class="key-point">帰納バイアス：</span>「どのような仮説がよりよいか」という、仮説（予測モデル）に対する一段階メタな仮説を表すもの</p>
+        </div>
+        
+        <h3>帰納バイアスの重要性</h3>
+        <ul>
+            <li>あるタスクにおいて、<span class="highlight">学習アルゴリズムの持つ帰納バイアスがそのタスク自体にマッチするかどうか</span>が学習される仮説の性能を決定する要因</li>
+            <li>与えられたタスクおよびそのタスクにおけるデータから帰納バイアスそのものを学習したい</li>
+        </ul>
+        
+        <div class="key-point-box">
+            <p class="key-point">メタ学習の動機</p>
+            <p>これが<span class="highlight">帰納バイアス学習（inductive bias learning）</span>またはメタ学習（meta-learning）の動機付けになります</p>
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.2 統計的メタ学習の定式化</h1>
+    </div>
+
+        <div class="slide divider-slide">
+        <h1>9.2.1 統計的メタ学習への導入</h1>
+    </div>
+
+        <!-- メタ学習の目的 -->
+    <div class="slide">
+        <h2>メタ学習の目的と課題</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">メタ学習の目的</p>
+            <p>帰納バイアスを学習すること</p>
+        </div>
+        
+        <h3>従来のアプローチの限界</h3>
+        <ul>
+            <li>帰納バイアス = 仮説の選び方に関する指針</li>
+            <li>学習アルゴリズムに帰納バイアスを持たせるには、<span class="highlight">最適な仮説を一つだけ含む仮説集合 $\mathcal{H} = \{h^*\}$ を学習アルゴリズムに提示する</span>のが最もよい方法</li>
+            <li>しかし、そのような仮説 $h^*$ を見つけることが学習問題のもともとの目的</li>
+        </ul>
+        
+        <div class="note">
+            したがって単一のタスクのみを対象にしたメタ学習は通常の仮説の学習と等価であるといえます。
+        </div>
+    </div>
+
+    <!-- Baxterのアプローチ -->
+    <div class="slide">
+        <h2>Baxterによる統計的メタ学習の提案</h2>
+        
+        <h3>従来手法との違い</h3>
+        <ul>
+            <li><span class="key-point">単一のタスクではなく、類似した複数のタスクを提示</span></li>
+            <li>それらタスク群に共通して適した帰納バイアスの獲得を目指す</li>
+        </ul>
+        
+        <div class="definition-box">
+            <p><strong>統計的メタ学習問題：</strong></p>
+            <ul>
+                <li>学習アルゴリズムに対して仮説集合の集合 $\mathbb{H} = \{\mathcal{H}\}$ が提示される</li>
+                <li>アルゴリズムは与えられたタスク群に対してよい帰納バイアス</li>
+                <li>すなわち<span class="highlight">一つの仮説集合 $\mathcal{H} \in \mathbb{H}$ を見つけることを目的</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 単一学習問題の復習 -->
+    <div class="slide">
+        <h2>単一学習問題の定式化（復習）</h2>
+        
+        <h3>基本設定</h3>
+        <div class="formula-box">
+            <p>入力空間：$\mathcal{X}$、出力空間：$\mathcal{Y}$</p>
+            <p>同時分布：$P_{X,Y} = P_{\mathcal{X} \times \mathcal{Y}}$ を $\mathcal{X} \times \mathcal{Y}$ 上の同時分布</p>
+            <p>仮説集合：$\mathcal{H} = \{h : \mathcal{X} \rightarrow \mathcal{Y}\}$</p>
+            <p>損失関数：$\ell : \mathcal{Y} \times \mathcal{Y} \rightarrow \mathbb{R}$</p>
+        </div>
+        
+        <h3>学習の目的</h3>
+        <ul>
+            <li>仮説 $h \in \mathcal{H}$ で $\mathbf{x} \in \mathcal{X}$ の出力 $y \in \mathcal{Y}$ を予測</li>
+            <li>損失：$\mathcal{L}(\mathbf{x}, y; h) = \ell(h(\mathbf{x}), y)$</li>
+            <li><span class="key-point">学習の目的は期待リスク $R(h) = \mathbb{E}_{(\mathbf{x}, y) \sim P_{X,Y}}[\mathcal{L}(\mathbf{x}, y; h)]$ を最小にするような仮説 $h \in \mathcal{H}$ を見つけること</span></li>
+        </ul>
+    </div>
+
+    <!-- 学習アルゴリズムの定式化 -->
+    <div class="slide">
+        <h2>学習アルゴリズムの定式化</h2>
+        
+        <div class="definition-box">
+            <p><strong>定義3.20による学習アルゴリズム：</strong></p>
+            <p>$n$個のラベルありデータ $D_n = \{(\mathbf{x}_i, y_i)\}_{i=1}^n \subset \mathcal{X} \times \mathcal{Y}$ を受け取りある仮説 $h \in \mathcal{H}$ を返す写像</p>
+        </div>
+        
+        <div class="equation">
+            $$A : \bigcup_{n=1}^{\infty} (\mathcal{X} \times \mathcal{Y})^n \rightarrow \mathcal{H} \quad (9.3)$$
+        </div>
+        
+        <h3>経験リスク最小化</h3>
+        <ul>
+            <li>多くの学習問題は訓練データ $D_n$ 上の経験リスク $\hat{R}(h) = \frac{1}{n} \sum_{i=1}^n \mathcal{L}(\mathbf{x}_i, y_i; h)$ を最小化して仮説 $h$ を決定</li>
+            <li>学習アルゴリズムの記号 $A$ を用いて：</li>
+        </ul>
+        
+        <div class="equation">
+            $$A(D_n) = \arg\min_{h \in \mathcal{H}} \hat{R}(h) \quad (9.4)$$
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.2.2 統計的メタ学習の定式化</h1>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.2.2.1 メタ期待リスクとメタ経験リスク</h1>
+    </div>
+
+        <!-- タスク分布と環境 -->
+    <div class="slide">
+        <h2>タスク分布と環境の設定</h2>
+        
+        <h3>タスクの定義</h3>
+        <div class="definition-box">
+            <p><strong>タスク：</strong>データの生成分布 $P_{X,Y}$ と損失 $\mathcal{L}$ の組 $\mathcal{T} = (P_{X,Y}, \mathcal{L})$</p>
+        </div>
+        
+        <h3>統計的メタ学習の設定</h3>
+        <ul>
+            <li><span class="highlight">タスク集合 $\mathbb{T} = \{\mathcal{T}\}$ を考え、学習アルゴリズムに提示されるタスクは $\mathbb{T}$ 上の確率分布 $P(\mathcal{T})$ に従ってサンプリングされたもの</span>であると仮定</li>
+            <li>$P(\mathcal{T})$ は<span class="key-point">タスク分布（task distribution）</span>と呼ばれる</li>
+        </ul>
+        
+        <h3>環境（Environment）</h3>
+        <div class="definition-box">
+            <p><strong>環境：</strong>タスク集合 $\mathbb{T}$ とタスク分布 $P(\mathcal{T})$ の組 $(\mathbb{T}, P(\mathcal{T}))$</p>
+        </div>
+        
+        <div class="note">
+            タスク分布 $P(\mathcal{T})$ は学習アルゴリズムにどのようなタスクが提示されやすいかを表します。
+        </div>
+    </div>
+
+    <!-- タスク分布の例 -->
+    <div class="slide">
+        <h2>タスク分布の具体例</h2>
+        
+        <h3>顔認識問題における帰納バイアス学習</h3>
+        <div class="two-col">
+            <div class="col">
+                <p><strong>目標：</strong>顔認識問題における帰納バイアスを学習したい</p>
+                <p>$P(\mathcal{T})$ として顔認識型の問題に対して高いピークを持つような確率分布を考える</p>
+            </div>
+            <div class="col">
+                <p><strong>対比例：</strong>文字認識問題における帰納バイアス学習</p>
+                <p>$P(\mathcal{T})$ として文字認識型の問題に対してピークを持つような確率分布を考える</p>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <!-- メタ期待リスク -->
+    <div class="slide">
+        <h2>メタ期待リスク（Meta-Expected Risk）</h2>
+        
+        <div class="formula-box">
+            <p><strong>メタ期待リスク $\mathcal{R}(\mathcal{H})$ の定義：</strong></p>
+            $$\mathcal{R}(\mathcal{H}) = \mathbb{E}_{\mathcal{T} \sim P(\mathcal{T})} \left[ \inf_{h \in \mathcal{H}} R(h) \right] \quad (9.5)$$
+            $$= \mathbb{E}_{(P_{X,Y}, \mathcal{L}) \sim P(\mathcal{T})} \left[ \inf_{h \in \mathcal{H}} \mathbb{E}_{(\mathbf{x}, y) \sim P_{X,Y}} [\mathcal{L}(\mathbf{x}, y; h)] \right]$$
+        </div>
+
+        <div class="key-point-box">
+            <p class="key-point">統計的メタ学習の目的</p>
+            <p>仮説集合の集合 $\mathbb{H} = \{ \mathcal{H}\}$ からメタ期待リスク（meta-expected risk）を最小にするような仮説集合 $\mathcal{H}$ を見つけること</p>
+        </div>
+        
+        <h3>メタ期待リスクの解釈</h3>
+        <ul>
+            <li><span class="key-point">メタ期待リスク $\mathcal{R}(\mathcal{H})$ が小さくなる</span>のは、タスク分布 $P(\mathcal{T})$ に従ってランダムにサンプリングされた任意のタスク $(P_{X,Y}, \mathcal{L})$ に対してよい仮説 $h$ が高い確率で $\mathcal{H}$ に含まれる場合</li>
+            <li>この意味で、<span class="highlight">$\mathcal{R}(\mathcal{H})$ は仮説集合 $\mathcal{H}$ が表す帰納バイアスが環境 $(\mathbb{T}, P(\mathcal{T}))$ にどれだけ適合しているかを測る指標</span>であると解釈できる</li>
+        </ul>
+        
+        <div class="note">
+            通常の学習問題において期待リスクを直接最小化できないのと同様に、メタ期待リスクもタスク分布 $P(\mathcal{T})$ が未知であるために直接最小化することはできません。
+        </div>
+    </div>
+
+    <!-- メタ経験リスク -->
+    <div class="slide">
+        <h2>メタ経験リスク（Meta-Empirical Risk）</h2>
+        
+        <h3>メタ学習のデータ設定</h3>
+        <ul>
+            <li>タスク分布 $P(\mathcal{T})$ からランダムに $M$ 個のタスク $\mathcal{T}_{S_1} = (P_{X,Y}^{(S_1)}, \mathcal{L}^{(S_1)}), \ldots, \mathcal{T}_{S_M} = (P_{X,Y}^{(S_M)}, \mathcal{L}^{(S_M)})$ が得られている</li>
+            <li>さらに各タスクにおける生成分布 $P_{X,Y}^{(S_m)}$ からサイズ $n_m$ のデータ $D_{S_m} = \{(\mathbf{x}_i^{(S_m)}, y_i^{(S_m)})\}_{i=1}^{n_m}$ が得られている</li>
+            <li>$\mathcal{T}_{S_m}$ は<span class="key-point">ソースタスク（source task）</span>と呼ばれ、各タスクのデータ集合 $D_{S_m}$ は<span class="key-point">学習エピソード（learning episode）</span>などと呼ばれる</li>
+        </ul>
+        
+        <div class="formula-box">
+            <p><strong>メタ経験リスク $\hat{\mathcal{R}}(\mathcal{H})$ の定義：</strong></p>
+            $$\hat{\mathcal{R}}(\mathcal{H}) = \frac{1}{M} \sum_{m=1}^M \inf_{h \in \mathcal{H}} \hat{R}_{S_m}(h) \quad (9.6)$$
+            $$= \frac{1}{M} \sum_{m=1}^M \inf_{h \in \mathcal{H}} \sum_{i=1}^{n_m} \mathcal{L}^{(S_m)}(\mathbf{x}_i^{(S_m)}, y_i^{(S_m)}; h)$$
+        </div>
+    </div>
+
+    <!-- メタ経験リスクの特徴 -->
+    <div class="slide">
+        <h2>メタ経験リスクの特徴と課題</h2>
+        
+        <h3>メタ経験リスクの性質</h3>
+        <ul>
+            <li><span class="key-point">メタ経験リスク $\hat{\mathcal{R}}(\mathcal{H})$ は、仮説集合 $\mathcal{H}$ の関数を用いて各訓練データ集合 $D_{S_m}$ で達成可能な最良の経験リスクを平均したもの</span></li>
+            <li>各タスクの期待リスク $R(h)$ ではなく経験リスク $\hat{R}_{S_m}(h)$ の $\inf$ をとっている</li>
+            <li>メタ期待リスクの不偏推定量ではない</li>
+        </ul>
+        
+        <div class="note">
+            (9.6)のメタ経験リスクでメタ期待リスクを近似することの理論的な正当化は9.2.2.2節で説明します。
+        </div>
+        
+        <h3>メタ学習アルゴリズム</h3>
+        <div class="formula-box">
+            <p>通常の学習アルゴリズムと同様に、メタ学習アルゴリズム $A_{\text{meta}}$ は一般に $m$ 個のタスクにおけるデータ集合 $D_{S_m}$, $m = 1, 2, \ldots$ を入力すると、ある仮説集合を出力する写像</p>
+            $$A_{\text{meta}} : \bigcup_{m=1}^{\infty} \bigcup_{n_m=1}^{\infty} (\mathcal{X}_{S_m} \times \mathcal{Y}_{S_m})^{n_m} \rightarrow \mathbb{H} \quad (9.7)$$
+        </div>
+    </div>
+
+    <!-- メタリスクの性質と課題 -->
+    <div class="slide">
+        <h2>メタリスクの性質と最適化の課題</h2>
+        
+        <h3>集合の包含関係と単調性</h3>
+        <div class="two-col">
+            <div class="col">
+                <p><strong>重要な性質：</strong></p>
+                <ul>
+                    <li>$\mathcal{H} \subset \mathcal{H}'$ であるような二つの仮説集合 $\mathcal{H}$ と $\mathcal{H}'$ に対して：</li>
+                    <li>$\mathcal{R}(\mathcal{H}') \leq \mathcal{R}(\mathcal{H})$</li>
+                    <li>$\hat{\mathcal{R}}(\mathcal{H}') \leq \hat{\mathcal{R}}(\mathcal{H})$</li>
+                </ul>
+            </div>
+            <div class="col">
+                <p><strong>単調性：</strong></p>
+                <ul>
+                    <li>集合の包含関係によって引数である仮説集合の間に順序を定義するとき、$\mathcal{R}$ や $\hat{\mathcal{R}}$ はこの順序について単調減少関数</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <p><span class="key-point">最適化の課題</span></p>
+            <p>もし $\mathbb{H}$ に含まれるすべての $\mathcal{H}$ に包含関係が成り立つならば、常に最大の要素数を持つ $\mathcal{H}$ が選択されることになります。一方、仮説集合の間に包含関係が成り立つかどうかは集合族 $\mathbb{H}$ のとり方に依存します。したがって、$\mathcal{R}(\mathcal{H})$ や $\hat{\mathcal{R}}(\mathcal{H})$ の最小化は、一般には「最大の $\mathcal{H}$ を選ぶ」という単純なものにはなりません。</p>
+        </div>
+
+        <div class="note">
+            この課題は、メタ学習において適切な仮説集合族 $\mathbb{H}$ の設計が重要であることを示しています。
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.2.2.2 メタ経験リスクによる近似の精度評価</h1>
+    </div>
+
+        <!-- 定理9.3 -->
+    <div class="slide">
+        <h2>定理9.3：メタ経験リスクの精度保証(目標)</h2>
+        
+        <div class="theorem-box">
+            <p><span class="key-point">定理9.3</span></p>
+            <p>$\mathcal{P}$ を $\mathcal{X} \times \mathcal{Y}$ 上の同時分布 $P_{XY}$ の集合（タスク集合）とし、$Q$ を $\mathcal{P}$ 上の確率分布（タスク分布）とします。また、タスク $P_m$, $m = 1, \ldots, M$ は $Q$ による $\mathcal{P}$ からのサンプルであり、各タスクのデータ $\{(\mathbf{x}_{m,i}, y_{m,i})\}_{i=1}^n$ は分布 $P_m$ により生成されているとします。さらに、$\mathbb{H}$ を許容的な仮説集合族とします。もしタスク数 $M$ およびサンプルサイズ $n$ に対してそれぞれ</p>
+            $$M \geq \max \left\{ \frac{256}{\varepsilon^2} \log \frac{8C(\frac{\varepsilon}{32}, \mathcal{G}^*)}{\delta}, \frac{64}{\varepsilon^2} \right\} \quad (9.14)$$
+            $$n \geq \max \left\{ \frac{256}{n\varepsilon^2} \log \frac{8C(\frac{\varepsilon}{32}, \mathcal{G}_\ell^M)}{\delta}, \frac{64}{\varepsilon^2} \right\}$$
+            <p>が成り立つならば、少なくとも $1 - \delta$ 以上の確率で、任意の $\mathcal{H} \in \mathbb{H}$ に対して、(9.9)である</p>
+            $$\mathcal{R}(\mathcal{H}) \leq \hat{\mathcal{R}}(\mathcal{H}) + \varepsilon$$
+            <p>が成り立ちます。ここで、$C(a, \mathcal{G}^*)$ および $C(a, \mathcal{G}_\ell^M)$ は，</p>
+            $$C(a, \mathcal{G}^*) = \sup_Q N(\mathcal{G}^*, d_{\mathcal{G}^*}, a)$$
+            $$C(a, \mathcal{G}_\ell^M) = \sup_{P_1, \ldots, P_M} N(\mathcal{G}_\ell^M, d_{\mathcal{G}_\ell^M}, a)$$
+            <p>で定まり、それぞれ $\mathcal{G}^*$ および $\mathcal{G}_\ell^M$ の、タスク分布 $Q$ およびタスク $P_1, \ldots, P_M$ に関する最悪ケースの被覆数を表します。</p>
+        </div>
+    </div>
+
+        <!-- 理論的準備 -->
+    <div class="slide">
+        <h2>理論的準備：問題設定と仮説集合の制約</h2>
+        
+        <h3>問題設定の簡単化と仮定</h3>
+        <ul>
+            <li>タスク集合 $\mathbb{T} = \{\mathcal{T} = (P_{X,Y}, \mathcal{L})\}$ において、損失関数 $\mathcal{L}$ はただ一つの関数 $\ell : \mathcal{Y} \times \mathcal{Y} \rightarrow [0, 1]$ を用いて $\mathcal{L}(\mathbf{x}, y; h) = \ell(h(\mathbf{x}), y)$ で定まっているとする。</li>
+            <li> $\mathbb{T}$ は同時分布 $P_{XY}$ の集合 $\mathcal{P}$ と同一視できる</li>
+            <li>タスク数を $M$、すべてのタスクでそれぞれ $n$ 個の教師ありデータが得られているとする</li>
+        </ul>
+        
+        <h3>仮説の制約</h3>
+        <div class="formula-box">
+            <p>仮説 $h$ として、入力 $\mathbf{x} \in \mathcal{X}$ とパラメータ $\mathbf{w} \in \mathbb{R}^D$ を引数にとり、$[0, 1]$ に値をとる関数を考える。</p>
+            <p>$h : \mathcal{X} \times \mathbb{R}^D \rightarrow [0, 1]$ を考え、仮説集合 $\mathcal{H}$ は</p>
+            $$\mathcal{H} = \{h(\cdot, \mathbf{w}) : \mathbf{w} \in \mathbb{R}^D\} \quad (9.8)$$
+            <p>を扱う</p>
+        </div>
+
+        <h3>仮説集合の許容性</h3>
+        
+        <div class="definition-box">
+            <p><span class="key-point">定義9.1（仮説集合の許容性）</span></p>
+            <p>(9.8)で定まる仮説集合 $\mathcal{H}$ が許容的（permissible）であるとは、$h \in \mathcal{H}$ が $\mathcal{X}$ と $\mathbb{R}^D$ のボレル集合族の直積 $B(\mathcal{X}) \times B(\mathbb{R}^D)$ で定まる $\sigma$ 集合族に関して可測であること</p>
+        </div>
+    </div>
+
+        <!-- 数学的準備 -->
+    <div class="slide">
+        <h2>数学的準備：関数集合の定義</h2>
+        
+        <h3>関数集合 $\mathcal{H}_\ell$ と $\mathcal{H}_\ell^M$ の定義</h3>
+        <div class="formula-box">
+            <p>仮説集合 $\mathcal{H} \in \mathbb{H}$ と損失関数 $\ell$ に対して、$\mathcal{H}_\ell = \{\ell \circ h; h \in \mathcal{H}\}$ とおく</p>
+            <p>$\mathcal{H}_\ell$ の元は仮説 $h \in \mathcal{H}$ と損失関数 $\ell$ の合成関数であり、任意の $(\mathbf{x}, y) \in \mathcal{X} \times \mathcal{Y}$ に対して $\ell(h(\mathbf{x}), y)$ で定まる</p>
+        </div>
+        
+        <h3>$M$ 個の仮説の平均損失関数</h3>
+        <div class="formula-box">
+            <p>$M$ 個の仮説 $h_1, \ldots, h_M \in \mathcal{H}$ に対して、関数 $\bar{h}_\ell : (\mathcal{X} \times \mathcal{Y})^M \rightarrow [0, 1]$ を</p>
+            $$\bar{h}_\ell(\{(\mathbf{x}_m, y_m)\}_{m=1}^M) = \frac{1}{M} \sum_{m=1}^M \ell(h_m(\mathbf{x}_m), y_m)$$
+            <p>で定め、$\mathcal{H}_\ell^M = \{\bar{h}_\ell; h_1, \ldots, h_M \in \mathcal{H}\}$ とおく</p>
+            <p>データ点をそれぞれ別々の仮説で評価した損失の算術平均</p>
+        </div>
+        
+        <h3>関数集合 $\mathcal{G}_\ell^M$ の定義</h3>
+        <div class="equation">
+            $$\mathcal{G}_\ell^M = \bigcup_{\mathcal{H} \in \mathbb{H}} \mathcal{H}_\ell^M \quad (9.10)$$
+        </div>
+    </div>
+
+        <!-- 関数集合Gスターの定義 -->
+    <div class="slide">
+        <h2>期待リスクを返す関数集合 $\mathcal{G}^*$ の定義</h2>
+        
+        <h3>$H^*$ 関数の定義</h3>
+        <div class="formula-box">
+            <p>$\mathcal{H} \in \mathbb{H}$ に対して関数 $H^* : \mathcal{P} \rightarrow [0, 1]$ を</p>
+            $$H^*(P_{XY}; \mathcal{H}) = \inf_{h \in \mathcal{H}} R_{P_{XY}}(h)$$
+            $$= \inf_{h \in \mathcal{H}} \mathbb{E}_{(\mathbf{x}, y) \sim P_{XY}} [\ell(h(\mathbf{x}), y)]$$
+        </div>
+        
+        <h3>関数集合 $\mathcal{G}^*$ の定義</h3>
+        <div class="equation">
+            $$\mathcal{G}^* = \{H^*(\cdot; \mathcal{H}); \mathcal{H} \in \mathbb{H}\} \quad (9.11)$$
+        </div>
+        
+        <div class="note">
+            $\mathcal{G}^*$ の元は、各タスク（すなわちデータ生成分布）$P_{XY}$ に対して、$\mathcal{H}$ に含まれる仮説を用いたときの最小の期待リスクを返す関数になっています。
+        </div>
+    </div>
+
+    <!-- 距離尺度の定義 -->
+    <div class="slide">
+        <h2>関数集合上の距離尺度</h2>
+        
+        <h3>$\mathcal{G}_\ell^M$ 上の距離 $d_{\mathcal{G}_\ell^M}$</h3>
+        <div class="formula-box">
+            <p>$P_1, \ldots, P_M \in \mathcal{P}$ を $\mathcal{X} \times \mathcal{Y}$ 上の同時分布の列とし、任意の $\bar{h}_\ell, \bar{h}_\ell' \in \mathcal{G}_\ell^M$ に対して</p>
+            $$d_{\mathcal{G}_\ell^M}(\bar{h}_\ell, \bar{h}_\ell') = \int |\bar{h}_\ell(\{(\mathbf{x}_m, y_m)\}_{m=1}^M) - \bar{h}_\ell'(\{(\mathbf{x}_m, y_m)\}_{m=1}^M)|$$
+            $$dP_1(\mathbf{x}_1, y_1) \cdots dP_M(\mathbf{x}_M, y_M) \quad (9.12)$$
+        </div>
+        
+        <h3>$\mathcal{G}^*$ 上の距離 $d_{\mathcal{G}^*}$</h3>
+        <div class="formula-box">
+            <p>$\mathcal{P}$ 上の任意の分布（すなわちタスク分布）$Q$ と任意の $H_1^*, H_2^* \in \mathcal{G}^*$ に対して，</p>
+            $$d_{\mathcal{G}^*}(H_1^*, H_2^*) = \int |H_1^*(P) - H_2^*(P)| dQ(P) \quad (9.13)$$
+        </div>
+        
+        <div class="note">
+            これらの距離は定義から非負であり、対称性と三角不等式を満たします。また、$d_{\mathcal{G}_\ell^M}$ と $d_{\mathcal{G}^*}$ はそれぞれ $\mathcal{G}_\ell^M$ および $\mathcal{G}^*$ 上の擬距離です。
+        </div>
+    </div>
+
+    <!-- 被覆数の定義 -->
+    <div class="slide">
+        <h2>被覆数（Covering Number）</h2>
+        
+        <div class="definition-box">
+            <p><span class="key-point">定義9.2（$\mathcal{G}_\ell^M$ の被覆数）</span></p>
+            <p>$\mathcal{F}$ を $\mathcal{G}_\ell^M$ の部分集合とし、$\varepsilon > 0$ とします。任意の $\bar{h}_\ell \in \mathcal{G}_\ell^M$ に対して、ある $\bar{h}_\ell' \in \mathcal{F}$ が存在して、$d_{\mathcal{G}_\ell^M}(\bar{h}_\ell, \bar{h}_\ell') < \varepsilon$ を満たすとき、$\mathcal{F}$ を $\mathcal{G}_\ell^M$ の $\varepsilon$-ネットと呼びます。$\mathcal{G}_\ell^M$ の $\varepsilon$-ネットが達成しうる最小の要素数を、$\mathcal{G}_\ell^M$ の被覆数と呼び、$N(\mathcal{G}_\ell^M, d_{\mathcal{G}_\ell^M}, \varepsilon)$ と書きます。すなわち，</p>
+            $$N(\mathcal{G}_\ell^M, d_{\mathcal{G}_\ell^M}, \varepsilon) = \min_{\mathcal{F}: \mathcal{G}_\ell^M \text{の} \varepsilon\text{-ネット}} |\mathcal{F}|$$
+        </div>
+        
+        <div class="image-placeholder">
+            <p><strong>図9.2：</strong>$\varepsilon$-ネットのイメージ</p>
+            <img src="img/image9-2.png" alt="ε-ネットのイメージ" style="width: 100%; max-width: 600px;">
+            <p>上図では、$\mathcal{F} = \{\bar{h}_\ell^{(m)}; m = 1, \ldots, 8\}$ であり、したがって $N(\mathcal{G}_\ell^M, d_{\mathcal{G}_\ell^M}, \varepsilon) \leq 8$ となります。</p>
+        </div>
+        
+        <div class="note">
+            $\mathcal{G}^*$ に対する被覆数 $N(\mathcal{G}^*, d_{\mathcal{G}^*}, \varepsilon)$ も同様に定義されます。
+        </div>
+    </div>
+
+    <!-- 定理9.3 -->
+    <div class="slide">
+        <h2>定理9.3：メタ経験リスクの精度保証</h2>
+        
+        <div class="theorem-box">
+            <p><span class="key-point">定理9.3</span></p>
+            <p>$\mathcal{P}$ を $\mathcal{X} \times \mathcal{Y}$ 上の同時分布 $P_{XY}$ の集合（タスク集合）とし、$Q$ を $\mathcal{P}$ 上の確率分布（タスク分布）とします。また、タスク $P_m$, $m = 1, \ldots, M$ は $Q$ による $\mathcal{P}$ からのサンプルであり、各タスクのデータ $\{(\mathbf{x}_{m,i}, y_{m,i})\}_{i=1}^n$ は分布 $P_m$ により生成されているとします。さらに、$\mathbb{H}$ を許容的な仮説集合族とします。もしタスク数 $M$ およびサンプルサイズ $n$ に対してそれぞれ</p>
+            $$M \geq \max \left\{ \frac{256}{\varepsilon^2} \log \frac{8C(\frac{\varepsilon}{32}, \mathcal{G}^*)}{\delta}, \frac{64}{\varepsilon^2} \right\} \quad (9.14)$$
+            $$n \geq \max \left\{ \frac{256}{n\varepsilon^2} \log \frac{8C(\frac{\varepsilon}{32}, \mathcal{G}_\ell^M)}{\delta}, \frac{64}{\varepsilon^2} \right\}$$
+            <p>が成り立つならば、少なくとも $1 - \delta$ 以上の確率で、任意の $\mathcal{H} \in \mathbb{H}$ に対して、(9.9)である</p>
+            $$\mathcal{R}(\mathcal{H}) \leq \hat{\mathcal{R}}(\mathcal{H}) + \varepsilon$$
+            <p>が成り立ちます。ここで、$C(a, \mathcal{G}^*)$ および $C(a, \mathcal{G}_\ell^M)$ は，</p>
+            $$C(a, \mathcal{G}^*) = \sup_Q N(\mathcal{G}^*, d_{\mathcal{G}^*}, a)$$
+            $$C(a, \mathcal{G}_\ell^M) = \sup_{P_1, \ldots, P_M} N(\mathcal{G}_\ell^M, d_{\mathcal{G}_\ell^M}, a)$$
+            <p>で定まり、それぞれ $\mathcal{G}^*$ および $\mathcal{G}_\ell^M$ の、タスク分布 $Q$ およびタスク $P_1, \ldots, P_M$ に関する最悪ケースの被覆数を表します。</p>
+        </div>
+    </div>
+
+        <!-- 定理の意義と実用性 -->
+    <div class="slide">
+        <h2>定理9.3の意義と実用性</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">定理の主張</p>
+            <p>(9.9)において、$\mathcal{R}$ と $\hat{\mathcal{R}}$ が近いことを保証するためのタスク数 $M$ とサンプルサイズ $n$ が、導入した関数集合 $\mathcal{G}_\ell^M$ および $\mathcal{G}^*$ の被覆数によって制約されることを主張するものです。</p>
+        </div>
+        
+        <h3>歴史的背景と現代的意義</h3>
+        <ul>
+            <li><span class="highlight">定理9.3が発表されたのは2000年</span>であり、まだ深層学習が爆発的な発展を見せる以前の研究</li>
+            <li>現在の深層ニューラルネットワークモデルの大規模化に通じる解釈を与えることができる</li>
+        </ul>
+        
+        <div class="two-col">
+            <div class="col">
+                <h4>理論的意義</h4>
+                <ul>
+                    <li>タスク数 $M$ とサンプルサイズ $n$ が条件(9.14)を満たす範囲において、理論的保証を提供</li>
+                    <li>被覆数による複雑性の制御</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>実用上の課題</h4>
+                <ul>
+                    <li>大規模モデルでは被覆数の計算が困難</li>
+                    <li>現実的な設定での適用可能性の限界</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="note">
+            定理の中で明示的に扱われていませんが、被覆数を測る指標である被覆リソース解放を明示的にする時間や複雑さについて、タスク数 $M$ とサンプルサイズ $n$ および被覆リソース解放によって制約条件が課されることを明示しています。
+        </div>
+    </div>
+
+    <!-- 深層学習モデルへの応用 -->
+    <div class="slide">
+        <h2>深層学習モデルへの応用と解釈</h2>
+        
+        <h3>現代的な解釈</h3>
+        <ul>
+            <li><span class="key-point">仮説集合の許容性：</span>$h$ の可測性は、$T$ が完備かつ可分な距離空間（と同様な空間）の部分集合であることを要請</li>
+            <li>$\mathbb{R}^D$ は自身が完備かつ可分な距離空間であるため、この性質は満たされている</li>
+        </ul>
+        
+        <h3>大規模モデルでの考察</h3>
+        <div class="two-col">
+            <div class="col">
+                <p><strong>パラメータ空間の巨大化</strong></p>
+                <ul>
+                    <li>大規模ニューラルネットワークでは $D$ が極めて大きい</li>
+                    <li>モデルのサイズ $D$（および計算リソース）を膨大化させる</li>
+                </ul>
+            </div>
+            <div class="col">
+                <p><strong>理論と実践のギャップ</strong></p>
+                <ul>
+                    <li>理論的には経験リスクによる期待リスクの近似について、タスク数 $M$ とサンプルサイズ $n$ および被覆リソースが重要</li>
+                    <li>しかし実際にはこれらの指標関係についていくらか緩い制約で実現されている</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="note">
+            この解釈は、深層ニューラルネットワークをモデルの大規模化に対する理論的説明の一つであるベき定理 [159] に通じるものがあります。すなわち、モデルパラメータ数、データ数などのリソース指標、および計算力について、三つの指標の組み合わせによって機能的結果を実現することを合理的に解釈する考え方に通じています。
+        </div>
+
+        <div class="note">
+            理論的保証を得た上で、実際のメタ学習アルゴリズムをどのように実装・評価するかが次の話題です。
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.2.2.3 メタ訓練とメタテスト</h1>
+    </div>
+
+        <!-- メタ訓練フェーズ -->
+    <div class="slide">
+        <h2>メタ訓練（Meta-Training）フェーズ</h2>
+        
+        <div class="definition-box">
+            <p><span class="key-point">メタ訓練の目的</span></p>
+            <p>メタ経験リスク（9.6）を最小化して仮説集合を学習するステップ</p>
+        </div>
+        
+        <div class="formula-box">
+            <p><strong>メタ訓練の定式化：</strong></p>
+            $$\hat{\mathcal{H}} = \arg\min_{\mathcal{H} \in \mathbb{H}} \hat{\mathcal{R}}(\mathcal{H}) \quad (9.15)$$
+            <p>ここで、メタ経験リスク $\hat{\mathcal{R}}(\mathcal{H})$ は：</p>
+            $$\hat{\mathcal{R}}(\mathcal{H}) = \frac{1}{M} \sum_{m=1}^M \inf_{h \in \mathcal{H}} \hat{R}_{S_m}(h) \quad (9.6)$$
+        </div>
+        
+        <div class="process-flow">
+            <h4>メタ訓練の具体的手順</h4>
+            <div class="step-box">
+                <strong>ステップ1：</strong>$M$ 個のソースタスクとそれぞれのデータを収集
+            </div>
+            <div class="step-box">
+                <strong>ステップ2：</strong>仮説集合の候補 $\mathbb{H} = \{\mathcal{H}\}$ を設定
+            </div>
+            <div class="step-box">
+                <strong>ステップ3：</strong>各仮説集合 $\mathcal{H} \in \mathbb{H}$ に対してメタ経験リスク $\hat{\mathcal{R}}(\mathcal{H})$ を計算
+            </div>
+            <div class="step-box">
+                <strong>ステップ4：</strong>最小のメタ経験リスクを持つ仮説集合 $\hat{\mathcal{H}}$ を選択
+            </div>
+        </div>
+    </div>
+
+    <!-- メタテストフェーズ -->
+    <div class="slide">
+        <h2>メタテスト（Meta-Testing）フェーズ</h2>
+        
+        <div class="definition-box">
+            <p><span class="key-point">メタテストの目的</span></p>
+            <p>メタ訓練で学習された仮説集合 $\hat{\mathcal{H}}$ の性能を新しいタスクで検証する</p>
+        </div>
+        
+        <h3>メタテストの詳細手順</h3>
+        <div class="workflow-box">
+            <h4>1. テストタスクの準備</h4>
+            <p>$Q$ 個のテストタスク $\mathcal{T}_{T_q} = \{P_{X,Y}^{(T_q)}, \mathcal{L}^{(T_q)}\} \sim P(\mathcal{T})$, $q = 1, \ldots, Q$ を用意</p>
+            
+            <h4>2. データの分割</h4>
+            <p>各タスクにおける生成分布から得られたデータ $D_{T_q} \sim P_{X,Y}^{(T_q)}$ を以下に分割：</p>
+            <ul>
+                <li><span class="highlight">訓練集合</span> $D_{T_q}^{\text{tr}}$：仮説学習用</li>
+                <li><span class="highlight">テスト集合</span> $D_{T_q}^{\text{te}}$：性能評価用</li>
+            </ul>
+            
+            <h4>3. 仮説の学習</h4>
+            <p>$D_{T_q}^{\text{tr}}$ に対して通常の仮説の学習問題を解く</p>
+        </div>
+    </div>
+
+    <!-- 仮説学習の定式化 -->
+    <div class="slide">
+        <h2>メタテストにおける仮説学習</h2>
+        
+        <h3>個別タスクでの学習問題</h3>
+        <div class="formula-box">
+            <p><strong>各テストタスク $q$ に対する学習問題：</strong></p>
+            $$\min_{h \in \hat{\mathcal{H}}} R_{T_q}(h) = \frac{1}{|D_{T_q}^{\text{tr}}|} \sum_{(\mathbf{x}, y) \in D_{T_q}^{\text{tr}}} \mathcal{L}^{(T_q)}(\mathbf{x}, y; h) \quad (9.16)$$
+            <p>この最適化により仮説 $\hat{h}_{T_q}$ を得る</p>
+        </div>
+        
+        <h3>性能評価</h3>
+        <div class="two-col">
+            <div class="col">
+                <h4>評価指標</h4>
+                <ul>
+                    <li>$\hat{h}_{T_q}$ の性能をテストデータ $D_{T_q}^{\text{te}}$ で評価</li>
+                    <li>複数のテストタスクでの平均性能</li>
+                    <li>学習効率（少ないデータでの性能向上）</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>評価の意義</h4>
+                <ul>
+                    <li>メタ訓練で得られた $\hat{\mathcal{H}}$ の質を測定</li>
+                    <li>新タスクへの適応速度を評価</li>
+                    <li>帰納バイアスの有効性を検証</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="key-point-box">
+            <p class="key-point">メタ学習の最終目標</p>
+            <p>メタ訓練で得られた $\hat{\mathcal{H}}$ がどれくらいよい帰納バイアスなのかが評価される</p>
+        </div>
+    </div>
+
+    <!-- メタ学習のワークフロー全体 -->
+    <div class="slide">
+        <h2>メタ学習のワークフロー全体</h2>
+        
+        <div class="process-flow">
+            <h3>完全なメタ学習プロセス</h3>
+            
+            <div style="display: flex; justify-content: space-between; margin: 20px 0;">
+                <div style="width: 45%; text-align: center;">
+                    <h4 style="color: #2196f3;">メタ訓練段階</h4>
+                    <div class="step-box">
+                        <strong>入力：</strong>$M$ 個のソースタスク<br>
+                        各タスクのデータ $D_{S_m}$
+                    </div>
+                    <div class="step-box">
+                        <strong>処理：</strong>メタ経験リスク最小化<br>
+                        $\hat{\mathcal{H}} = \arg\min \hat{\mathcal{R}}(\mathcal{H})$
+                    </div>
+                    <div class="step-box">
+                        <strong>出力：</strong>最適仮説集合 $\hat{\mathcal{H}}$
+                    </div>
+                </div>
+                
+                <div style="width: 10%; text-align: center; display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 24px; font-weight: bold;">→</span>
+                </div>
+                
+                <div style="width: 45%; text-align: center;">
+                    <h4 style="color: #4caf50;">メタテスト段階</h4>
+                    <div class="step-box">
+                        <strong>入力：</strong>$Q$ 個のテストタスク<br>
+                        学習済み仮説集合 $\hat{\mathcal{H}}$
+                    </div>
+                    <div class="step-box">
+                        <strong>処理：</strong>各タスクで個別学習<br>
+                        $\hat{h}_{T_q} = \arg\min R_{T_q}(h)$
+                    </div>
+                    <div class="step-box">
+                        <strong>出力：</strong>各タスクでの性能評価<br>
+                        メタ学習の効果測定
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="note">
+            このワークフローは現在のfew-shot learning、domain adaptation、neural architecture searchなどの実用的なメタ学習手法の基盤となっています。
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.2.3 より一般的なメタ学習の定式化</h1>
+    </div>
+
+        <!-- メタ知識の概念 -->
+    <div class="slide">
+        <h2>メタ知識（Meta-knowledge）の導入</h2>
+        
+        <div class="meta-learning-concept">
+            <p><span class="key-point">メタ知識 $\omega$ の定義</span></p>
+            <p>メタ学習の学習対象を一般にメタ知識（meta-knowledge）と呼び、パラメータ $\omega$ で表すことにします</p>
+        </div>
+        
+        <h3>メタ知識の具体例</h3>
+        <ul>
+            <li><span class="highlight">ニューラルネットワークのパラメータの初期値</span></li>
+            <li><span class="highlight">学習に用いるオプティマイザ</span>の種類や設定</li>
+            <li><span class="highlight">仮説集合 $\mathcal{H}$</span>（従来のBaxterのアプローチ）</li>
+            <li><span class="highlight">ハイパーパラメータ</span>の最適値</li>
+        </ul>
+        
+        <h3>一般化されたメタ期待リスク</h3>
+        <div class="formula-box">
+            <p>タスク $\mathcal{T} = (P_{X,Y}, \mathcal{L})$ においてメタ知識 $\omega$ を用いたときの損失を記号 $\mathcal{L}(\omega; P_{X,Y})$ で表すことにすると、$\omega$ の学習は (9.5) のメタ期待リスク $\mathcal{R}(\mathcal{H})$ を一般化した</p>
+            $$\mathcal{R}(\omega) = \mathbb{E}_{\mathcal{T} \sim P(\mathcal{T})}[\mathcal{L}(\omega; P_{X,Y})] \quad (9.17)$$
+            <p>を $\omega$ について最小化することで行われます。</p>
+        </div>
+    </div>
+
+    <!-- メタ経験リスクの一般化 -->
+    <div class="slide">
+        <h2>メタ経験リスクの一般化</h2>
+        
+        <h3>一般化されたメタ経験リスク</h3>
+        <div class="formula-box">
+            <p>損失 $\mathcal{L}(\omega; P_{X,Y})$ は、メタ知識 $\omega$ のもとでデータ $D \sim P_{X,Y}$ から学習されたモデルの性能を表します。</p>
+            
+            <p>$\mathcal{T}_{S_1} = (P_{X,Y}^{(S_1)}, \mathcal{L}^{(S_1)}), \ldots, \mathcal{T}_{S_M} = (P_{X,Y}^{(S_M)}, \mathcal{L}^{(S_M)})$ をタスク分布 $P(\mathcal{T})$ からランダムに得られた $M$ 個のタスクとしたとき、$\mathcal{R}(\omega)$ は (9.6) のメタ経験リスク $\hat{\mathcal{R}}(\mathcal{H})$ の一般化</p>
+            
+            $$\hat{\mathcal{R}}(\omega) = \frac{1}{M} \sum_{m=1}^M \mathcal{L}^{(S_m)}(\omega; P_{X,Y}^{(S_m)}) \quad (9.18)$$
+            
+            <p>によって近似されます。</p>
+        </div>
+        
+        <h3>メタ学習のプロセス</h3>
+        <div class="two-col">
+            <div class="col">
+                <h4>メタ訓練</h4>
+                <ul>
+                    <li>$\hat{\mathcal{R}}(\omega)$ を最小化してメタ知識の推定値 $\hat{\omega}$ を得る</li>
+                    <li>複数のソースタスクから共通の知識を抽出</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>メタテスト</h4>
+                <ul>
+                    <li>テストタスク $\mathcal{T}_{T_q} = \{P_{X,Y}^{(T_q)}, \mathcal{L}^{(T_q)}\}, q = 1, \ldots, Q$ のデータ $D_{T_q} = \{D_{T_q}^{\text{tr}}, D_{T_q}^{\text{te}}\} \sim P_{X,Y}^{(T_q)}$ を用いて $\hat{\omega}$ の性能を検証</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- メタテストの詳細 -->
+    <div class="slide">
+        <h2>メタテストにおける性能評価</h2>
+        
+        <h3>メタテストの手順</h3>
+        <div class="formula-box">
+            <p>各テストタスク $q = 1, \ldots, Q$ に対して：</p>
+            $$\min_{h \in \mathcal{H}} \hat{R}_{T_q}(h) = \frac{1}{|D_{T_q}^{\text{tr}}|} \sum_{(\mathbf{x}, y) \in D_{T_q}^{\text{tr}}} \mathcal{L}^{(T_q)}(\omega; P_{X,Y}^{(T_q)}) \quad (9.19)$$
+            <p>を解いて仮説 $\hat{h}_{T_q}$ を学習し、$D_{T_q}^{\text{te}}$ から計算されるテスト誤差によって $\hat{\omega}$ の性能を検証します。</p>
+        </div>
+        
+        <div class="note">
+            帰納バイアス学習のためのメタ学習と同様、まずメタ訓練ステップで $\hat{\mathcal{R}}(\omega)$ を最小化してメタ知識の推定値 $\hat{\omega}$ を得ます。次にメタテストステップでテストタスクのデータを用いて $\hat{\omega}$ の性能を検証します。
+        </div>
+    </div>
+
+        <!-- 例9.1の内容 -->
+    <div class="slide">
+        <h2>例9.1：ハイパーパラメータ最適化への応用</h2>
+        
+        <div class="example-box">
+            <p><span class="key-point">例9.1（機械学習モデルのハイパーパラメータ最適化）</span></p>
+            <p>メタ学習を上述のように定式化すると、例えば従来の機械学習におけるモデルのハイパーパラメータ最適化をメタ学習として解釈することができます。</p>
+        </div>
+        
+        <h3>K重交差検証法による最適化</h3>
+        <ul>
+            <li>5.1.2.1節で説明したK重交差検証法によるハイパーパラメータ最適化を考える</li>
+            <li>データ集合 $D$ を $K$ 分割し、$K$ 組の訓練、検証データ集合 $\{D_k^{\text{tr}}, D_k^{\text{val}}\}$, $k = 1, \ldots, K$ を作る</li>
+            <li>各 $\{D_k^{\text{tr}}, D_k^{\text{val}}\}$ がメタ学習における一つのタスクに相当</li>
+        </ul>
+        
+        <h3>仮説とパラメータの設定</h3>
+        <div class="formula-box">
+            <p>モデルパラメータ $\theta$ およびハイパーパラメータ $\omega$ を持つ仮説を $h_{\theta,\omega}$ と書くとき、K重交差検証法は、以下の最適化問題として定式化されます：</p>
+        </div>
+    </div>
+
+    <!-- K重交差検証の定式化 -->
+    <div class="slide">
+        <h2>K重交差検証の数学的定式化</h2>
+        
+        <div class="optimization-box">
+            <p><span class="key-point">K重交差検証の最適化問題：</span></p>
+            $$\min_\omega \frac{1}{K} \sum_{k=1}^K \frac{1}{|D_k^{\text{val}}|} \sum_{(\mathbf{x}, y) \in D_k^{\text{val}}} \mathcal{L}(\mathbf{x}, y; h_{\hat{\theta}_k, \omega})$$
+            
+            $$\text{subject to } \hat{\theta}_k = \arg\min_\theta \frac{1}{|D_k^{\text{tr}}|} \sum_{(\mathbf{x}, y) \in D_k^{\text{tr}}} \mathcal{L}(\mathbf{x}, y; h_{\theta, \omega}), \quad k = 1, 2, \ldots, K$$
+            
+            <p style="text-align: right;">(9.20)</p>
+        </div>
+        
+        <h3>式の解釈</h3>
+        <div class="two-col">
+            <div class="col">
+                <h4>目的関数（1行目）</h4>
+                <ul>
+                    <li>あるハイパーパラメータ値 $\omega$ のもとで各タスクの個別の学習（2行目）で得られたモデルパラメータ $\hat{\theta}_k$ を用いたときの検証誤差</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>制約条件（2行目）</h4>
+                <ul>
+                    <li>各分割 $k$ において訓練データ $D_k^{\text{tr}}$ を用いてモデルパラメータ $\theta$ を最適化</li>
+                    <li>ハイパーパラメータ $\omega$ は固定</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="note">
+            ここで、(9.20)の目的関数（1行目）は、あるハイパーパラメータ値 $\omega$ のもとで各タスクの個別の学習（2行目）で得られたモデルパラメータ $\hat{\theta}_k$ を用いたときの検証誤差を表します。
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.2.4 メタ知識の学習</h1>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.2.4.1 2レベル最適化による学習の定式化</h1>
+    </div>
+
+    <!-- 一般的な2レベル最適化問題 -->
+    <div class="slide">
+        <h2>一般的な2レベル最適化問題の定式化</h2>
+        
+        <div class="bilevel-box">
+            <p><span class="key-point">メタ学習の2レベル最適化問題：</span></p>
+            $$\min_\omega \sum_{m=1}^M \mathcal{L}^{\text{meta}}(\hat{\theta}_m(\omega), \omega, D_{S_m}^{\text{val}}) \quad (9.21)$$
+            $$\text{subject to } \hat{\theta}_m(\omega) = \arg\min_\theta \mathcal{L}^{(S_m)}(\theta, \omega, D_{S_m}^{\text{tr}}), \quad m = 1, \ldots, M$$
+        </div>
+        
+        <h3>記号の意味</h3>
+        <ul>
+            <li>各タスクの訓練データ $D_{S_m}^{\text{tr}}$ と検証データ $D_{S_m}^{\text{val}}$ はそれぞれサポート集合（support set）、クエリ集合（query set）とも呼ばれる</li>
+            <li>(9.21)の制約条件である個別のタスクの学習問題を<span class="highlight">ベース学習（base learning）</span>フェーズと呼ぶ</li>
+        </ul>
+        
+        <h3>2レベル最適化の流れ</h3>
+        <div class="step-box">
+            <ol>
+                <li>まずメタ知識 $\omega$ の初期条件を適当に与え、$\omega$ のもとでベース学習によって各タスクの個別のモデルパラメータ $\hat{\theta}_m(\omega)$ を学習</li>
+                <li>次に、$\hat{\theta}_m(\omega), m = 1, \ldots, M$ を用いて $\omega$ のよさをメタ損失 $\mathcal{L}^{\text{meta}}$ で評価し、これを更新</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- メタ学習の非対称性 -->
+    <div class="slide">
+        <h2>メタ学習フェーズとベース学習フェーズの非対称性</h2>
+        
+        <h3>重要な特徴</h3>
+        <div class="key-point-box">
+            <p class="key-point">非対称性による制約</p>
+            <p>メタ損失の記号 $\mathcal{L}^{\text{meta}}$ は内部ループであるベース学習の損失 $\mathcal{L}^{(S_m)}$ と区別し外部ループの損失であることを明示するために用いているものですが、メタ損失自体は基本的にベース学習の損失と同じ損失関数によって評価されます</p>
+        </div>
+        
+        <h3>具体例</h3>
+        <ul>
+            <li><span class="highlight">分類タスクのとき</span>：交差エントロピー損失</li>
+            <li><span class="highlight">回帰タスクのとき</span>：二乗損失など</li>
+        </ul>
+        
+        <h3>2レベル最適化の主な特徴</h3>
+        <div class="note">
+            メタ学習フェーズとベース学習フェーズの非対称性にあるといえます。具体的にいうと、(9.21)の制約条件であるベース学習フェーズはメタ学習フェーズで得られたメタ知識 $\omega$ をパラメータとして含みますが、ベース学習中にこの $\omega$ を変更することはできません。
+        </div>
+    </div>
+
+    <!-- 2レベル最適化の例 -->
+    <div class="slide">
+        <h2>2レベル最適化が可能な $\omega$ の例</h2>
+        
+        <h3>具体的な応用例</h3>
+        <ul>
+            <li><span class="highlight">非凸最適化の初期条件</span>[96]</li>
+            <li><span class="highlight">正則化の強さを制御するハイパーパラメータ</span>[99]</li>
+            <li><span class="highlight">目標タスクの損失関数 $\mathcal{L}$ のパラメータ化の方法</span>[180]</li>
+        </ul>
+        
+        <div class="note">
+            これらはすべて、メタ学習において学習可能な対象として扱うことができ、2レベル最適化の枠組みで最適化することが可能です。
+        </div>
+    </div> 
+
+    <div class="slide divider-slide">
+        <h1>9.2.4.2 線形回帰タスクの環境におけるメタ知識の学習の例</h1>
+    </div>
+
+        <!-- 線形回帰におけるメタ学習の設定 -->
+    <div class="slide">
+        <h2>線形回帰におけるメタ学習の設定</h2>
+        
+        <h3>問題設定</h3>
+        <div class="example-box">
+            <p>環境 $(\mathbb{T}, P(\mathcal{T}))$ が線形回帰の空間として与えられる場合を例として取り上げ、(9.21)で抽象的に定義されたメタ知識の学習が具体的にどう実現されるのかを説明します</p>
+        </div>
+        
+        <h3>線形回帰の数学的設定</h3>
+        <div class="formula-box">
+            <p>いま、$\mathcal{X} = \mathbb{R}^d$、$\mathcal{Y} = \mathbb{R}$ とし、タスク $\mathcal{T} = (P_{X,Y}, \mathcal{L}) \sim P(\mathcal{T})$ は、データ生成分布 $P_{X,Y}$ が</p>
+            $$(\mathbf{x}, y) \sim P_{X,Y} \Leftrightarrow \mathbf{x} \sim P_X, \quad \varepsilon \sim \eta, \quad y = \boldsymbol{\theta}^{\top} \mathbf{x} + \varepsilon \quad (9.22)$$
+            <p>となるような周辺分布 $P_X$、ノイズ分布 $\eta$ および線形モデルのパラメータ $\boldsymbol{\theta}$ の三つ組 $(P_X, \eta, \boldsymbol{\theta})$ で定まるとします。また、損失 $\mathcal{L}$ は二乗損失 $\mathcal{L}(\mathbf{x}, y; h) = (h(\mathbf{x}) - y)^2$ で与えられるものとします。</p>
+        </div>
+    </div>
+
+    <!-- リッジ回帰によるメタ学習 -->
+    <div class="slide">
+        <h2>リッジ回帰によるメタ学習</h2>
+        
+        <h3>メタ知識の設定</h3>
+        <div class="formula-box">
+            <p>このとき、Denevi ら [75] は線形モデルのパラメータ $\boldsymbol{\theta}$ を学習するためのアルゴリズム $\mathcal{A}_\omega : D_n = \{(\mathbf{x}_i, y_i)\}_{i=1}^n \mapsto \hat{\boldsymbol{\theta}}(D_n; \omega)$ として以下のようなリッジ回帰型の最適化問題を考察しました</p>
+            
+            $$\mathcal{A}_\omega(D_n) = \hat{\boldsymbol{\theta}}(D_n; \omega) = \arg\min_{\boldsymbol{\theta} \in \mathbb{R}^d} \frac{1}{n} \|\mathbf{X}\boldsymbol{\theta} - \mathbf{y}\|^2 + \lambda\|\boldsymbol{\theta} - \boldsymbol{\omega}\|^2 \quad (9.23)$$
+        </div>
+        
+        <h3>記号の説明</h3>
+        <ul>
+            <li>$\mathbf{X} = (\mathbf{x}_1^{\top}, \ldots, \mathbf{x}_n^{\top})$ は計画行列</li>
+            <li>$\mathbf{y} = (y_1, \ldots, y_n)^{\top}$ は出力ベクトル</li>
+            <li>ベクトル $\boldsymbol{\omega} \in \mathbb{R}^d$ は線形回帰の環境において各タスクのモデルパラメータ $\boldsymbol{\theta}$ に共通して近い、平均ベクトルのような役割を持つメタ知識を表す</li>
+        </ul>
+        
+        <div class="note">
+            メタ知識 $\boldsymbol{\omega}$ は環境中のタスク間の類似度を表現するベクトルであり、$\boldsymbol{\omega}$ を推定できれば、同一の環境における新たなタスクに対する効率的な適応が期待できます。
+        </div>
+    </div>
+
+    <!-- メタ期待リスクとメタ経験リスク -->
+    <div class="slide">
+        <h2>リッジ回帰におけるメタ期待リスクとメタ経験リスク</h2>
+        
+        <h3>メタ期待リスクの導出</h3>
+        <div class="formula-box">
+            <p>リッジ回帰 (9.23) におけるメタ知識 $\boldsymbol{\omega}$ の学習は、メタ期待リスク</p>
+            
+            $$\mathcal{R}(\boldsymbol{\omega}) = \mathbb{E}_{\mathcal{T} \sim P(\mathcal{T})} \left[ \mathbb{E}_{D_n \sim P_{X,Y}} \left[ \mathbb{E}_{(\mathbf{x}, y) \sim P_{X,Y}} \left[ \frac{1}{2} \left( (\hat{\boldsymbol{\theta}}(D_n; \boldsymbol{\omega}))^{\top} \mathbf{x} - y \right)^2 \right] \right] \right] \quad (9.24)$$
+            
+            <p>を $\boldsymbol{\omega}$ について最小化する問題として定義できます。</p>
+        </div>
+        
+        <h3>解析的解の導出</h3>
+        <div class="formula-box">
+            <p>リッジ回帰 (9.23) のモデルパラメータ $\hat{\boldsymbol{\theta}}(D_n; \boldsymbol{\omega})$ が、$C = \frac{1}{n}\mathbf{X}^{\top}\mathbf{X} + \lambda I$ として $\hat{\boldsymbol{\theta}}(D_n; \boldsymbol{\omega}) = C^{-1}(\frac{1}{n}\mathbf{X}^{\top} \mathbf{y} + \lambda\boldsymbol{\omega})$ と解析的に書けることから、メタ期待リスク $\mathcal{R}(\boldsymbol{\omega})$ は以下のように書き換えることができます (Denevi ら [75] の Proposition 1)。</p>
+            
+            $$\mathcal{R}(\boldsymbol{\omega}) = \frac{1}{2} \mathbb{E}_{\mathbf{x}, \tilde{y}} \left[ (\boldsymbol{\omega}^{\top} \tilde{\mathbf{x}} - \tilde{y})^2 \right] \quad (9.25)$$
+            
+            <p>ここで、$\tilde{\mathbf{x}} = \lambda C^{-1} \mathbf{x}$、$\tilde{y} = y - \frac{1}{\lambda n} (\mathbf{X}^{\top} \mathbf{y})^{\top} \tilde{\mathbf{x}}$ とおきました。</p>
+        </div>
+    </div>
+
+    <!-- メタ経験リスクによる近似 -->
+    <div class="slide">
+        <h2>メタ経験リスクによる近似</h2>
+        
+        <h3>メタ経験リスクの定義</h3>
+        <div class="formula-box">
+            <p>(9.25)の $\mathcal{R}(\boldsymbol{\omega})$ はメタ経験リスク</p>
+            
+            $$\hat{\mathcal{R}}(\boldsymbol{\omega}) = \frac{1}{2m} \sum_{j=1}^m (\boldsymbol{\omega}^{\top} \tilde{\mathbf{x}}_j^{\text{val}} - \tilde{y}_j^{\text{val}})^2 \quad (9.26)$$
+            
+            <p>によって近似されます。ここで、$\tilde{\mathbf{x}}_j^{\text{val}}$ および $\tilde{y}_j^{\text{val}}$ は $\{(\mathbf{x}_j^{\text{val}}, y_j^{\text{val}})\}$ を訓練データと異なる検証データとして (9.25) の $\tilde{\mathbf{x}}, \tilde{y}$ と同様に計算されるものです。</p>
+        </div>
+        
+        <h3>実装の詳細</h3>
+        <div class="note">
+            メタ経験リスク $\hat{\mathcal{R}}(\boldsymbol{\omega})$ の最小化は、次のような2ステップの反復アルゴリズムで実行することができます (Denevi ら [75] の Algorithm 1)。
+        </div>
+    </div>
+
+    <!-- Deneviらのアルゴリズム -->
+    <div class="slide">
+        <h2>Deneviらのアルゴリズム</h2>
+        
+        <div class="algorithm-box">
+            <h3>Step1（ベース学習フェーズ）</h3>
+            <p>データ $D_n$ を受け取り、サイズ $n - m$ の訓練データ $D^{\text{tr}}$ とサイズ $m$ の検証データ $D^{\text{val}}$ に分割して $\tilde{\mathbf{x}}_j^{\text{val}}, \tilde{y}_j^{\text{val}}, j = 1, \ldots, m$ を以下で計算します。</p>
+            
+            <div class="formula-box" style="background-color: #f9f9f9;">
+                $$\tilde{\mathbf{x}}_j^{\text{val}} \leftarrow \lambda C^{-1} \mathbf{x}_j^{\text{val}} \quad (9.27)$$
+                $$\tilde{y}_j^{\text{val}} \leftarrow y_j^{\text{val}} - \frac{1}{\lambda n} (\mathbf{X}^{\text{tr}\top} \mathbf{y}^{\text{tr}})^{\top} \tilde{\mathbf{x}}_j^{\text{val}}$$
+            </div>
+            
+            <h3>Step2（メタ学習フェーズ）</h3>
+            <p>メタ経験リスク $\hat{\mathcal{R}}(\boldsymbol{\omega})$ の勾配 $\nabla_{\boldsymbol{\omega}} \hat{\mathcal{R}}(\boldsymbol{\omega})$ を計算し、</p>
+            
+            <div class="formula-box" style="background-color: #f9f9f9;">
+                $$\boldsymbol{\omega} \leftarrow \boldsymbol{\omega} - \gamma \nabla_{\boldsymbol{\omega}} \hat{\mathcal{R}}(\boldsymbol{\omega}) \quad (9.28)$$
+            </div>
+            
+            <p>でメタ知識 $\boldsymbol{\omega}$ を更新します。</p>
+        </div>
+        
+        <div class="note">
+            実際には、各反復におけるメタ知識 $\boldsymbol{\omega}$ をすべて記憶しておき、それらの標本平均をメタ知識の推定値として出力します。
+        </div>
+    </div>
+
+    <!-- モデルベースメタ学習への発展 -->
+    <div class="slide">
+        <h2>モデルベースメタ学習への発展</h2>
+        
+        <h3>一般化の方向性</h3>
+        <div class="key-point-box">
+            <p class="key-point">メタ学習の実現方法</p>
+            <p>以上のようなメタ学習の実現は、メタ知識 $\boldsymbol{\omega}$ の学習であると同時に、(9.23)のような写像 $\mathcal{A}_\omega$ の学習と捉えることもできます</p>
+        </div>
+        
+        <h3>より一般的なアプローチ</h3>
+        <ul>
+            <li>(9.23)でリッジ回帰として定義されていた $\mathcal{A}_\omega$ を一般化</li>
+            <li>サポート集合 $D_n$ を入力してベースタスクのモデルパラメータ $\boldsymbol{\theta}$ を出力する写像 $\mathcal{A} : D \mapsto \boldsymbol{\theta} = \mathcal{A}(D_n)$ を考え</li>
+            <li>これをニューラルネットワークなどの適切なモデルで近似 [111]</li>
+        </ul>
+    </div>
+
+        <!-- セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>9.3 メタ学習の分類と方法</h1>
+    </div>
+
+        <!-- セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>9.3.1 メタ学習の分類の概要</h1>
+    </div>
+
+        <!-- メタ学習の分類概要 -->
+    <div class="slide">
+        <h2>メタ学習の分類の概要</h2>
+        
+        <div class="key-point-box">
+            <p class="key-point">メタ学習は3つの軸で分類されます</p>
+        </div>
+
+        <ul>
+            <li><span class="highlight">メタ目的（meta-objective）</span>：何をメタ学習の目標とするか</li>
+            <li><span class="highlight">メタオプティマイザ（meta-optimizer）</span>：どのようにメタ知識を更新するか</li>
+            <li><span class="highlight">メタ表現（meta-representation）</span>：何をメタ知識として扱うか</li>
+        </ul>
+
+        <div class="note">
+            Hospedales等による分類 [139] では、これらの3つの軸でメタ学習の様々な手法を体系化しています。
+        </div>
+    </div>
+
+    <!-- メタ目的による分類 -->
+    <div class="slide">
+        <h2>メタ目的による分類</h2>
+
+        <h3>メタ学習の目標設定</h3>
+
+        <table>
+            <tr>
+                <th>分類軸</th>
+                <th>内容</th>
+                <th>例</th>
+            </tr>
+            <tr>
+                <td><span class="highlight">少数ショット vs 多数ショット</span></td>
+                <td>目標ドメインの利用可能なデータ量</td>
+                <td>Few-shot learning, Full-shot learning</td>
+            </tr>
+            <tr>
+                <td><span class="highlight">シングルタスク vs マルチタスク</span></td>
+                <td>適応対象のタスク数</td>
+                <td>単一目標ドメイン、多目標ドメイン</td>
+            </tr>
+            <tr>
+                <td><span class="highlight">オンライン vs オフライン</span></td>
+                <td>メタ知識の更新タイミング</td>
+                <td>継続的学習、事前学習</td>
+            </tr>
+        </table>
+
+        <div class="note">
+            目標設定によってメタ学習のアプローチが大きく変わります。
+        </div>
+    </div>
+
+    <!-- メタオプティマイザによる分類 -->
+    <div class="slide">
+        <h2>メタオプティマイザによる分類</h2>
+        <h3>外部ループであるメタ知識の学習で用される最適化アルゴリズムの種類(どう転移するか)</h3>
+        
+
+        <h3>メタ知識の更新方法</h3>
+
+        <div class="definition-box">
+            <p><span class="key-point">勾配法による更新</span></p>
+            <p>メタ損失関数の <span class="math">$\omega$</span> に関する勾配 <span class="math">$\mathcal{L}^{\text{meta}}/\partial \omega$</span> を利用</p>
+        </div>
+
+        <div class="formula-box">
+            <p>典型的な勾配更新式：</p>
+            <p><span class="math">$\omega$</span> はモデルパラメータ <span class="math">$\theta$</span> を介して <span class="math">$\mathcal{L}^{\text{meta}}$</span> に寄与</p>
+            <p>勾配：<span class="math">$(\partial \mathcal{L}^{\text{meta}}/\partial \theta)(\partial \theta/\partial \omega)$</span></p>
+        </div>
+
+        <div class="note">
+            解析的勾配を利用するため効率的ですが、計算コストが高くなる場合があります。
+        </div>
+    </div>
+
+    <!-- 勾配法のメリット・デメリット -->
+    <div class="slide">
+        <h2>勾配法以外のメタオプティマイザ</h2>
+        
+
+        <h3>進化的探索による更新</h3>
+
+        <div class="key-point-box">
+            <p class="key-point">進化的探索の利点</p>
+        </div>
+
+        <ol>
+            <li><span class="highlight">微分可能性の制約を受けない</span>：任意のベースモデルとメタ損失を最適化可能</li>
+            <li><span class="highlight">誤差逆伝搬不要</span>：勾配劣化問題や従来手法の高次勾配計算コストを回避</li>
+            <li><span class="highlight">並列化可能</span>：スケーラビリティが高い</li>
+            <li><span class="highlight">多様性の確保</span>：局所解を回避しやすい</li>
+        </ol>
+
+        <div class="note">
+            一方で、収束まで長時間を要し、理論的性質の解析が困難な場合が多い。
+        </div>
+    </div>
+
+    <!-- メタ表現による分類 -->
+    <div class="slide">
+        <h2>メタ表現による分類</h2>
+
+        <h3>メタ知識として何を学習するか（何を転移するか）</h3>
+
+        <div class="definition-box">
+            <p><span class="key-point">メタ表現の種類</span></p>
+            <p>「何をメタ学習の対象 = メタ知識とするのか」という観点による分類</p>
+        </div>
+
+        <ul>
+            <li><span class="highlight">モデルパラメータの初期値</span></li>
+            <li><span class="highlight">モデルの最適化手法</span> </li>
+        </ul>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.3.2 メタ知識の表現に基づく分類と方法</h1>
+    </div>
+
+    <div class="slide">
+        <h2>メタ知識の表現とは</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">メタ知識 $\omega$ として何を考えるか</span></p>
+            <p>学習戦略のどの部分をメタ学習の対象とし、どの部分を対象としないか（ユーザが与える固定戦略とするか）を決めること</p>
+        </div>
+
+        <h3>主なメタ知識の種類</h3>
+        <table>
+            <tr>
+                <th>メタ知識の種類</th>
+                <th>内容</th>
+                <th>文献</th>
+            </tr>
+            <tr>
+                <td>仮説集合</td>
+                <td>$\mathcal{H} = \{h_\theta | \theta \in \Theta\}$</td>
+                <td>9.2.2節</td>
+            </tr>
+            <tr>
+                <td>パラメータ初期値</td>
+                <td>$h_\theta$ を規定するパラメータ $\theta$ の初期化</td>
+                <td>[96]</td>
+            </tr>
+            <tr>
+                <td>ハイパーパラメータ</td>
+                <td>モデルの設定や学習率など</td>
+                <td>[23, 99]</td>
+            </tr>
+            <tr>
+                <td>ブラックボックスモデル</td>
+                <td>サポート集合→ベースタスクモデルパラメータ</td>
+                <td>9.2.4.2節</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ニューラルネットワークアーキテクチャ -->
+    <div class="slide">
+        <h2>アーキテクチャもメタ知識となる</h2>
+
+        <div class="key-point-box">
+            <p class="key-point">ニューラルネットワークのアーキテクチャ構造</p>
+            <p>仮説がニューラルネットワークの場合、アーキテクチャの構成も学習の対象となります</p>
+        </div>
+
+        <h3>メタ学習におけるオプティマイザの学習</h3>
+        <ul>
+            <li>通常の機械学習：SGD、Adamなど既存のオプティマイザを利用</li>
+            <li>メタ学習における革新的アプローチ：</li>
+        </ul>
+
+        <div class="algorithm-box">
+            <p><span class="highlight">オプティマイザ自体をメタ知識として学習</span></p>
+            <ul>
+                <li>反復 $t$ における現在のパラメータ値 $\theta_t$</li>
+                <li>損失の勾配 $\nabla_\theta \mathcal{L}(\theta_t)$ を入力</li>
+                <li>反復におけるパラメータ更新を出力する写像を学習</li>
+            </ul>
+        </div>
+
+        <div class="note">
+            このアプローチにより、タスクに特化したオプティマイザを獲得できます [60, 239, 276]。
+        </div>
+    </div>
+
+    <!-- データもメタ知識になる場合 -->
+    <div class="slide">
+        <h2>データもメタ知識の対象</h2>
+
+        <h3>学習データの生成・拡張</h3>
+
+        <div class="two-col">
+            <div class="col">
+                <h4>データ拡張手法</h4>
+                <ul>
+                    <li>学習用サポート集合</li>
+                    <li>データ拡張 [65]</li>
+                    <li>ミニバッチの切り分け方 [192]</li>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>環境シミュレータ</h4>
+                <ul>
+                    <li>Sim2Real転移</li>
+                    <li>環境のシミュレータ [13]</li>
+                    <li>データそのものの生成</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="note">
+            前処理の方法、データ拡張戦略、さらには学習環境そのものをメタ学習の対象とする手法が多数提案されています [191, 306]。
+        </div>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.3.2.1 モデルパラメータの初期値としてのメタ知識の学習</h1>
+    </div>
+
+        <!-- 同時訓練の問題点 -->
+    <div class="slide">
+        <h2>同時訓練の問題点と解決策</h2>
+
+        <div class="warning-box">
+            <p><span class="key-point">同時訓練の問題</span></p>
+            <p>各タスクのサポート集合$D^{\text{tr}}$に対する期待損失の最小化によってメタ知識を学習しようとしている点にある。</p>
+        </div>
+
+        <h3>重要な課題</h3>
+        <ul>
+            <li>(9.21)のような<span class="highlight">仮説評価時のリスク</span>であるクエリ集合$D^{\text{val}}$に対するリスクを最小化することが重要</li>
+            <li>この点を考慮したモデルパラメータの初期値に対するメタ学習の成功例が必要</li>
+        </ul>
+
+        <div class="note">
+            単純な同時訓練では、サポート集合での損失のみを考慮するため、未知のタスクに対する汎化性能が不十分になる可能性があります。
+        </div>
+    </div>
+
+    <!-- 例9.2：正弦関数の同時訓練 -->
+    <div class="slide">
+        <h2>例9.2：正弦関数の同時訓練</h2>
+
+        <div class="example-box">
+            <p><span class="key-point">設定</span></p>
+            <ul>
+                <li>タスク$\mathcal{T}$のデータ生成分布$P_{X,Y}^{\mathcal{T}}$：入力$x$が1次元の一様分布$U([-5, 5])$</li>
+                <li>出力$y$が正弦関数$f_{\mathcal{T}}(x) = a \sin(x + b)$に従う</li>
+                <li>各タスクを特徴付けるパラメータ$a, b$：それぞれ一様分布$U([0.1, 5.0])$、$U([0, 2\pi])$に従う確率変数</li>
+                <li>タスクの損失$\mathcal{L}^{\mathcal{T}}$を$\ell_2$損失関数で定義</li>
+            </ul>
+        </div>
+
+        <div class="formula-box">
+            <p>損失関数：</p>
+            <div class="equation">
+                $$\mathcal{L}^{\mathcal{T}}(x, f_{\mathcal{T}}(x); \theta) = \int_{-5}^5 \|h(x; \theta) - f_{\mathcal{T}}(x)\|^2 dx$$
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <p><span class="key-point">問題点</span></p>
+            <p>期待リスク$\mathbb{E}_{\mathcal{T}}[\mathcal{L}^{\mathcal{T}}]$は恒等的に0を返す仮説$h(x; \theta) \equiv 0$によって最小化されるが、これは明らかに未知のタスクに対する初期値として有用ではない。</p>
+        </div>
+    </div>
+
+    <!-- MAML概要 -->
+    <div class="slide">
+        <h2>MAML（Model-Agnostic Meta-Learning）</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">MAMLの特徴</span></p>
+            <ul>
+                <li><span class="highlight">Model-agnostic</span>：モデルに対して勾配法によって更新可能であること（微分可能であること）以外を仮定せず</li>
+                <li><span class="highlight">Task-agnostic</span>：回帰、分類または強化学習などのタスクを問わずに適用可能な柔軟性の高いメタ学習手法</li>
+            </ul>
+        </div>
+
+        <h3>MAMLの目標</h3>
+        <div class="key-point-box">
+            <p>新たなタスクに対して、少数ショット学習でそれぞれの最適なモデルパラメータが発見できるような<span class="highlight">共通の初期値</span>を見つけることを目標とします。</p>
+        </div>
+
+        <div class="image-box">
+            <p><strong>図9.3 MAMLのイメージ</strong></p>
+            <img src="img/image9-3.png" alt="MAMLのイメージ" style="width: 100%; max-width: 700px;">
+            <p>新たなタスクの最適なモデルパラメータ$\theta_1^*, \theta_2^*, \theta_3^*$に対して、それぞれを少数ショット学習で到達できるような共通の初期値$\theta$を見つけるためのメタ学習手法です。</p>
+        </div>
+    </div>
+
+    <!-- MAMLアルゴリズム -->
+    <div class="slide">
+        <h2>MAMLアルゴリズム</h2>
+
+        <div class="algorithm-box">
+            <p><span class="key-point">MAMLは非常にシンプルで、以下の3ステップを繰り返します</span></p>
+        </div>
+
+        <div class="formula-box">
+            <p><strong>Step 1:</strong> タスク分布$P(\mathcal{T})$からタスク$\mathcal{T}_i = (\{D_{T_i}^{\text{tr}}, D_{T_i}^{\text{val}}\}, \mathcal{L}^{T_i})$をサンプリング</p>
+            <ul>
+                <li>$D_{T_i}^{\text{val}}$：それぞれタスク$\mathcal{T}_i$のデータ生成分布$P_{X,Y}^{T_i}$からサンプリングされたサポート集合とクエリ集合</li>
+                <li>$\mathcal{L}^{T_i}$：損失を表します</li>
+            </ul>
+        </div>
+
+        <div class="note">
+            各ステップでバッチサイズ分のタスクをサンプリングし、それぞれのタスクに対して個別の適応を行います。
+        </div>
+
+        <div class="formula-box">
+            <p><strong>Step 2:</strong> タスク$\mathcal{T}_i$固有のモデルパラメータ$\theta^{T_i}$を$\theta_0^{T_i} \leftarrow \theta$と初期化し、勾配法で$S$回更新します。</p>
+            
+            <p>各反復$s = 1, ..., S$の更新則：</p>
+            <div class="equation">
+                $$\theta^{T_i} = \theta_{s-1}^{T_i} - \alpha \nabla_\theta \mathcal{L}^{T_i}(D_{T_i}^{\text{tr}}; \theta_{s-1}^{T_i}) \quad (9.30)$$
+            </div>
+        </div>
+
+        <div class="formula-box">
+            <p><strong>Step 3:</strong> 各タスクの検証誤差を小さくするようにすべてのタスクで共有する初期化パラメータ$\theta$を更新します。</p>
+            <div class="equation">
+                $$\theta \leftarrow \theta - \beta \nabla_\theta \sum_{\mathcal{T}_i \sim P(\mathcal{T}_i)} \mathcal{L}^{T_i}(D_{T_i}^{\text{val}}, \theta_S^{T_i}) \quad (9.31)$$
+            </div>
+            <p>ここで、$\beta > 0$は学習率パラメータです。</p>
+        </div>
+    </div>
+
+    <!-- MAMLの2レベル最適化 -->
+    <div class="slide">
+        <h2>MAMLの2レベル最適化</h2>
+
+        <div class="key-point-box">
+            <p><span class="key-point">重要な理解</span></p>
+            <p>MAMLは、すべてのタスクで同じ仮説集合を用いるとき、メタ知識$\omega$としてモデルパラメータ$\theta$をとった2レベル最適化問題(9.21)と解釈することができます。</p>
+        </div>
+
+        <h3>(9.21)の制約条件と目的関数の対応</h3>
+        <table>
+            <tr>
+                <th>2レベル最適化の要素</th>
+                <th>MAMLでの対応</th>
+            </tr>
+            <tr>
+                <td>制約条件</td>
+                <td>Step2：個別タスクでの適応</td>
+            </tr>
+            <tr>
+                <td>目的関数</td>
+                <td>Step3：メタパラメータの更新</td>
+            </tr>
+        </table>
+
+        <div class="note">
+            MAMLは損失関数$\mathcal{L}^{\mathcal{T}}$を取り替えることで教師あり学習におけるメタ学習アルゴリズムにも、強化学習におけるメタ学習アルゴリズムにもなります。
+        </div>
+    </div>
+
+    <!-- 損失関数の例 -->
+    <div class="slide">
+        <h2>MAMLで使用される損失関数の例</h2>
+
+        <div class="two-col">
+            <div class="col">
+                <h3>回帰問題</h3>
+                <div class="formula-box">
+                    <p>平均二乗損失：</p>
+                    <div class="equation">
+                        $$\mathcal{L}^{\mathcal{T}}(D_{\mathcal{T}}; \theta) = \sum_{(x,y) \in D_{\mathcal{T}}} (h(x; \theta) - y)^2$$
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h3>分類問題</h3>
+                <div class="formula-box">
+                    <p>2値交差エントロピー損失：</p>
+                    <div class="equation">
+                        $$\mathcal{L}^{\mathcal{T}}(D_{\mathcal{T}}; \theta) = \sum_{(x,y) \in D_{\mathcal{T}}} [y \log h(x; \theta) + (1-y) \log(1-h(x; \theta))]$$
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="formula-box">
+            <p><strong>強化学習の場合</strong>：負の期待報酬</p>
+            <div class="equation">
+                $$\mathcal{L}^{\mathcal{T}}(D_{\mathcal{T}}; \theta) = -\mathbb{E}_{s_1 \sim q, a_i \sim \pi_\theta} \left[ \sum_{t=1}^T R(s_t, a_t) \right]$$
+            </div>
+            <p>マルコフ決定過程（MDP）をタスクとし、方策関数$\pi_\theta$のパラメータ$\theta$の初期値をメタ学習するアルゴリズムが導出できます。</p>
+        </div>
+
+        <div class="warning-box">
+            <p>例9.2のような同時訓練では役に立たない初期化が得られてしまう場合でも、MAMLでは未知のタスクに対してよいパラメータの初期化が得られることが期待できます。</p>
+        </div>
+    </div>
+
+    <!-- MAMLの計算コスト -->
+    <div class="slide">
+        <h2>MAMLの計算コストと改善</h2>
+
+        
+
+        <h3>計算コストの課題</h3>
+        <div class="formula-box">
+            <p>S=1の場合のメタ知識の更新(9.31)：</p>
+            <div class="equation">
+                $$\theta \leftarrow \theta - \beta \nabla_\theta \sum_{\mathcal{T}_i \sim P(\mathcal{T}_i)} \mathcal{L}^{T_i}(D_{T_i}^{\text{val}}; \theta - \alpha \nabla_\theta \mathcal{L}^{T_i}(D_{T_i}^{\text{tr}}; \theta)) \quad (9.32)$$
+            </div>
+        </div>
+
+        <ul>
+            <li>この実行にはパラメータ$\theta$に関する<span class="highlight">ヘッセ行列の計算</span>が要請される</li>
+            <li>メタ学習フェーズにおけるパラメータ更新に大きな計算コストがかかる</li>
+        </ul>
+    </div>
+
+    <!-- FOMAML -->
+    <div class="slide">
+        <h2>FOMAML（First-order MAML）</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">FOMAMLの改善点</span></p>
+            <p>Finn等[96]は勾配を1次近似してメタ学習フェーズのパラメータ更新を行う方法（first order MAML (FOMAML)）も提案しています。</p>
+        </div>
+
+        <h3>FOMAMLの利点</h3>
+        <ul>
+            <li>ベース学習フェーズの勾配を保存しておく必要がなく、通常のMAMLに比べて処理が軽量化されています</li>
+            <li>ヘッセ行列の計算を回避</li>
+            <li>メモリ使用量の削減</li>
+        </ul>
+    </div>
+
+    <div class="slide divider-slide">
+        <h1>9.3.2.2 オプティマイザとしてのメタ知識の学習</h1>
+    </div>
+
+        <!-- オプティマイザをメタ知識とする動機 -->
+    <div class="slide">
+        <h2>オプティマイザをメタ知識とする動機</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">従来のアプローチ vs メタ学習アプローチ</span></p>
+            <ul>
+                <li><span class="highlight">従来</span>：モメンタム付きSGDやAdam等の既存の最適化器を利用</li>
+                <li><span class="highlight">メタ学習</span>：$\theta$や損失関数のパラメータに関する勾配$\nabla_\theta \mathcal{L}$などの最適化問題における状態を入力とし、ベース学習の反復ごとにとるべき更新則を生成する関数（最適化アルゴリズムそのもの）を学習</li>
+            </ul>
+        </div>
+
+        <h3>メタ知識$\omega$の範囲</h3>
+        <ul>
+            <li>ステップサイズのような単純なハイパーパラメータ [15, 181]</li>
+            <li>前処理の方法 [221]</li>
+            <li>複雑な非線形変換としての新たな勾配ベースのオプティマイザ構成 [31, 177, 238, 315]</li>
+        </ul>
+
+        <div class="note">
+            このアプローチにおけるメタ知識$\omega$は、ステップサイズのような単純なハイパーパラメータから、前処理の方法に至るまで多岐にわたります。
+        </div>
+    </div>
+
+    <!-- 勾配法アルゴリズムの学習 -->
+    <div class="slide">
+        <h2>勾配法アルゴリズムの学習</h2>
+
+        <div class="formula-box">
+            <p><span class="key-point">標準的な勾配更新則（式9.33）</span></p>
+            <div class="equation">
+                $$\theta_{t+1} \leftarrow \theta_t - \alpha_t g_t$$
+            </div>
+            <p>ここで、$g_t$はパラメータの更新方向を表すベクトルで、素朴な勾配法では$g_t = \nabla_\theta f(\theta_t)$とします。</p>
+        </div>
+
+        <h3>既存最適化アルゴリズムの例</h3>
+        
+        <div class="two-col">
+            <div class="col">
+                <h4>モメンタム法</h4>
+                <div class="formula-box">
+                    <p>$g_0 = 0$として：</p>
+                    <div class="equation" style="font-size: 14px;">
+                        $$g_{t+1} = \mu g_t - (1-\mu)\alpha_t \frac{1}{|D_t|} \sum_{(x,y) \in D_t} \nabla_\theta \mathcal{L}(x,y; \theta_t)$$
+                        $$\theta_{t+1} \leftarrow \theta_t + g_{t+1}$$
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h4>Adam</h4>
+                <div class="formula-box">
+                    <p>$m_0 = v_0 = 0$として：</p>
+                    <div class="equation" style="font-size: 12px;">
+                        $$m_{t+1} = \beta_1 m_t + (1-\beta_1)g_t, \quad \hat{m}_{t+1} = \frac{m_{t+1}}{1-\beta_1^t}$$
+                        $$v_{t+1} = \beta_2 v_t + (1-\beta_2)g_t^2, \quad \hat{v}_{t+1} = \frac{v_{t+1}}{1-\beta_2^t}$$
+                        $$\theta_{t+1} \leftarrow \theta_t - \frac{\alpha}{\sqrt{\hat{v}_{t+1}} + \varepsilon} \hat{m}_{t+1}$$
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="note">
+            $\mu \in [0,1)$はモメンタム係数と呼ばれ、次の更新方向を決める際に過去の更新方向$g_t$をどれくらい重視するかを制御するパラメータです。
+        </div>
+    </div>
+
+    <!-- No Free Lunch定理 -->
+    <div class="slide">
+        <h2>No Free Lunch定理との関係</h2>
+
+        <div class="theory-box">
+            <p><span class="key-point">Wolpertら[318]のNo Free Lunch定理</span></p>
+            <p>組合せ最適化問題の設定において、すべての最適化問題に対してランダムサーチよりよい性能を示す最適化アルゴリズムは存在しないことを示しました。</p>
+        </div>
+
+        <h3>定理の含意</h3>
+        <ul>
+            <li>ある最適化アルゴリズムが特定の最適化問題に対してランダムサーチよりよい性能を示すならば、それ以外の最適化問題に対してはランダムサーチより悪い性能を示さなければならない</li>
+            <li>どんな最適化アルゴリズムも、すべての最適化問題に対する性能を平均するとランダムサーチと同等の性能となってしまう</li>
+        </ul>
+
+        <div class="key-point-box">
+            <p class="key-point">重要な示唆</p>
+            <p>一般に最適化アルゴリズムの性能を向上させるためには、<span class="highlight">問題のサブクラスに特化させることが唯一の方法</span>であることを示唆しています。</p>
+        </div>
+    </div>
+
+    <!-- Andrychowiczらの手法 -->
+    <div class="slide">
+        <h2>Andrychowiczらの手法</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">勾配法の更新則の一般化（式9.36）</span></p>
+            <div class="equation">
+                $$\theta_{t+1} \leftarrow \theta_t + g_t(\nabla f(\theta_t); \omega)$$
+            </div>
+            <p>現在の勾配$\nabla f(\theta_t)$を入力し、その反復における更新量を出力する写像$g_t(f(\theta_t); \omega)$のパラメータ$\omega$を学習するメタ学習問題を考察しました。</p>
+        </div>
+
+        <h3>$\omega$の意味</h3>
+        <ul>
+            <li>(9.34)や(9.35)でモデルパラメータの更新方向と更新量を規定するハイパーパラメータたちを表すもの</li>
+            <li>タスクのクラスごとによいオプティマイザを人間が設計するのではなく、<span class="highlight">データから学習させてしまおうという発想</span></li>
+        </ul>
+
+        <div class="note">
+            ただし、オプティマイザを学習対象とするアプローチ自体には歴史があり、例えばBengioら[34, 35]による進化計算に基づく更新則の学習法の提案などにそのルーツがあると考えることができます。
+        </div>
+    </div>
+
+    <!-- メタ期待リスクの定式化 -->
+    <div class="slide">
+        <h2>メタ期待リスクの新しい定式化</h2>
+
+        <div class="formula-box">
+            <p><span class="key-point">メタ期待リスク（式9.37）</span></p>
+            <div class="equation">
+                $$\mathcal{R}(\omega) = \mathbb{E}_{f \sim P(f)}[f(\theta^*(\omega))]$$
+            </div>
+            <p>各$f$が一つのタスクを、$P(f)$がタスク分布を表現している。</p>
+        </div>
+
+        <div class="warning-box">
+            <p><span class="key-point">問題点</span></p>
+            <p>(9.37)のメタ期待リスク$\mathcal{R}(\omega)$は最終時点のパラメータ値$\theta^*$のみに依存します。しかし、更新ステップ$g_t$の訓練であることを考えれば、最適化の初期時点からある時点$T$までのすべての解の履歴に依存する目的関数のほうが適していると考えられます。</p>
+        </div>
+
+        <div class="formula-box">
+            <p><span class="key-point">改良されたメタ期待リスク（式9.38）</span></p>
+            <div class="equation">
+                $$\tilde{\mathcal{R}}(\omega) = \mathbb{E}_{f \sim P(f)}\left[\sum_{t=1}^T w_t f(\theta_t)\right]$$
+            </div>
+            <p>各時点$t = 1, ..., T$に対応する適当な重み$w_t \in \mathbb{R}_{\geq 0}$を導入し、新たなメタ期待リスク$\tilde{\mathcal{R}}(\omega)$を定義します。</p>
+        </div>
+    </div>
+
+    <!-- RNNの出力と潜在表現 -->
+    <div class="slide">
+        <h2>RNNによる更新ステップの実装</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">RNNを用いた更新ステップの生成</span></p>
+            <p>$\theta$の更新は$\theta_{t+1} \leftarrow \theta_t + g_t$で行われ、更新ステップ$g_t$はRNNの出力として$(g_t, z_{t+1})^T = h_\omega(\nabla_\theta f(\theta_t), z_t)$で潜在表現$z_{t+1}$とともに生成されます。</p>
+        </div>
+
+        <h3>重みの設定による柔軟性</h3>
+        <div class="formula-box">
+            <p>重み$w_t$を$w_t = \mathbb{1}[t = T]$（最終時点でのみ1）とり、それ以外の時点では0をとるように設定すれば(9.37)のメタ期待リスクを復元します。</p>
+            <p>この意味で、(9.38)による定式化は(9.37)の自然な拡張とみなすことができます。</p>
+        </div>
+
+        <div class="image-box">
+            <p><strong>図9.4 勾配法の更新ステップ学習のための計算グラフ</strong></p>
+            <img src="img/image9-4.png" alt="勾配法の更新ステップ学習のための計算グラフ" style="width: 100%; max-width: 800px;">
+            <p>実線に沿った勾配は逆伝播し、破線に沿った勾配は逆伝播しない、すなわち$\partial \nabla_\theta f(\theta_t)/\partial \omega = 0$という仮定をおいています。</p>
+        </div>
+    </div>
+
+    <!-- 計算グラフと仮定 -->
+    <div class="slide">
+        <h2>計算効率化のための仮定</h2>
+
+        <div class="warning-box">
+            <p><span class="key-point">計算効率化のための仮定</span></p>
+            <p>Andrychowiczら[12]は図の実線に沿った勾配は逆伝播し、破線に沿った勾配は逆伝播しない、すなわち$\partial \nabla_\theta f(\theta_t)/\partial \omega = 0$という仮定をおいています。</p>
+        </div>
+
+        <h3>仮定の意味</h3>
+        <ul>
+            <li>この仮定は、$f$の勾配$\nabla_\theta f(\theta_t)$がメタ知識$\omega$に依存しないことを仮定するものです</li>
+            <li>この仮定によって$f$のヘッセ行列の計算を回避することができます</li>
+        </ul>
+
+        <div class="note">
+            この計算効率化は実用上重要ですが、理論的な厳密性とのトレードオフがあります。実際の実装では、この近似が十分な性能を提供することが実験的に確認されています。
+        </div>
+    </div>
+
+    <!-- RNNオプティマイザの利点 -->
+    <div class="slide">
+        <h2>RNNオプティマイザの利点</h2>
+
+        <div class="key-point-box">
+            <p class="key-point">RNNを用いる理由</p>
+            <p>勾配が過去の更新情報を用いることで効率化できるという経験的な事実に基づいています。</p>
+        </div>
+
+        <h3>確率的最適化手法との関連</h3>
+        <ul>
+            <li><span class="highlight">モメンタムやAdam</span>：過去の更新情報を用いて現在の更新方向を補正することによってより高速に最適解まで収束させられることが報告されています</li>
+            <li><span class="highlight">RNNの活用</span>：過去の更新情報を取り入れ、さらにそれをどう現在の更新に反映するかまで含めて学習させられるという点がRNNを用いる最大の理由といえるでしょう</li>
+        </ul>
+
+        <div class="note">
+            RNNを用いることで、過去の更新情報を取り入れ、さらにそれをどう現在の更新に反映するかまで含めて学習させられるという点が、この手法の最大の利点です。
+        </div>
+    </div>
+
+    <!-- 座標別LSTM最適化 -->
+    <div class="slide">
+        <h2>座標別LSTM最適化</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">Hochreiterら[132]のRNNアーキテクチャ</span></p>
+            <p>全結合型のLSTMでした。しかし、これはモデルパラメータ$\theta$の次元$d$が高いとき、パラメータ数が膨大となり、最適化が不安定になるうえにRNNの計算自体も重くなってしまいます。</p>
+        </div>
+
+        <div class="algorithm-box">
+            <p><span class="key-point">Andrychowiczら[12]の改善</span></p>
+            <p>$\theta$の成分ごとにLSTM$h_\omega^{(1)}, ..., h_\omega^{(d)}$を用意し、$\theta_1, ..., \theta_d$を個別に最適化するアプローチを提案しています。</p>
+        </div>
+
+        <h3>利点</h3>
+        <ul>
+            <li>$\theta$が高次元の場合でも全結合型LSTMに比べて効率的に最適化を実行することができます</li>
+            <li>実際に最適化を行う際には、学習を安定させるためにLSTMの入出力を適当に規格化する前処理を各時点で行います</li>
+        </ul>
+
+        <div class="image-box">
+            <p><strong>図9.5 座標方向LSTM オプティマイザ</strong></p>
+            <img src="img/image9-5.png" alt="座標方向LSTM オプティマイザ" style="width: 100%; max-width: 700px;">
+            <p>成分ごとのLSTMはパラメータ$\omega$を共有します。</p>
+        </div>
+    </div>
+    
+            <!-- セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>9.3.2.3 Sim2Real転移のためのメタ学習</h1>
+    </div>
+        <!-- Sim2Real転移とは -->
+    <div class="slide">
+        <h2>Sim2Real転移とは</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">Sim2Real転移（Sim2Real transfer）</span></p>
+            <p>シミュレータによって人工的に生成されたデータを訓練データとして用いてさまざまなタスクを解き、そこで得られた知識を実世界のタスクに適用する問題設定を指します。</p>
+        </div>
+
+        <h3>現在の研究動向</h3>
+        <ul>
+            <li><span class="highlight">画像認識</span>：主に画像がシミュレータによる人工データとして用いられています</li>
+            <li><span class="highlight">強化学習</span>：セグメンテーションや識別のような画像認識タスクのみでなく、ロボティクスと組み合わせた強化学習タスクが解かれることも多いです</li>
+            <li><span class="highlight">センサー・制御</span>：出力を観測するためのセンサーやアクチュエータの制御など</li>
+        </ul>
+
+        <div class="note">
+            Sim2Real転移は画像やロボティクスのほか、出力を観測するためのセンサーやアクチュエータの制御、アクションコストが大きいデータを収集するのが困難な分野での重要性が指摘されています。
+        </div>
+    </div>
+
+    <!-- シミュレーションの課題 -->
+    <div class="slide">
+        <h2>シミュレーションから実世界への課題</h2>
+
+        <h3>シミュレーションでのギャップ</h3>
+        <ul>
+            <li><span class="highlight">シミュレーション空間でのモデルの訓練</span>：実世界に比べてもコストが安く、モデルの改善や効率的な訓練が支持されています</li>
+            <li><span class="highlight">実世界への適用時の課題</span>：実世界にはデータやモデルを転移する際に欠陥についても点</li>
+        </ul>
+
+        <h3>主な困難な要因</h3>
+        <table>
+            <tr>
+                <th>要因</th>
+                <th>説明</th>
+            </tr>
+            <tr>
+                <td>物理ダイナミクス</td>
+                <td>重量・摩擦力・接合部の減衰量や弾性係数など</td>
+            </tr>
+            <tr>
+                <td>システム同定</td>
+                <td>system identification</td>
+            </tr>
+            <tr>
+                <td>ドメインランダム化</td>
+                <td>domain randomization による対応</td>
+            </tr>
+        </table>
+
+        <div class="note">
+            シミュレーションで学習されたモデルが実世界に転移する際の主な課題は、物理的な条件の違いやシステムパラメータの不一致です。
+        </div>
+    </div>
+
+    <!-- ドメインランダム化 -->
+    <div class="slide">
+        <h2>ドメインランダム化に基づくSim2Real転移</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">ドメインランダム化</span></p>
+            <p>ランダムな性質を持つさまざまな類似ドメインを作り、それらすべてで機能するモデルを学習させるアプローチです。実世界の環境がランダムに生成されたようなシミュレーションドメインの中に含まれているならば、学習されたモデルが実世界の環境に適応できる可能性が高いことが期待されます。</p>
+        </div>
+
+        <h3>基本的なアイデア</h3>
+        <ul>
+            <li>実世界の環境がランダムに生成されたシミュレーションドメインに含まれると仮定</li>
+            <li>多様な環境で汎化性能を持つモデルを学習</li>
+            <li>実際の環境への適応可能性を高める</li>
+        </ul>
+
+        <div class="note">
+            このアプローチは、実世界の複雑さと多様性をシミュレーション環境でカバーしようとする試みです。
+        </div>
+    </div>
+
+    <!-- 強化学習での問題設定 -->
+    <div class="slide">
+        <h2>強化学習でのSim2Real問題設定</h2>
+
+        <div class="definition-box">
+            <p>強化学習の基本的な問題設定については13.1節を参照してください。</p>
+            <ul>
+                <li>シミュレータの環境を元ドメイン$E_S$</li>
+                <li>実世界の環境を目標ドメイン$E_T$</li>
+                <li>モデルの訓練は元ドメインで行う</li>
+            </ul>
+        </div>
+
+        <div class="formula-box">
+            <p><span class="key-point">期待報酬の定式化（式9.39）</span></p>
+            <div class="equation">
+                $$\mathcal{R}(\theta) = \mathbb{E}_\xi \left[ \mathbb{E}_{\tau \sim p(\tau | \pi_\theta, \xi)} \left[ \sum_{m=1}^M r_m(s_m, a_m, s_{m+1}) \right] \right]$$
+            </div>
+        </div>
+
+        <h3>記号の意味</h3>
+        <ul>
+            <li>元ドメインには$N$個のランダム化パラメータ$\xi = (\xi_1, ..., \xi_N)^T \in \Xi \subset \mathbb{R}^N$がある</li>
+            <li>$\tau = (s_1, a_1, ..., s_M, a_M, s_{M+1})$は状態$s_m$と行動$a_m$からなるエージェントの学習エピソード</li>
+            <li>$r_m(s_m, a_m, s_{m+1})$は時点$m$における報酬</li>
+        </ul>
+    </div>
+
+    <!-- ドメインランダム化の実装 -->
+    <div class="slide">
+        <h2>ドメインランダム化の実装</h2>
+
+        <h3>ランダム化パラメータの例</h3>
+        <ul>
+            <li>環境中に配置されるオブジェクトの形状や位置</li>
+            <li>色などの条件</li>
+            <li>強化学習では方策が学習の対象となる</li>
+        </ul>
+
+        <div class="theory-box">
+            <p><span class="key-point">ドメインランダム化の定式化</span></p>
+            <p>元ドメインと目標ドメインの不一致度を元ドメインの変動としてモデル化しているものと解釈することができます [227]。</p>
+        </div>
+
+        <h3>最も簡単な実現方法</h3>
+        <div class="algorithm-box">
+            <p><span class="highlight">一様ドメインランダム化（uniform domain randomization）</span></p>
+            <p>各ランダム化パラメータ$\xi_j$を適当な区間$[\xi_j^{\text{low}}, \xi_j^{\text{high}}]$から一様ランダムにサンプリングするというもの [286]。</p>
+        </div>
+
+        <div class="image-box">
+            <p><strong>図9.6 ドメインランダム化によってランダムに生成された学習環境の例</strong></p>
+            <img src="img/image9-6.png" alt="ドメインランダム化によってランダムに生成された学習環境の例" style="width: 100%; max-width: 800px;">
+            <div class="image-caption">Tobinらの研究によるシーンの外観をドメインランダム化によって多数生成して訓練に用いている例</div>
+        </div>
+    </div>
+
+    <!-- ランダム化パラメータの具体例 -->
+    <div class="slide">
+        <h2>ランダム化パラメータの具体例</h2>
+
+        <h3>視覚・環境要素</h3>
+        <ul>
+            <li><span class="highlight">テーブル上のオブジェクトの位置や形、色</span></li>
+            <li><span class="highlight">オブジェクトの質感</span></li>
+            <li><span class="highlight">照明の位置や向きなどの条件</span></li>
+            <li><span class="highlight">シミュレータ内のカメラの位置や向き、視野</span></li>
+            <li><span class="highlight">画像に加えるランダムノイズの種類と大きさ</span></li>
+        </ul>
+
+        <h3>物理・動力学要素</h3>
+        <div class="example-box">
+            <p><span class="key-point">物理ダイナミクスのランダム化</span></p>
+            <p>実際、Pengら[227]の研究では、ロボット本体の質量や寸法、接合部の減衰量や弾性係数などの条件がランダム化の対象となっています。</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2>OpenAI Roboticsの例</h2>
+
+        <div class="example-box">
+            <p><span class="key-point">OpenAI Roboticsの成功事例</span></p>
+            <p>実際にロボットハンドに50種類の向きを実現させている動画が公開されています。</p>
+            <div class="video-container" style="margin: 15px 0; text-align: center;">
+                <iframe width="560" height="450" src="https://www.youtube.com/embed/DKe8FumoD4E" 
+                        title="YouTube video player" frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen style="max-width: 100%; height: 450px;">
+                </iframe>
+            </div>
+        </div>
+
+        <ul>
+            <li><span class="highlight">視覚とダイナミクス</span>の両方でドメインランダム化を適用</li>
+            <li><span class="highlight">継続的な回転制御</span>という複雑なタスクでの成功</li>
+            <li><span class="highlight">50種類の向き</span>という多様な目標状態への対応</li>
+        </ul>
+
+        <div class="note">
+            この成功例は、適切に設計されたドメインランダム化が実世界の複雑なロボット制御タスクに対して有効であることを実証しています。
+        </div>
+    </div>
+
+    <!-- 一様ドメインランダム化の限界 -->
+    <div class="slide">
+        <h2>一様ドメインランダム化の限界</h2>
+
+        <div class="warning-box">
+            <p><span class="key-point">一様ドメインランダム化の問題点</span></p>
+            <p>最も素朴なドメインランダム化の実現方法であり、実際にはより洗練された定式化が望ましいと考えられます。</p>
+        </div>
+
+        <div class="formula-box">
+            <p><span class="key-point">2レベル最適化問題としての定式化（式9.40）</span></p>
+            <div class="equation">
+                $$\min_\omega \mathcal{L}(\pi_{\theta^*(\omega)}; E_T)$$
+            </div>
+            <div class="equation">
+                $$\text{subject to } \theta^*(\omega) = \arg\min_\theta \mathbb{E}_{\xi \sim P(\xi; \omega)} [\mathcal{L}(\pi_\theta; E_\xi)]$$
+            </div>
+        </div>
+
+        <h3>解釈</h3>
+        <ul>
+            <li>これは(9.21)のような2レベル最適化問題として実現することができます [301]</li>
+            <li>$\mathcal{L}(\pi; E)$を環境$E$のもとで方策$\pi$に従って探索を行ったときの損失とするとき、$\xi$の決定問題を$\xi$に従う確率分布$P(\xi; \omega)$のパラメータ$\omega$を推定する問題として書くことができます</li>
+        </ul>
+    </div>
+
+    <!-- ガイド付きドメインランダム化 -->
+    <div class="slide">
+        <h2>ガイド付きドメインランダム化</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">ガイド付きドメインランダム化の利点</span></p>
+            <p>(9.40)の定式化は、タスクの性能や実現境のデータ、シミュレータからのガイダンスなどの補助情報が利用できるという仮定の下でより洗練されたランダム化の戦略を考える方針になります。この意味で、後者をガイド付きドメインランダム化（guided domain randomization）と呼びます。</p>
+        </div>
+
+        <h3>学習フロー</h3>
+        <div class="step-box">
+            <p>ガイド付きドメインランダム化では、まず異なるランダム化パラメータ$\xi \sim P(\xi; \omega)$によるそれぞれの環境で方策を学習します。</p>
+            <p>その後、学習した各方策を目標ドメインの下流タスク（すなわち現実のロボット制御や検証データの予測）で評価しフィードバックを収集します。</p>
+        </div>
+
+        <div class="note">
+            得られたフィードバックは用いたランダム化パラメータ$\xi$の良さを評価したものであり、メタ知識$\omega$を更新する際に利用します。
+        </div>
+    </div>
+
+    <!-- ガイド付きドメインランダム化の具体的手法 -->
+    <div class="slide">
+        <h2>Ruizらの手法</h2>
+
+        <div class="definition-box">
+            <p><span class="key-point">Ruizら[246]の強化学習アプローチ</span></p>
+            <p>強化学習における報酬をタスクからのフィードバックと捉え、分布$P(\xi; \omega)$を近似する方策$\pi_\phi$を学習するメタ強化学習のアプローチを提案しました。</p>
+        </div>
+
+        <div class="formula-box">
+            <p>記号の簡単のため各下流タスクの報酬を単に$R(\xi)$とおくと、$\pi_\phi$の最適化問題は：</p>
+            <div class="equation">
+                $$\max_\phi R(\phi) = \mathbb{E}_{\xi \sim \pi_\phi} [R(\xi)] \quad (9.41)$$
+            </div>
+        </div>
+
+        <div class="formula-box">
+            <p><span class="key-point">REINFORCE rule[317]による勾配計算（式9.42）</span></p>
+            <div class="equation">
+                $$\nabla_\phi R(\phi) = \mathbb{E}_{\xi \sim \pi_\phi} [\nabla_\phi \log(\pi_\phi) R(\xi)]$$
+            </div>
+        </div>
+
+        <div class="formula-box">
+            <p>$\nabla_\phi R(\phi)$の不偏推定量は、$K$個のランダム化パラメータのサンプル$\xi_1, ..., \xi_K$を用いて：</p>
+            <div class="equation">
+                $$\frac{1}{K} \sum_{k=1}^K \nabla_\phi \log(\pi_\phi) A_k \quad (9.43)$$
+            </div>
+            <p>ここで、$A_k = R(\xi_k) - b$はベースライン値$b$からの改善量の推定値であり、$b$には例えば過去の報酬の指数移動平均を用いることができます。</p>
+        </div>
+    </div>
+
+    <!-- シミュレーションのための学習アルゴリズム -->
+    <div class="slide">
+        <h2>シミュレーションのための学習アルゴリズム</h2>
+
+        <div class="algorithm-box">
+            <p><span class="key-point">Learning to simulate アルゴリズム</span></p>
+            <p>Ruizら[246]による「シミュレーションのための学習」アルゴリズムは以下の手順の繰り返しで構成されます：</p>
+        </div>
+
+        <div class="step-box">
+            <p><strong>Step 1:</strong> メタ方策$\pi_\phi$から$K$個のランダム化パラメータ$\xi_k$を生成します。</p>
+            
+            <p><strong>Step 2:</strong> 各$\xi_k$に対応した$K$個の学習エピソード$\tau_k$を$p(\tau | \pi_\theta; \xi_k)$から生成し、タスク固有の方策$\pi_\theta$を学習します。</p>
+            
+            <p><strong>Step 3:</strong> 各タスクの報酬$R(\xi_k)$を取得し、改善量$A_k = R(\xi_k) - b$を計算します。</p>
+            
+            <p><strong>Step 4:</strong> (9.43)を用いて勾配法でメタ方策のパラメータ$\phi$を更新します。</p>
+        </div>
+
+        <div class="image-box">
+            <p><strong>図9.7 Ruizら[246]によるシミュレーションのための学習の流れ</strong></p>
+            <img src="img/image9-7.png" alt="Ruizらによるシミュレーションのための学習の流れ" style="width: 100%; max-width: 700px;">
+            <div class="image-caption">メタ方策→シミュレータ→下流タスク→報酬のフィードバックループを示す</div>
+        </div>
+    </div>
+
+    <!-- セクション開始 -->
+    <div class="slide divider-slide">
+        <h1>9.4 まとめ</h1>
+    </div>
+
+    <!-- まとめスライド -->
+    <div class="slide">
+        <h2>第9章のまとめ</h2>
+        
+        <h3>本章で扱った内容</h3>
+        <ul>
+            <li><span class="highlight">メタ学習の基本概念</span>：帰納バイアス学習としてのメタ学習</li>
+            <li><span class="highlight">統計的メタ学習の定式化</span>：複数タスクに共通する最適な仮説集合の発見</li>
+            <li><span class="highlight">実践的手法</span>：MAML、勾配ベース手法、LSTMオプティマイザ</li>
+            <li><span class="highlight">ドメインランダム化</span>：シミュレーションから実世界への転移</li>
+        </ul>
+        
+        <h3>メタ学習の歴史と発展</h3>
+        <ul>
+            <li>メタ学習の歴史は比較的古く、<span class="key-point">はじめは帰納バイアス、すなわち機械学習における帰納的な偏見の研究</span>として始まっていました</li>
+            <li>近年、広範囲な研究の機械学習分野での研究が行われることとなりました</li>
+            <li><span class="highlight">広範囲な分野の学習支援概念が得られるべきメタ知識として認識</span>されるようになり、メタ学習の対象とする問題は飛躍的に増大しています</li>
+        </ul>
+        
+        <div class="key-point-box">
+            <p>本章で紹介したメタ学習の問題設定や方法はその一部であり、解介できなかったものの中にも重要な研究が多数存在しています。詳細は、例えば<strong>Hospedales らのサーベイ論文</strong> <em>[136]</em> やその引用文献を参照してください。</p>
+        </div>
+    </div>
+
+
+
+
+
+
+   
+</div>
+<script src="../scripts/pswd.js"></script>
+</body>
+</html>
